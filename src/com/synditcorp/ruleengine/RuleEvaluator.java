@@ -2,11 +2,11 @@
 The MIT License (MIT)
 Copyright © 2021 Syndit Business Solutions, Inc. 
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 package com.synditcorp.ruleengine;
@@ -59,6 +59,13 @@ public class RuleEvaluator {
 	 */
 	public String getVersion() {
 		return ruleDefinition.getVersion();
+	}
+	
+	/**
+	 * Returns the starting rule for the rule definition.  This is optional: any rule can be called directly.
+	 */
+	public Integer getStartRule() {
+		return ruleDefinition.getStartRule();
 	}
 	
 	/**
@@ -440,11 +447,11 @@ public class RuleEvaluator {
 
 
 	/**
-	 * This method sets a "calc" rule's passKey, passScore, passFlag, passReason, and passAction values to the engine's variables, which can be used by 
-	 * other rules' expressions.  The intent is to call this function when a calc rule passes at runtime in the rule engine evaluator.  Only calc rules that
+	 * This method sets a rule's passKey, passScore, passFlag, passReason, and passAction values to the engine's variables, which can be used by 
+	 * other rules' expressions.  The intent is to call this function when a rule passes at runtime in the rule engine evaluator.  Only rules that
 	 * evaluate to "true" are included (included in runtimePasses).  A rule must have been called prior to using its variables.
 	 */
-	private void addCalcRulePassResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
+	private void addRulePassResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
 		
 		if(! runtimePasses.contains(ruleNumber)) return;
 		
@@ -468,11 +475,11 @@ public class RuleEvaluator {
 	}
 	
 	/**
-	 * This method sets a "calc" rule's failKey, failScore, failFlag, failReason, and failAction values to the engine's variables, which can be used by 
-	 * other rules' expressions. The intent is to call this function when a calc rule fails at runtime in the rule engine evaluator.  Only calc rules that
+	 * This method sets a rule's failKey, failScore, failFlag, failReason, and failAction values to the engine's variables, which can be used by 
+	 * other rules' expressions. The intent is to call this function when a rule fails at runtime in the rule engine evaluator.  Only rules that
 	 * evaluate to "false" are included (included in runtimeFails).  A rule must have been called prior to using its variables.
 	 */
-	private void addCalcRuleFailResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
+	private void addRuleFailResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
 		
 		if(! runtimeFails.contains(ruleNumber)) return;
 		
@@ -504,24 +511,24 @@ public class RuleEvaluator {
 
 		if(! runtimePasses.contains(ruleNumber)) return;
 		
-		addCalcRulePassResultsToVariables(ruleNumber, variables);
+		addRulePassResultsToVariables(ruleNumber, variables);
 		
 		String ruleNumberStr = ruleNumber.toString();
 
 		ArrayList<String> passKeys = getCompositePassKeys(ruleNumber);
-		if(passKeys != null) variables.put( ("compositePassKeys_" + ruleNumberStr), passKeys);
+		if(passKeys != null && !passKeys.isEmpty()) variables.put( ("compositePassKeys_" + ruleNumberStr), passKeys);
 		
 		Double passScore = getCompositePassScore(ruleNumber);
 		if(passScore != null) variables.put( ("compositePassScore_" + ruleNumberStr), passScore);
 		
 		ArrayList<String> passFlags = getCompositePassFlags(ruleNumber);
-		if(passFlags != null) variables.put( ("compositePassFlags_" + ruleNumberStr), passFlags);
+		if(passFlags != null && !passFlags.isEmpty()) variables.put( ("compositePassFlags_" + ruleNumberStr), passFlags);
 		
 		ArrayList<String> passReasons = getCompositePassReasons(ruleNumber);
-		if(passReasons != null) variables.put( ("compositePassReasons_" + ruleNumberStr), passReasons);
+		if(passReasons != null && !passReasons.isEmpty()) variables.put( ("compositePassReasons_" + ruleNumberStr), passReasons);
 		
 		ArrayList<String> passActions = getCompositePassActions(ruleNumber);
-		if(passActions != null) variables.put( ("compositePassActions_" + ruleNumberStr), passActions);
+		if(passActions != null && !passActions.isEmpty()) variables.put( ("compositePassActions_" + ruleNumberStr), passActions);
 
 	}
 
@@ -534,24 +541,24 @@ public class RuleEvaluator {
 		
 		if(! runtimeFails.contains(ruleNumber)) return;
 		
-		addCalcRuleFailResultsToVariables(ruleNumber, variables);
+		addRuleFailResultsToVariables(ruleNumber, variables);
 		
 		String ruleNumberStr = ruleNumber.toString();
 
 		ArrayList<String> failKeys = getCompositeFailKeys(ruleNumber);
-		if(failKeys != null) variables.put( ("compositeFailKeys_" + ruleNumberStr), failKeys);
+		if(failKeys != null && !failKeys.isEmpty()) variables.put( ("compositeFailKeys_" + ruleNumberStr), failKeys);
 		
 		Double failScore = getCompositeFailScore(ruleNumber);
 		if(failScore != null) variables.put( ("compositeFailScore_" + ruleNumberStr), failScore);
 
 		ArrayList<String> failFlags = getCompositeFailFlags(ruleNumber);
-		if(failFlags != null) variables.put( ("compositeFailFlags_" + ruleNumberStr), failFlags);
+		if(failFlags != null && !failFlags.isEmpty()) variables.put( ("compositeFailFlags_" + ruleNumberStr), failFlags);
 		
 		ArrayList<String> failReasons = getCompositeFailReasons(ruleNumber);
-		if(failReasons != null) variables.put( ("compositeFailReasons_" + ruleNumberStr), failReasons);
+		if(failReasons != null && !failReasons.isEmpty()) variables.put( ("compositeFailReasons_" + ruleNumberStr), failReasons);
 		
 		ArrayList<String> failActions = getCompositeFailActions(ruleNumber);
-		if(failActions != null) variables.put( ("compositeFailActions_" + ruleNumberStr), failActions);
+		if(failActions != null && !failActions.isEmpty()) variables.put( ("compositeFailActions_" + ruleNumberStr), failActions);
 
 	}
 	
@@ -634,14 +641,14 @@ public class RuleEvaluator {
 
 		if(result) {
 			addRuntimePass(ruleNumber);
-			addCalcRulePassResultsToVariables(ruleNumber, variables);
+			addRulePassResultsToVariables(ruleNumber, variables);
 		}
 		else {
 			addRuntimeFail(ruleNumber);
-			addCalcRuleFailResultsToVariables(ruleNumber, variables);
+			addRuleFailResultsToVariables(ruleNumber, variables);
 		}
 
-		RuleLogger.debug(TimeTrack.getElapsedTime(t) + " milliseconds to evaluate rule number " + ruleNumber + " expression: " + expression + " - evaluates to " + result);
+		RuleLogger.log("{} milleseconds to evaluate rule number {} expression: {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, expression, result);
 		
 		return ( result );
 
@@ -661,11 +668,11 @@ public class RuleEvaluator {
 			if(processRule(compositeRuleList.get(i))) {
 				addRuntimePass(ruleNumber);
 				addCompositeRulePassResultsToVariables(ruleNumber, variables);
-				RuleLogger.debug(TimeTrack.getElapsedTime(t) + " milliseconds to evaluate rule number " + ruleNumber + " - evaluates to true");
+				RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 			} else {
 				addRuntimeFail(ruleNumber);
 				addCompositeRuleFailResultsToVariables(ruleNumber, variables);
-				RuleLogger.debug(TimeTrack.getElapsedTime(t) + " milliseconds to evaluate rule number " + ruleNumber + " - evaluates to false");
+				RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
 			}
 
 		}
@@ -686,14 +693,14 @@ public class RuleEvaluator {
 			if(processRule(compositeRuleList.get(i))) {
 				addRuntimePass(ruleNumber);
 				addCompositeRulePassResultsToVariables(ruleNumber, variables);
-				RuleLogger.debug(TimeTrack.getElapsedTime(t) + " milliseconds to evaluate rule number " + ruleNumber + " - evaluates to true");
+				RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 				return (true);
 			}
 		}
 
 		addRuntimeFail(ruleNumber);
 		addCompositeRuleFailResultsToVariables(ruleNumber, variables);
-		RuleLogger.debug(TimeTrack.getElapsedTime(t) + " milliseconds to evaluate rule number " + ruleNumber + " - evaluates to false");
+		RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
 
 		return false;
 
@@ -713,7 +720,7 @@ public class RuleEvaluator {
 			if(!processRule(compositeRuleList.get(i))) {
 				addRuntimeFail(ruleNumber);
 				addCompositeRuleFailResultsToVariables(ruleNumber, variables);
-				RuleLogger.debug(TimeTrack.getElapsedTime(t) + " milliseconds to evaluate rule number " + ruleNumber + " - evaluates to false");
+				RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
 				return false;
 			}			
 			
@@ -721,7 +728,7 @@ public class RuleEvaluator {
 		
 		addRuntimePass(ruleNumber);
 		addCompositeRulePassResultsToVariables(ruleNumber, variables);
-		RuleLogger.debug(TimeTrack.getElapsedTime(t) + " milliseconds to evaluate rule number " + ruleNumber + " - evaluates to true");
+		RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 		
 		return true;
 

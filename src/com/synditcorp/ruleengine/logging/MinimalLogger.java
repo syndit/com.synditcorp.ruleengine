@@ -2,23 +2,61 @@
 The MIT License (MIT)
 Copyright © 2021 Syndit Business Solutions, Inc. 
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 package com.synditcorp.ruleengine.logging;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;
+import org.slf4j.helpers.MessageFormatter;
 
 /**
  * This class is meant to be replaced by a logger that implements slf4j.  This logger, or its replacement, is injected at runtime.
  */
 public class MinimalLogger implements Logger {
+	
+	private static Boolean traceEnabled = false;
+	private static Boolean debugEnabled = false;
+	private static Boolean infoEnabled = false;
+	private static Boolean warnEnabled = false;
+	private static Boolean errorEnabled = false;
+	public static final int TRACE = 0;
+	public static final int DEBUG = 1;
+	public static final int INFO = 2;
+	public static final int WARN = 3;
+	public static final int ERROR = 4;
 
+	/**
+	 * @param for logLevel, use one of the MinimalLogger constants
+	 */
+	public MinimalLogger(int logLevel) {
+		
+		switch (logLevel) {
+		case 0:
+			traceEnabled = true;
+			break;
+		case 1:
+			debugEnabled = true;
+			break;
+		case 2:
+			infoEnabled = true;
+			break;
+		case 3:
+			warnEnabled = true;
+			break;
+		case 4:
+			errorEnabled = true;
+			break;
+		}
+		
+	}
+	
+	
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
@@ -27,8 +65,7 @@ public class MinimalLogger implements Logger {
 
 	@Override
 	public boolean isTraceEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+		return traceEnabled;
 	}
 
 	@Override
@@ -51,8 +88,8 @@ public class MinimalLogger implements Logger {
 
 	@Override
 	public void trace(String format, Object... arguments) {
-		// TODO Auto-generated method stub
-		
+		String message = MessageFormatter.arrayFormat(format, arguments).getMessage();
+		System.out.println(message);
 	}
 
 	@Override
@@ -99,8 +136,7 @@ public class MinimalLogger implements Logger {
 
 	@Override
 	public boolean isDebugEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+		return debugEnabled;
 	}
 
 	@Override
@@ -122,8 +158,8 @@ public class MinimalLogger implements Logger {
 
 	@Override
 	public void debug(String format, Object... arguments) {
-		// TODO Auto-generated method stub
-		
+		String message = MessageFormatter.arrayFormat(format, arguments).getMessage();
+		System.out.println(message);
 	}
 
 	@Override
@@ -170,8 +206,7 @@ public class MinimalLogger implements Logger {
 
 	@Override
 	public boolean isInfoEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+		return infoEnabled;
 	}
 
 	@Override
@@ -194,8 +229,8 @@ public class MinimalLogger implements Logger {
 
 	@Override
 	public void info(String format, Object... arguments) {
-		// TODO Auto-generated method stub
-		
+		String message = MessageFormatter.arrayFormat(format, arguments).getMessage();
+		System.out.println(message);
 	}
 
 	@Override
@@ -242,8 +277,7 @@ public class MinimalLogger implements Logger {
 
 	@Override
 	public boolean isWarnEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+		return warnEnabled;
 	}
 
 	@Override
@@ -260,8 +294,8 @@ public class MinimalLogger implements Logger {
 
 	@Override
 	public void warn(String format, Object... arguments) {
-		// TODO Auto-generated method stub
-		
+		String message = MessageFormatter.arrayFormat(format, arguments).getMessage();
+		System.out.println(message);
 	}
 
 	@Override
@@ -314,8 +348,7 @@ public class MinimalLogger implements Logger {
 
 	@Override
 	public boolean isErrorEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+		return errorEnabled;
 	}
 
 	@Override

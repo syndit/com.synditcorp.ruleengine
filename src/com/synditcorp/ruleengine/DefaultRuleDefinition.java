@@ -2,11 +2,11 @@
 The MIT License (MIT)
 Copyright © 2021 Syndit Business Solutions, Inc. 
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 package com.synditcorp.ruleengine;
@@ -33,7 +33,7 @@ import com.synditcorp.ruleengine.interfaces.RuleParser;
  */
 public class DefaultRuleDefinition implements RuleDefinition {
 
-	private BaseRules coreRules;
+	private BaseRules baseRules;
 	private TreeMap<Integer, CalcRule> calcRules = new TreeMap<Integer, CalcRule>();
 	private TreeMap<Integer, OrRule> orRules = new TreeMap<Integer, OrRule>();
 	private TreeMap<Integer, AndRule> andRules = new TreeMap<Integer, AndRule>();
@@ -48,7 +48,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 */
 	@Override
 	public String getDefinitionID() {
-		return coreRules.getdefinitionID();
+		return baseRules.getdefinitionID();
 	}
 	
 	/**
@@ -56,7 +56,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 */
 	@Override
 	public String getDescription() {
-		return coreRules.getDescription();
+		return baseRules.getDescription();
 	}
 	
 	/**
@@ -64,7 +64,15 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 */
 	@Override
 	public String getVersion() {
-		return coreRules.getVersion();
+		return baseRules.getVersion();
+	}
+	
+	/**
+	 * Returns the rule number at the base of the decision tree.  This is optional: any rule can be called directly.
+	 */
+	@Override
+	public Integer getStartRule() {
+		return baseRules.getStartRule();
 	}
 	
 	
@@ -74,8 +82,8 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	@Override
 	public void loadRules(RuleParser parser) throws Exception {
 		
-		this.coreRules = parser.getRules();
-		setManifest(this.coreRules);
+		this.baseRules = parser.getRules();
+		setManifest(this.baseRules);
 		
 	}
 	
@@ -86,8 +94,8 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	@Override
 	public void reloadRules(RuleParser parser) throws Exception {
 
-		if(this.coreRules != null) {
-			this.coreRules = null;
+		if(this.baseRules != null) {
+			this.baseRules = null;
 		}
 		loadRules(parser);
 		
