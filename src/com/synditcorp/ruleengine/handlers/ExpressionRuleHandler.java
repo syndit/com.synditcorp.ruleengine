@@ -26,7 +26,7 @@ public class ExpressionRuleHandler implements RuleClassHandler {
 
 		} catch (Exception e) {
 
-			RuleLogger.debug("Unable to process rule expression: \"" + ruleExpression + "\"");
+			RuleLogger.log("Unable to process rule expression: \"" + ruleExpression + "\"");
 			return false;
 
 		}

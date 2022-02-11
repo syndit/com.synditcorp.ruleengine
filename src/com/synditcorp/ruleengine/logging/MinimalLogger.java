@@ -371,8 +371,8 @@ public class MinimalLogger implements Logger {
 
 	@Override
 	public void error(String format, Object... arguments) {
-		// TODO Auto-generated method stub
-		
+		String message = MessageFormatter.arrayFormat(format, arguments).getMessage();
+		System.out.println(message);
 	}
 
 	@Override

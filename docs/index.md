@@ -3,21 +3,21 @@
 - [Application structure](#application-structure)
 - [Rule fields](#rule-fields)
 - [JSON document format](#json-document-format)
+- [Validation](#validation)
 - [Usage tips](#usage-tips)
 - [License](#license)
 
 # Features
 
-1. Simple, document based.  The definition document has the intelligence, not the Java code.
-1. Reusable rules (configure one rule and use by other rules).
-1. Supports expression language.
-1. Include rule results in other rule expressions.
-1. Caches runtime rule results so reusable rule only needs to be executed once.
-1. To evaluate rules:
-    1. Use MVEL expressions.
+1. Simple, document based.  The definition document has the intelligence, not the Java code.  
+1. The definition documents are self-contained, making it easy to store a complete set of rules for a give purpose.
+1. Reusable rules (configure one rule to be used by other rules).
+1. Caches runtime rule results so reusable rules only needs to be executed once.
+1. Evaluate rules with:
+    1. MVEL expressions.
     1. Optional custom Java classes.
     1. Optional APIs.
-1. Set and capture rule evaluation values that can be used in expressions and/or called externally for other needs.  
+1. Sets and captures rule evaluation values that can be used in expressions and/or called externally for other needs:  
     1. Keys, intended for i18n keys.
     1. Scores, for such things as tree scoring
     1. Flags
@@ -30,21 +30,21 @@
 
 ## Parser
 
-Step 1 is to instantiate a parser.  Included is a parser for JSON using the Jackson parser (com.fasterxml.jackson.core).  Any parser can be implemented, for instance for XML, MongoDB, etc., by writing a custom parser that implements the RuleParser interface.  In this example, a JSON file is parsed.  To reference the JSON document format, see verifyRulesDefinitions.JSON in the test.java folder.  See JSON document format below for more information.
+Step 1 is to instantiate a parser.  Included is a parser for JSON using the Jackson parser (com.fasterxml.jackson.core).  Any parser can be implemented, for instance for XML, MongoDB, etc., by writing a custom class that implements the RuleParser interface and uses your preferred parser.  In this example, a JSON file is parsed.  To reference the JSON document format, see verifyRulesDefinitions.JSON in the test.java folder.  See [JSON document format](#json-document-format) below for more information.
 
 	RuleJSONParser parser = new RuleJSONParser();
-	parser.loadRules(jsonFileName);
+	parser.loadRules(jsonDefinitionFileName);
 
 ## Definition
 
-In step 2, inject the parser into the RuleDefinition implementation to load the rule objects.
+In step 2, inject the parser into a class that implements the RuleDefinition interface to load the rule Java objects.
 
 	DefaultRuleDefinition rules = new DefaultRuleDefinition();
 	rules.loadRules(parser);
 
 ## Logger
 
-In step 3, create a logger that implements org.slf4j.Logger interface.  Here com.synditcorp.ruleengine.logging.MinimalLogger is used.  MinimalLogger is intended to be replaced.
+In step 3, create a logger that implements org.slf4j.Logger interface.  Here com.synditcorp.ruleengine.logging.MinimalLogger is used.  MinimalLogger is intended to be replaced with your preferred logger.
 
 	Logger logger = new MinimalLogger(MinimalLogger.DEBUG);
 
@@ -64,19 +64,21 @@ For optional step 5, load any variables to be used by the rule expressions, APIs
 
 ## Call a rule
 
-Then, call a rule.
+Then, call a rule and use the Boolean value make a decision in the calling code.
 
 	Integer ruleNumber = 17;
 	Boolean result = ruleEvaluator.evaluateRule(ruleNumber);
+	if(result) doThis();
+	else doThat();
 
-And, get whatever you need.
+And, get whatever you need before discarding the RuleEvaluator instance.
 
 	String passFlag = ruleEvaluator.getPassFlag(ruleNumber);
 	Double passScore = ruleEvaluator.getCompositePassScore(ruleNumber);
 
 # Application structure
 
-The rules engine uses "calc" rules, "and" rules, "or" rules, and "all" rules.
+The Syndit Rule Engine uses "calc" rules, "and" rules, "or" rules, and "all" rules.
 
 ## Calc rules
 
@@ -88,19 +90,19 @@ Composite rules are used to, effectively, build a decision tree using a document
 
 ### And rules
 
-An _and_ rule is a composite rule that references one or more _calc_ rules, and/or one or more composite rules.  Each of the _calc_ rules referenced directly, or via composite rules, must evaluate to TRUE.  At the first _calc_ rule or other composite rule failure, the _and_ rule returns FALSE.  If all referenced rules pass, TRUE is returned.
+An _and_ rule is a composite rule that references one or more _calc_ rules, and/or one or more composite rules.  Each of the _calc_ rules referenced directly, or via composite rules, must evaluate to TRUE.  At the first _calc_ rule or composite rule failure, the _and_ rule returns FALSE.  If all referenced rules pass, TRUE is returned.  Rules are evaluated in the order listed in the rule's definition.
 
 ### Or rules
 
-Similar to an _and_ rule, an _or_ rule is a composite rule that references one or more _calc_ rules, and/or one or more composite rules.  The difference is that only one rule needs to evaluate to TRUE.  At the first _calc_ rule or composite rule pass, the _or_ rule returns TRUE. If no rules pass, then FALSE is returned.
+Similar to an _and_ rule, an _or_ rule is a composite rule that references one or more _calc_ rules, and/or one or more composite rules.  The difference is that only one rule needs to evaluate to TRUE.  At the first _calc_ rule or composite rule pass, the _or_ rule returns TRUE. If no rules pass, then FALSE is returned.  Rules are evaluated in the order listed in the rule's definition.
 
 ### All rules
 
-_All_ composite rules are for when all the rules referenced need to be evaluated.  This type of rule is used when variables need to be set that other rules rely upon.  _All_ rules always return TRUE.
+_All_ composite rules are for when all the rules referenced need to be evaluated.  This type of rule is used when variables need to be set that other rules rely upon.  _All_ rules always return TRUE.  Rules are evaluated in the order listed in the rule's definition.
 
 ### Not rules
 
-_Not_ rules are _calc_ rules or composite rules referenced in a composite rule that need the inverse to be true.  In other words, a _not_ rule is used when something needs to be not true or not false.  For example, if you need a rule that evaluates if a property is not in the state of Florida, reference as a _not_ rule a rule that returns if the property is in Florida.  If the rule returns FALSE, that is the property is not in Florida, and it is being referenced as a _not_ rule, the evaluation will be TRUE.  _Not_ rules are denoted in composite rules with a minus sign before the rule number.
+_Not_ rules are _calc_ rules or composite rules referenced in a composite rule that need the inverse to be true.  In other words, a _not_ rule is used when something needs to be not true or not false.  For example, if you need a rule that evaluates if a property is not in the state of Florida, reference as a _not_ rule a rule that returns if the property is in Florida.  If the rule returns FALSE, that is the property is not in Florida, and it is being referenced as a _not_ rule, the evaluation will be TRUE that the property is not in Florida.  _Not_ rules are denoted in composite rules with a minus sign before the rule number.
 
 # Rule fields
 
@@ -114,12 +116,12 @@ If a MVEL expression is to be used, then an "expression" field is required.
 
 The optional "description" field holds a meaningful description for the rule. 
 
-There are currently 10 other optional informational Rule fields that can be used to store values associated with either a passing rule, or a failing rule.  These values can be accessed at runtime for whatever is needed.  For example, if a rule fails and the fail message needs to be presented in the UI, retrieve the rule's unique failKey field value, which is intended to hold an i18n key (but really can hold a value for whatever scheme is being used).  Note that field values are only available if the rule has been evaluated at runtime. The 10 fields are: 
+There are currently 10 other optional rule fields that can be used to store values associated with either a passing rule, or a failing rule.  These values can be accessed at runtime for whatever is needed.  For example, if a rule fails and the fail message needs to be presented in the UI, retrieve the rule's unique failKey field value, which is intended to hold an i18n key (but really can hold a value for whatever scheme is being used).  Note that field values are only available if the rule has been evaluated at runtime. The 10 fields are: 
 
  1. passKey - String, intended to hold an i18n key
  1. failKey - String, intended to hold an i18n key
- 1. passScore - Double, intended for scoring a rule on a pass
- 1. failScore - Double, intended for scoring a rule on a fail
+ 1. passScore - An expression that returns a Double, intended for scoring a rule on a pass.  The expression can be a single value or a complex calculation using other rules' failScore values. 
+ 1. failScore - An expression that returns a Double, intended for scoring a rule on a fail.  The expression can be a single value or a complex calculation using other rules' failScore values.
  1. passFlag -  String, a flag for particular rule's pass
  1. failFlag - String, a flag for particular rule's fail 
  1. passReason - String, use to store a reason for particular rule's pass
@@ -131,14 +133,14 @@ If a field is not to be used, set it to null in the JSON document, or just don't
 
 ## Composite Rule fields 
 
-The "compositeRules" field is a comma separated list of calc and composite rules to evaluate. 
+The "compositeRules" field is a comma separated list of calc and composite rules to evaluate.  The Engine evaluates rules in the order listed. 
 
 There are 10 other composite rule fields and these reference calc rule fields, or other composite rule fields, for a given rule number.  Referenced rule fields need not be in the composite field list ("compositeRules" field).  At runtime, the list of composite rule field values can be retrieved, but only for those calc and composite rules that have been evaluated at runtime.  For example, with an _or_ rule, not all rules may have been evaluated.  With the exception of the score fields, all composite fields return a list of field values.  The score fields add the scores from the referenced fields that have been evaluated.  The 10 composite rule fields are:
 
  1. compositePassKeys - ArrayList<String> 
  1. compositeFailKeys - ArrayList<String>
- 1. compositePassScore - Double
- 1. compositeFailScore - Double
+ 1. compositePassScore - Double, sums the passScores for those rules listed.
+ 1. compositeFailScore - Double, sums the failScores for those rules listed.
  1. compositePassFlags -  ArrayList<String>
  1. compositeFailFlags - ArrayList<String> 
  1. compositePassReasons - ArrayList<String>
@@ -150,7 +152,23 @@ If a composite field is not to be used, set it to an empty array ([]), or don't 
 
 ## Accessing field values from other rules at runtime
 
-Each of the rule fields values can be accessed by other rules at runtime.  They are added to the variables collection and can be referenced using the field name followed by an underscore and then the rule number.  For example to access the passReasons value for rule 15, use `passReasons_15`.  To access the compositePassActions list, use `compositePassActions_15`.  Scores can be used to calculate expressions, like `passScore_231 * (passScore_17 / compositePassScore_31)`.
+Each of the rule fields values can be accessed by other rules at runtime.  They are added to the variables collection and can be referenced using the field name followed by an underscore and then the rule number.  For example to access the passReason value for rule 15, use `passReason_15`.  To access the compositePassActions list, use `compositePassActions_15`.  Scores can be used to calculate expressions, like `passScore_231 * (passScore_17 / compositePassScore_31)`.
+
+## Document definition fields
+
+There are four fields for use in identifying a particular document:
+
+1. definitionID - an ID unique to the particular document.  This is useful at runtime, particularly when retrieving a rule definition from a no-sql database, like MongoDB.
+2. description - this is for providing a meaningful description of the rules in the document.
+3. version - always a good idea to version your documents.
+4. startRule - for decision trees, this holds the value of the base rule of the tree.  It is intended for the developers to retrieve at runtime so you don't have to rely on Jira tickets, emails, text messages, etc. to know the base rule to call. 
+
+
+	"definitionID" : "ORDACC",
+	"description" : "New vehicle order accept tree",
+	"version" : "1.0.17",
+	"startRule" : "14",
+
 
 
 ## Fields not yet implemented
@@ -169,7 +187,7 @@ Here is an example of a calc rule:
 				"ruleType" : "calc",
 				"ruleNumber" : "1",
 				"description" : "Rule 1 passes",
-				"expression" : "amount1 >= 1 && name1.matches('Buggs.*') && ID.matches('.*654.*')",
+				"expression" : "amount1 >= 1 && name1.matches('Buggs.*') && compositePassFlags_23.contains('Sunny')",
 				"handlerClass" : "com.synditcorp.rulesengine.handlers.DefaultRuleHandler",`
 				"active" : "true",
 				"effectiveDate" : null,
@@ -189,7 +207,7 @@ Here is an example of a calc rule:
 
 
 
-Note the field values set to null.
+Note the field values set to null.  Also, note the use of the compositePassFlags ArrayList in the expression.
 
 Here is an example of an "and" rule:
 
@@ -229,7 +247,7 @@ Here is an example of an "and" rule:
 
 
 
-Note the composite field values set to an empty array.
+Note the composite field values set to an empty array.  An alternative is to just not include those empty fields in the rule definition.  Also notice the expressions in the passScore and failScore fields.
 
 Here is an example of an "or" rule:
 
@@ -241,7 +259,7 @@ Here is an example of an "or" rule:
 				"ruleType" : "or",
 				"ruleNumber" : "12",
 				"description" : "Rule 12 is true",
-				"compositeRules" : [10,11],
+				"compositeRules" : [10,11,15],
 				"active" : "true",
 				"effectiveDate" : null,
 				"expirationDate" : null,
@@ -257,7 +275,7 @@ Here is an example of an "or" rule:
 				"failAction" : null,		
 				"compositePassKeys": [10],
 				"compositeFailKeys" : [10],
-				"compositePassScores" : [10],
+				"compositePassScores" : [10,32],
 				"compositeFailScores" : [10],
 				"compositePassFlags" : [],
 				"compositeFailFlags" : [],
@@ -286,17 +304,17 @@ Here is an example of an "all" rule:
 				"active" : "true",
 				"effectiveDate" : null,
 				"expirationDate" : null,
-				"passKey" : "passKey_15",
+				"passKey" : "",
 				"passScore" : "",
-				"passFlag" : "15FlagP",
-				"passReason" : "15ReasonP",
+				"passFlag" : "",
+				"passReason" : "",
 				"passAction" : null,
 				"compositePassKeys": [],
-				"compositeFailKeys" : [],
-				"compositePassScores" : [],
-				"compositeFailScores" : [],
-				"compositePassFlags" : [31, 32, 33],
-				"compositeFailFlags" : [31, 32, 33],
+				"compositeFailKeys": [],
+				"compositePassScores" : [31, 32, 33],
+				"compositeFailScores" : [31, 32, 33],
+				"compositePassFlags" : [],
+				"compositeFailFlags" : [],
 				"compositePassReasons" : [],
 				"compositeFailReasons" : [],
 				"compositePassActions" : [],
@@ -306,9 +324,9 @@ Here is an example of an "all" rule:
 
 
 
-Note that _all_ rules evaluates all of the rules in the compositeRules field list, therefore an _all_ rule may set both true and false pass and fail field values depending upon the results of each of the rules it calls.  So care should be taken using the _all_ rule field pass and fail values.
+Note that _all_ rules evaluates all of the rules in the compositeRules field list, therefore an _all_ rule may set both true and false pass and fail field values depending upon the results of each of the rules it calls.  So, care should be taken using the _all_ rule field pass and fail values.
 
-# Calling an API or Java classe
+# Calling an API or Java class
 
 If an API or a Java class needs to be used, simply create a new handler that implements the com.synditcorp.ruleengine.interfaces.RuleClassHandler interface and then pass whatever variables the API or class needs.  Then, in the rule definition, reference the new class:
 
@@ -317,7 +335,7 @@ If an API or a Java class needs to be used, simply create a new handler that imp
 		[
 			{
 				"ruleType" : "calc",
-				"ruleNumber" : "1",
+				"ruleNumber" : "117",
 				"description" : "Get forecast for today",
 				"expression" : null,
 				"handlerClass" : "com.yourcompany.handlers.CallWeatherServiceAPI",
@@ -325,9 +343,34 @@ If an API or a Java class needs to be used, simply create a new handler that imp
 				"failFlag" : "Rain",
 
 
+# Validation
+
+The Engine does not prevent mistakes in the definition document, like recursive rules (a rule calling itself, which, by the way, is quite obvious during document definition testing).  The code is purposefully kept simple, with the intelligence in the document definition.  It is very easy to perform automated testing, particularly because any rule can be called directly.  So, be sure to create and regularly use test scripts before going to UAT, and most certainly before PROD. 
+
 # Usage tips
 
-The Syndit Rule Engine is intended to be very simple, with the JSON definition document providing the intelligence.  Over the years, the core Engine has not changed, only fields have been added, like passKey and passScore.  So, avoid the temptation of coding new functionality when a little bit of creativity with the definition document or a new handler can provide the solution.    
+## Keep it simple
+
+The Syndit Rule Engine code is intended to be very simple, with the JSON definition document providing the intelligence.  Over the years, the core Engine has not changed, only fields have been added, like passFlag and passScore.  So, avoid the temptation of coding changes to the Engine's functionality when a little bit of creativity with the definition document or a new handler can provide the solution.  
+
+## Document structure
+
+The Rule Engine is very flexible.  Because at runtime any rule can be called directly, you can put all your company's rules into one document.  Or, you can organize you rules into multiple documents.  Even if you have a decision tree within a document, nothing is stopping you from having other trees or other stand alone rules in the same document.  
+
+## Expressions
+
+MVEL is the expression language used by the Engine (you can change if you want).  At runtime, it takes time for each type of expression to initialize, so if milliseconds are critical to your SLA, keep the RuleEvaluator instance in memory and just reset the variables after each request.
+
+## Be organized
+
+Being organized is the key to a successful, lasting implementation.  The Rule Engine was written long ago to solve the problem of out-of-control rules in code, so don't over think your rules, particularly because they are quite easy to create.
+
+Also, control is important, so limit definition maintenance to a knowledgeable team.  And, prune when possible.  
+
+## CI/CD pipeline
+
+Do integrate the rule definition documents into the CI/CD pipeline.  Automated testing is very easy with the Engine.  And, be sure to put process in place to roll-back in the event it is discovered a new rule is too restrictive or too lax.  It is very easy to roll-back a rule definition document version: the definition documents are self contained.
+
 
 # License
 

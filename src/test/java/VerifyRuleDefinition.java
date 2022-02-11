@@ -63,14 +63,14 @@ public class VerifyRuleDefinition {
 		DefaultRuleDefinition rules = new DefaultRuleDefinition();
 		rules.loadRules(parser);
 		
-		Logger logger = new MinimalLogger(MinimalLogger.ERROR);
+		Logger logger = new MinimalLogger(MinimalLogger.DEBUG);
 
 		RuleEvaluator eval = new RuleEvaluator(rules, logger);
 		eval.setVariables(variables);
 		
 		System.out.println("Definition: ID " + eval.getDefinitionID() + ", " + eval.getDescription() + ", version " + eval.getVersion());
 
-		RuleLogger.debug(TimeTrack.getElapsedTime(t1) + " milliseconds to load rules");
+		RuleLogger.log(TimeTrack.getElapsedTime(t1) + " milliseconds to load rules");
 		
 		Integer startRule = eval.getStartRule();
 		Integer[] testRules = {startRule};
@@ -88,13 +88,13 @@ public class VerifyRuleDefinition {
 					String successMsg;
 					if(result) successMsg = "Verify rules definitions was successful!";
 					else successMsg = "Verify rules definitions failed.";
-					RuleLogger.debug(successMsg);
+					RuleLogger.log(successMsg);
 				} catch (Exception e) {
 					System.out.println(e);
 				}
 			}
 			
-			RuleLogger.debug(TimeTrack.getElapsedTime(t2) + " milliseconds to process rules");
+			RuleLogger.log(TimeTrack.getElapsedTime(t2) + " milliseconds to process rules");
 			
 			for (Map.Entry<String, Object> entry : variables.entrySet()) {
 		        System.out.println(entry.getKey() +  " = " + entry.getValue());
