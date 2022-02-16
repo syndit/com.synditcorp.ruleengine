@@ -262,7 +262,7 @@ public class RuleEvaluator {
 		if( rule instanceof CompositeRule) {
 			CompositeRule cr = (CompositeRule) rule;
 			ArrayList<Integer> list = cr.getCompositePassScore();			
-			if(list == null) return 0.00;
+			if(list == null) return null;
 			for (int i = 0; i < list.size(); i++) {
 				if(getPassScore(list.get(i)) == null) continue;
 				double ruleScore = getPassScore(list.get(i)).doubleValue();
@@ -270,7 +270,7 @@ public class RuleEvaluator {
 			}
 		}
 		
-		return new Double(calcScore);
+		return Double.valueOf(calcScore);
 
 	}
 
@@ -286,7 +286,7 @@ public class RuleEvaluator {
 		if( rule instanceof CompositeRule) {
 			CompositeRule cr = (CompositeRule) rule;
 			ArrayList<Integer> list = cr.getCompositeFailScore();
-			if(list == null) return 0.00;
+			if(list == null) return null;
 			for (int i = 0; i < list.size(); i++) {
 				if(getFailScore(list.get(i)) == null) continue;
 				double ruleScore = getFailScore(list.get(i)).doubleValue();
@@ -294,7 +294,7 @@ public class RuleEvaluator {
 			}
 		}
 
-		return new Double(calcScore);
+		return Double.valueOf(calcScore);
 
 	}
 
