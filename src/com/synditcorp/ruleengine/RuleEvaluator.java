@@ -256,7 +256,7 @@ public class RuleEvaluator {
 	 */
 	public Double getCompositePassScore(Integer ruleNumber) throws Exception {
 
-		Double score = null;
+		double calcScore = 0.00;
 
 		Rule rule = getRule(ruleNumber);
 		if( rule instanceof CompositeRule) {
@@ -265,13 +265,12 @@ public class RuleEvaluator {
 			if(list == null) return 0.00;
 			for (int i = 0; i < list.size(); i++) {
 				if(getPassScore(list.get(i)) == null) continue;
-				Double ruleScore = getPassScore(list.get(i));
-				if(score == null) score = 0.00;
-				score = score + ruleScore;
+				double ruleScore = getPassScore(list.get(i)).doubleValue();
+				calcScore = calcScore + ruleScore;
 			}
 		}
 		
-		return score;
+		return new Double(calcScore);
 
 	}
 
@@ -281,7 +280,7 @@ public class RuleEvaluator {
 	 */
 	public Double getCompositeFailScore(Integer ruleNumber) throws Exception {
 
-		Double score = null;
+		double calcScore = 0.00;
 
 		Rule rule = getRule(ruleNumber);
 		if( rule instanceof CompositeRule) {
@@ -290,13 +289,12 @@ public class RuleEvaluator {
 			if(list == null) return 0.00;
 			for (int i = 0; i < list.size(); i++) {
 				if(getFailScore(list.get(i)) == null) continue;
-				Double ruleScore = getFailScore(list.get(i));
-				if(score == null) score = 0.00;
-				score = score + ruleScore;
+				double ruleScore = getFailScore(list.get(i)).doubleValue();
+				calcScore = calcScore + ruleScore;
 			}
 		}
 
-		return score;
+		return new Double(calcScore);
 
 	}
 
@@ -658,7 +656,7 @@ public class RuleEvaluator {
 	 * The engine processes all rules listed in the AllRule bean compositeRules field list. AllRule rule types should be used when all rules must be processed
 	 * for such things as setting bean field values that will be accessed by other rules. 
 	 */
-	private boolean processAllRules(int ruleNumber) throws Exception {
+	private boolean processAllRules(Integer ruleNumber) throws Exception {
 
 		TimeTrack t = new TimeTrack();
 		
@@ -684,7 +682,7 @@ public class RuleEvaluator {
 	 * The engine process all rules listed in the OrRule bean compositeRules field list up to the first pass.  Only those rules evaluated at runtime
 	 * set bean field values. 
 	 */
-	private boolean processOrRules(int ruleNumber) throws Exception {
+	private boolean processOrRules(Integer ruleNumber) throws Exception {
 
 		TimeTrack t = new TimeTrack();
 		
@@ -710,7 +708,7 @@ public class RuleEvaluator {
 	 * The engine processes all rules listed in the AndRule bean compositeRules field list up to the first fail.  Only those rules evaluated at runtime
 	 * set bean field values. 
 	 */
-	private boolean processAndRules(int ruleNumber) throws Exception {
+	private boolean processAndRules(Integer ruleNumber) throws Exception {
 
 		TimeTrack t = new TimeTrack();
 
@@ -734,11 +732,11 @@ public class RuleEvaluator {
 
 	}
 
-	private boolean processRule(int ruleNumber) throws Exception {
+	private boolean processRule(Integer ruleNumber) throws Exception {
 
 		int abs = Math.abs(ruleNumber); 
 		boolean result = callRule(abs);
-		if( ruleNumber < 0 ) { //negative number means a "not" rule
+		if( ruleNumber.intValue() < 0 ) { //negative number means a "not" rule
 			return (!result);
 		}
 		return (result);
