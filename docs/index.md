@@ -158,7 +158,7 @@ Each of the rule fields values can be accessed by other rules at runtime.  They 
 
 ## Document definition fields
 
-There are four fields for use in identifying a particular document:
+There are five fields for use in identifying a particular document:
 
 1. definitionID - an ID unique to the particular document.  This is useful at runtime, particularly when retrieving a rule definition from a no-sql database, like MongoDB.
 1. description - this is for providing a meaningful description of the rules in the document.
