@@ -11,14 +11,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.interfaces;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public interface Rule {
 
-	public void setRuleNumber(int ruleRef);
+	public void setRuleNumber(Integer ruleRef);
 	public Integer getRuleNumber();
 	public void setRuleType(String ruleType);
 	public String getRuleType();
+	public ArrayList<String> getRuleTags();
+	public void setRuleTags(ArrayList<String> ruleTags);
 	public void setDescription(String ruleDescription);
 	public String getDescription();
 	public void setActive(Boolean active);

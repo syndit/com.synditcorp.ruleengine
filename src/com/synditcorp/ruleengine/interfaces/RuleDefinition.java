@@ -19,6 +19,8 @@ public interface RuleDefinition {
 	public String getDescription();
 	public String getVersion();
 	public Integer getStartRule();
+	public ArrayList<String> getDocumentTags();
+	public ArrayList<String> getRuleTags(Integer ruleNumber) throws Exception;
 	public void loadRules(RuleParser parser) throws Exception;
 	public void reloadRules(RuleParser parser) throws Exception;
 	public Rule getRule(Integer ruleNumber) throws Exception;

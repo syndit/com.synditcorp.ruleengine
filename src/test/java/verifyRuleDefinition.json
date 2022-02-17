@@ -2,6 +2,7 @@
 	"definitionID" : "TESTXXX",
 	"description" : "This is a test definition",
 	"version" : "0.0.1",
+	"documentTags" : ["test","partial"],
 	"startRule" : "14",
 	"calcRules":
 		[
@@ -191,6 +192,7 @@
 			{
 				"ruleType" : "and",
 				"ruleNumber" : "10",
+				"ruleTags" : ["protected"],
 				"description" : "Rule 10 returns true",
 				"compositeRules" : [1, 2],
 				"active" : "true",

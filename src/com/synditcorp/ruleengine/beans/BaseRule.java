@@ -11,6 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.beans;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.synditcorp.ruleengine.interfaces.Rule;
@@ -19,6 +20,7 @@ public class BaseRule implements Rule {
 
 	private Integer ruleNumber;
 	private String ruleType;
+	private ArrayList<String> ruleTags;
 	private String description;
 	private Boolean active;
 	private Date expirationDate;
@@ -93,7 +95,7 @@ public class BaseRule implements Rule {
 
 
 	@Override
-	public void setRuleNumber(int ruleNumber) {
+	public void setRuleNumber(Integer ruleNumber) {
 		this.ruleNumber = ruleNumber;
 	}
 
@@ -202,5 +204,14 @@ public class BaseRule implements Rule {
 		this.failScore = failScore;
 	}
 
+	public ArrayList<String> getRuleTags() {
+		return ruleTags;
+	}
+
+	public void setRuleTags(ArrayList<String> ruleTags) {
+		this.ruleTags = ruleTags;
+	}
+
+	
 	
 }

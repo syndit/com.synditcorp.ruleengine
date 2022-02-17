@@ -44,7 +44,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	}
 
 	/**
-	 * Returns the ID of the rules definition 
+	 * Returns the ID of the rules definition.  Definition is not used at runtime to evaluate rules.
 	 */
 	@Override
 	public String getDefinitionID() {
@@ -52,7 +52,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	}
 	
 	/**
-	 * Returns the description of the rules definition 
+	 * Returns the description of the rules definition.  Description is not used at runtime to evaluate rules. 
 	 */
 	@Override
 	public String getDescription() {
@@ -60,7 +60,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	}
 	
 	/**
-	 * Returns the version of the rules definition
+	 * Returns the version of the rules definition.  Version is not used at runtime to evaluate rules.
 	 */
 	@Override
 	public String getVersion() {
@@ -68,7 +68,20 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	}
 	
 	/**
-	 * Returns the rule number at the base of the decision tree.  This is optional: any rule can be called directly.
+	 * Optional document tags are used to further define a document.  Document tags are not used at runtime
+	 * to evaluate rules.  Tags can be used for things like authorization in databases or display control in
+	 * custom rule definition editors
+	 */
+	@Override
+	public ArrayList<String> getDocumentTags() {
+		return baseRules.getDocumentTags();
+	}
+
+	/**
+	 * This is intended to hold the rule number at the base of the decision tree so calling programs can refer to
+	 * this value at runtime rather than having to rely on other processes to communicate the starting rule of
+	 * a decision tree.  This is optional: any rule can be called directly.  This is not used when
+	 * evaluating rules at runtime.
 	 */
 	@Override
 	public Integer getStartRule() {
@@ -76,6 +89,16 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	}
 	
 	
+	/**
+	 * Optional rule tags are used to further define a rule, but are not used when evaluating
+	 * rules at runtime.  Tags can be used for things like authorization in databases or display control in
+	 * custom rule definition editors
+	 */
+	@Override
+	public ArrayList<String> getRuleTags(Integer ruleNumber) throws Exception {
+		return getRule(ruleNumber).getRuleTags();
+	}
+
 	/**
 	 * Load the rules engine rules objects using a parser that implements com.synditcorp.ruleengine.interfaces.RulesParser
 	 */

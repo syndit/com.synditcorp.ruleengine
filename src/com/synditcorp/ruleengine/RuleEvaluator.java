@@ -60,12 +60,33 @@ public class RuleEvaluator {
 	public String getVersion() {
 		return ruleDefinition.getVersion();
 	}
+
+	/**
+	 * Optional document tags are used to further define a document.  Document tags are not used at runtime
+	 * to evaluate rules.  Tags can be used for things like authorization in databases or display control in
+	 * custom rule definition editors
+	 */
+	public ArrayList<String> getDocumentTags() {
+		return ruleDefinition.getDocumentTags();
+	}
 	
 	/**
-	 * Returns the starting rule for the rule definition.  This is optional: any rule can be called directly.
+	 * This is intended to hold the rule number at the base of the decision tree so calling programs can refer to
+	 * this value at runtime rather than having to rely on other processes to communicate the starting rule of
+	 * a decision tree.  This is optional: any rule can be called directly.  This is not specifically used when
+	 * evaluating rules at runtime.
 	 */
 	public Integer getStartRule() {
 		return ruleDefinition.getStartRule();
+	}
+	
+	/**
+	 * Optional rule tags are used to further define a rule, but are not specifically used when evaluating
+	 * rules at runtime.  Tags can be used for things like authorization in databases or display control in
+	 * custom rule definition editors
+	 */
+	public ArrayList<String> getRuleTags(Integer ruleNumber) throws Exception {
+		return ruleDefinition.getRuleTags(ruleNumber);
 	}
 	
 	/**

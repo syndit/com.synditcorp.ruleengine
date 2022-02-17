@@ -21,6 +21,7 @@ public class BaseRules implements Rules {
 	private String description;
 	private String version;
 	private Integer startRule;
+	private ArrayList<String> documentTags;
 	private ArrayList<CalcRule> calcRules;
 	private ArrayList<AndRule> andRules;
 	private ArrayList<OrRule> orRules;
@@ -116,6 +117,14 @@ public class BaseRules implements Rules {
 	@Override
 	public void setStartRule(Integer ruleNumber) {
 		this.startRule = ruleNumber;
+	}
+
+	public ArrayList<String> getDocumentTags() {
+		return documentTags;
+	}
+
+	public void setDocumentTags(ArrayList<String> documentTags) {
+		this.documentTags = documentTags;
 	}
 
 

@@ -116,6 +116,8 @@ If a MVEL expression is to be used, then an "expression" field is required.
 
 The optional "description" field holds a meaningful description for the rule. 
 
+The optional "ruleTags" field is a String array useful in further describing a rule.  The ruleTags values are not used to evaluate rules at runtime.  They are intended for such things as authorization in databases or display control in custom document definition editors. 
+
 There are currently 10 other optional rule fields that can be used to store values associated with either a passing rule, or a failing rule.  These values can be accessed at runtime for whatever is needed.  For example, if a rule fails and the fail message needs to be presented in the UI, retrieve the rule's unique failKey field value, which is intended to hold an i18n key (but really can hold a value for whatever scheme is being used).  Note that field values are only available if the rule has been evaluated at runtime. The 10 fields are: 
 
  1. passKey - String, intended to hold an i18n key
@@ -159,17 +161,19 @@ Each of the rule fields values can be accessed by other rules at runtime.  They 
 There are four fields for use in identifying a particular document:
 
 1. definitionID - an ID unique to the particular document.  This is useful at runtime, particularly when retrieving a rule definition from a no-sql database, like MongoDB.
-2. description - this is for providing a meaningful description of the rules in the document.
-3. version - always a good idea to version your documents.
-4. startRule - for decision trees, this holds the value of the base rule of the tree.  It is intended for the developers to retrieve at runtime so you don't have to rely on Jira tickets, emails, text messages, etc. to know the base rule to call. 
+1. description - this is for providing a meaningful description of the rules in the document.
+1. version - always a good idea to version your documents.
+1. documentTags - document tags are used to further define a document.  Tags can be used for things like authorization in databases or display control in custom rule definition editors
+1. startRule - for decision trees, this holds the value of the base rule of the tree.  It is intended for the developers to retrieve at runtime so you don't have to rely on Jira tickets, emails, text messages, etc. to know the base rule to call. 
 
 
 	"definitionID" : "ORDACC",
 	"description" : "New vehicle order accept tree",
 	"version" : "1.0.17",
+	"documentTags" : ["test","partial"],
 	"startRule" : "14",
 
-
+Note that these values are not used when evaluating rules at runtime.
 
 ## Fields not yet implemented
 
@@ -299,6 +303,7 @@ Here is an example of an "all" rule:
 			{
 				"ruleType" : "all",
 				"ruleNumber" : "15",
+				"ruleTags" : ["protected"],				
 				"description" : "Evaluate all these rules",
 				"compositeRules" : [31, 32, 33],
 				"active" : "true",
@@ -324,7 +329,7 @@ Here is an example of an "all" rule:
 
 
 
-Note that _all_ rules evaluates all of the rules in the compositeRules field list, therefore an _all_ rule may set both true and false pass and fail field values depending upon the results of each of the rules it calls.  So, care should be taken using the _all_ rule field pass and fail values.
+Note that _all_ rules evaluates all of the rules in the compositeRules field list, therefore an _all_ rule may set both true and false pass and fail field values depending upon the results of each of the rules it calls.  So, care should be taken using the _all_ rule field pass and fail values.  Note also the optional ruleTags field.
 
 # Calling an API or Java class
 
@@ -359,13 +364,13 @@ The Rule Engine is very flexible.  Because at runtime any rule can be called dir
 
 ## Expressions
 
-MVEL is the expression language used by the Engine (you can change if you want).  At runtime, it takes time for each type of expression to initialize, so if milliseconds are critical to your SLA, keep the RuleEvaluator instance in memory and just reset the variables after each request.
+MVEL is the expression language used by the Engine (you can change if you want).  At runtime, it takes time for each type of expression to initialize, so if milliseconds are critical to your SLA, keep the RuleEvaluator instance in memory and reset after each request.
 
 ## Be organized
 
 Being organized is the key to a successful, lasting implementation.  The Rule Engine was written long ago to solve the problem of out-of-control rules in code, so don't over think your rules, particularly because they are quite easy to create.
 
-Also, control is important, so limit definition maintenance to a knowledgeable team.  And, prune when possible.  
+Also, control is important, so limit definition maintenance to a team knowledgeable in process formulation.  And, prune when possible. 
 
 ## CI/CD pipeline
 
