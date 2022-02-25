@@ -535,19 +535,19 @@ public class RuleEvaluator {
 		String ruleNumberStr = ruleNumber.toString();
 
 		ArrayList<String> passKeys = getCompositePassKeys(ruleNumber);
-		if(passKeys != null && !passKeys.isEmpty()) variables.put( ("compositePassKeys_" + ruleNumberStr), passKeys);
+		variables.put( ("compositePassKeys_" + ruleNumberStr), passKeys);
 		
 		Double passScore = getCompositePassScore(ruleNumber);
-		if(passScore != null) variables.put( ("compositePassScore_" + ruleNumberStr), passScore);
+		variables.put( ("compositePassScore_" + ruleNumberStr), passScore);
 		
 		ArrayList<String> passFlags = getCompositePassFlags(ruleNumber);
-		if(passFlags != null && !passFlags.isEmpty()) variables.put( ("compositePassFlags_" + ruleNumberStr), passFlags);
+		variables.put( ("compositePassFlags_" + ruleNumberStr), passFlags);
 		
 		ArrayList<String> passReasons = getCompositePassReasons(ruleNumber);
-		if(passReasons != null && !passReasons.isEmpty()) variables.put( ("compositePassReasons_" + ruleNumberStr), passReasons);
+		variables.put( ("compositePassReasons_" + ruleNumberStr), passReasons);
 		
 		ArrayList<String> passActions = getCompositePassActions(ruleNumber);
-		if(passActions != null && !passActions.isEmpty()) variables.put( ("compositePassActions_" + ruleNumberStr), passActions);
+		variables.put( ("compositePassActions_" + ruleNumberStr), passActions);
 
 	}
 
@@ -565,19 +565,19 @@ public class RuleEvaluator {
 		String ruleNumberStr = ruleNumber.toString();
 
 		ArrayList<String> failKeys = getCompositeFailKeys(ruleNumber);
-		if(failKeys != null && !failKeys.isEmpty()) variables.put( ("compositeFailKeys_" + ruleNumberStr), failKeys);
+		variables.put( ("compositeFailKeys_" + ruleNumberStr), failKeys);
 		
 		Double failScore = getCompositeFailScore(ruleNumber);
-		if(failScore != null) variables.put( ("compositeFailScore_" + ruleNumberStr), failScore);
+		variables.put( ("compositeFailScore_" + ruleNumberStr), failScore);
 
 		ArrayList<String> failFlags = getCompositeFailFlags(ruleNumber);
-		if(failFlags != null && !failFlags.isEmpty()) variables.put( ("compositeFailFlags_" + ruleNumberStr), failFlags);
+		variables.put( ("compositeFailFlags_" + ruleNumberStr), failFlags);
 		
 		ArrayList<String> failReasons = getCompositeFailReasons(ruleNumber);
-		if(failReasons != null && !failReasons.isEmpty()) variables.put( ("compositeFailReasons_" + ruleNumberStr), failReasons);
+		variables.put( ("compositeFailReasons_" + ruleNumberStr), failReasons);
 		
 		ArrayList<String> failActions = getCompositeFailActions(ruleNumber);
-		if(failActions != null && !failActions.isEmpty()) variables.put( ("compositeFailActions_" + ruleNumberStr), failActions);
+		variables.put( ("compositeFailActions_" + ruleNumberStr), failActions);
 
 	}
 	
