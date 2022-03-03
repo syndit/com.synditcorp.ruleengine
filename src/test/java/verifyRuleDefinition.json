@@ -1,5 +1,5 @@
 {
-	"definitionID" : "TESTXXX",
+	"documentId" : "TESTXXX",
 	"description" : "This is a test definition",
 	"version" : "0.0.1",
 	"documentTags" : ["test","partial"],

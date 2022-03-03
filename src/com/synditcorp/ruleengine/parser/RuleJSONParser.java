@@ -38,9 +38,18 @@ public class RuleJSONParser implements RuleParser {
 		
 	}
 
+	/**
+	 * Use this for getting definitions from resources like MongoDB.  See test.java.verifyRulesDefinitions.json for supported JSON file format.
+	 */
+	@Override
+	public void loadRules(Object... arguments) throws Exception {
+		// TODO Auto-generated method stub
+	}
+	
 	@Override
 	public BaseRules getRules() throws Exception {
 		return rules;
 	}
+
 
 }

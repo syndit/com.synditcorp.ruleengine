@@ -28,8 +28,8 @@ public interface Rules {
 	public void setOrRules(ArrayList<OrRule> orRules);
 	public ArrayList<AllRule> getAllRules();
 	public void setAllRules(ArrayList<AllRule> allRules);
-	public String getdefinitionID();
-	public void setdefinitionID(String definitionID);
+	public String getDocumentId();
+	public void setDocumentId(String documentId);
 	public String getDescription();
 	public void setDescription(String description);
 	public String getVersion();

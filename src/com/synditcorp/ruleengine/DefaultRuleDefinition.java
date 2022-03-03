@@ -47,8 +47,8 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 * Returns the ID of the rules definition.  Definition is not used at runtime to evaluate rules.
 	 */
 	@Override
-	public String getDefinitionID() {
-		return baseRules.getdefinitionID();
+	public String getDocumentId() {
+		return baseRules.getDocumentId();
 	}
 	
 	/**

@@ -17,7 +17,7 @@ import com.synditcorp.ruleengine.interfaces.Rules;
 
 public class BaseRules implements Rules {
 
-	private String definitionID;
+	private String documentId;
 	private String description;
 	private String version;
 	private Integer startRule;
@@ -80,13 +80,13 @@ public class BaseRules implements Rules {
 	}
 
 	@Override
-	public String getdefinitionID() {
-		return definitionID;
+	public String getDocumentId() {
+		return documentId;
 	}
 
 	@Override
-	public void setdefinitionID(String definitionID) {
-		this.definitionID = definitionID;
+	public void setDocumentId(String documentId) {
+		this.documentId = documentId;
 	}
 
 	@Override

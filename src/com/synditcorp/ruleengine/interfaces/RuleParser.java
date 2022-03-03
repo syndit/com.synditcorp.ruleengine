@@ -19,6 +19,7 @@ import com.synditcorp.ruleengine.beans.BaseRules;
 public interface RuleParser {
 
 	public void loadRules(String fileName) throws Exception;
+	public void loadRules(Object... arguments) throws Exception;
 	public BaseRules getRules() throws Exception;
 	
 }

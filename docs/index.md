@@ -160,11 +160,11 @@ Each of the rule fields values can be accessed by other rules at runtime.  They 
 
 There are five fields for use in identifying a particular document:
 
-1. definitionID - an ID unique to the particular document.  This is useful at runtime, particularly when retrieving a rule definition from a no-sql database, like MongoDB.
-1. description - this is for providing a meaningful description of the rules in the document.
-1. version - always a good idea to version your documents.
-1. documentTags - document tags are used to further define a document.  Tags can be used for things like authorization in databases or display control in custom rule definition editors
-1. startRule - for decision trees, this holds the value of the base rule of the tree.  It is intended for the developers to retrieve at runtime so you don't have to rely on Jira tickets, emails, text messages, etc. to know the base rule to call. 
+ 1. documentId - an ID unique to the particular document.  This is useful at runtime, particularly when retrieving a rule definition from a no-sql database, like MongoDB.
+ 1. description - this is for providing a meaningful description of the rules in the document.
+ 1. version - always a good idea to version your documents.
+ 1. documentTags - document tags are used to further define a document.  Tags can be used for things like authorization in databases or display control in custom rule definition editors.
+ 1. startRule - for decision trees, this holds the value of the base rule of the tree.  It is intended for the developers to retrieve at runtime so you don't have to rely on Jira tickets, emails, text messages, etc. to know the base rule to call. 
 
 
 	"definitionID" : "ORDACC",

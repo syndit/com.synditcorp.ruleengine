@@ -43,8 +43,8 @@ public class RuleEvaluator {
 	/**
 	 * Returns the ID of the rule definition 
 	 */
-	public String getDefinitionID() {
-		return ruleDefinition.getDefinitionID();
+	public String getDocumentId() {
+		return ruleDefinition.getDocumentId();
 	}
 	
 	/**

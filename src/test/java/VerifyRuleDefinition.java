@@ -68,7 +68,7 @@ public class VerifyRuleDefinition {
 		RuleEvaluator eval = new RuleEvaluator(rules, logger);
 		eval.setVariables(variables);
 		
-		System.out.println("Definition: ID " + eval.getDefinitionID() + ", " + eval.getDescription() + ", version " + eval.getVersion() + ", tags: " + eval.getDocumentTags());
+		System.out.println("Document: ID " + eval.getDocumentId() + ", " + eval.getDescription() + ", version " + eval.getVersion() + ", tags: " + eval.getDocumentTags());
 		
 		RuleLogger.log(TimeTrack.getElapsedTime(t1) + " milliseconds to load rules");
 		

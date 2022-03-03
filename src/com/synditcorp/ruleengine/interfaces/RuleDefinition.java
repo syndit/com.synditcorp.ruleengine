@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public interface RuleDefinition {
 
-	public String getDefinitionID();
+	public String getDocumentId();
 	public String getDescription();
 	public String getVersion();
 	public Integer getStartRule();
