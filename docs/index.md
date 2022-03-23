@@ -26,6 +26,14 @@
 1. Easily allows for multiple tenant implementations:
     1. Separate documents for each client, division, department, etc.
 
+# Version 2.1.0 Changes
+
+There are two changes in version 2.1.0:
+
+ 1. Support for empty _compositeRule_ fields to allow rules to be stubbed-out in preparation for future use.  Empty _compositeRule_ fields evaluate to null in the Engine.
+ 1. Support for multiple rule field values, except for passScore and failScore.  Basically, the rule fields types were changed from String to ArrayList<String>. The rule field strings are intended be evaluated in whole, but if pattern matching is needed in an expression, then a target value will need to be referenced by index in the field's array.  
+  
+
 # Using
 
 ## Parser
@@ -118,18 +126,18 @@ The optional "description" field holds a meaningful description for the rule.
 
 The optional "ruleTags" field is a String array useful in further describing a rule.  The ruleTags values are not used to evaluate rules at runtime.  They are intended for such things as authorization in databases or display control in custom document definition editors. 
 
-There are currently 10 other optional rule fields that can be used to store values associated with either a passing rule, or a failing rule.  These values can be accessed at runtime for whatever is needed.  For example, if a rule fails and the fail message needs to be presented in the UI, retrieve the rule's unique failKey field value, which is intended to hold an i18n key (but really can hold a value for whatever scheme is being used).  Note that field values are only available if the rule has been evaluated at runtime. The 10 fields are: 
+There are currently 10 other optional rule fields that can be used to store values associated with either a passing rule, or a failing rule.  These values can be accessed at runtime for whatever is needed.  For example, if a rule fails and the fail message needs to be presented in the UI, retrieve the rule's unique failKey field values, which are intended to hold an i18n keys (but really can hold values for whatever scheme is being used).  Note that field values are only available if the rule has been evaluated at runtime. The 10 fields are: 
 
- 1. passKey - String, intended to hold an i18n key
- 1. failKey - String, intended to hold an i18n key
+ 1. passKeys - ArrayList<String>, intended to hold i18n keys
+ 1. failKeys - ArrayList<String> , intended to hold i18n keys
  1. passScore - An expression that returns a Double, intended for scoring a rule on a pass.  The expression can be a single value or a complex calculation using other rules' failScore values. 
  1. failScore - An expression that returns a Double, intended for scoring a rule on a fail.  The expression can be a single value or a complex calculation using other rules' failScore values.
- 1. passFlag -  String, a flag for particular rule's pass
- 1. failFlag - String, a flag for particular rule's fail 
- 1. passReason - String, use to store a reason for particular rule's pass
- 1. failReason - String, use to store a reason for particular rule's fail
- 1. passAction -  String, use to store an action for particular rule's pass
- 1. failAction -  String, use to store an action for particular rule's fail
+ 1. passFlags -  ArrayList<String>, flags for a particular rule's pass
+ 1. failFlags - ArrayList<String>, flags for a particular rule's fail 
+ 1. passReasons - ArrayList<String>, use to store reasons for a particular rule's pass
+ 1. failReasons - ArrayList<String>, use to store reasons for a particular rule's fail
+ 1. passActions -  ArrayList<String>, use to store actions for a particular rule's pass
+ 1. failActions -  ArrayList<String>, use to store actions for a particular rule's fail
 
 If a field is not to be used, set it to null in the JSON document, or just don't include it in the JSON record.
 
@@ -196,16 +204,16 @@ Here is an example of a calc rule:
 				"active" : "true",
 				"effectiveDate" : null,
 				"expirationDate" : null,
-				"passKey" : "passKey_1",
-				"failKey" : "failKey_1",
+				"passKey" : ["passKey_1"],
+				"failKey" : ["failKey_1"],
 				"passScore" : "1",
 				"failScore" : -1,
-				"passFlag" : "1FlagP",
-				"failFlag" : "1FlagF",
-				"passReason" : null,
-				"failReason" : null,
-				"passAction" : "1ActionP",
-				"failAction" : "1ActionF"			`
+				"passFlag" : ["1FlagP"],
+				"failFlag" : ["1FlagF"],
+				"passReason" : [],
+				"failReason" : [],
+				"passAction" : ["1ActionP"],
+				"failAction" : ["1ActionF"]			`
 			},
 
 
@@ -227,16 +235,16 @@ Here is an example of an "and" rule:
 				"active" : "true",
 				"effectiveDate" : null,
 				"expirationDate" : null,
-				"passKey" : "passKey_10",
-				"failKey" : "failKey_10",
+				"passKey" : ["passKey_10"],
+				"failKey" : ["failKey_10"],
 				"passScore" : "passScore_27 + 13",
 				"failScore" : "passScore_27 - 13",			
-				"passFlag" : "10FlagP",
-				"failFlag" : "10FlagF",
-				"passReason" : "10ReasonP",
-				"failReason" : "10ReasonF",
-				"passAction" : "10ActionP",
-				"failAction" : "10ActionF",		
+				"passFlag" : ["10FlagP"],
+				"failFlag" : ["10FlagF"],
+				"passReason" : ["10ReasonP"],
+				"failReason" : ["10ReasonF"],
+				"passAction" : ["10ActionP"],
+				"failAction" : [10ActionF"],		
 				"compositePassKeys": [1,2],
 				"compositeFailKeys" : [1,2],
 				"compositePassScores" : [1,2],
@@ -267,16 +275,16 @@ Here is an example of an "or" rule:
 				"active" : "true",
 				"effectiveDate" : null,
 				"expirationDate" : null,
-				"passKey" : "passKey_12",
-				"failKey" : "failKey_12",
+				"passKey" : ["passKey_12"],
+				"failKey" : ["failKey_12"],
 				"passScore" : "12",
 				"failScore" : "-12",			
-				"passFlag" : "12FlagP",
-				"failFlag" : "12FlagF",
-				"passReason" : "12ReasonP",
-				"failReason" : "12ReasonF",
-				"passAction" : null,
-				"failAction" : null,		
+				"passFlag" : ["12FlagP"],
+				"failFlag" : ["12FlagF"],
+				"passReason" : ["12ReasonP"],
+				"failReason" : ["12ReasonF"],
+				"passAction" : [],
+				"failAction" : [],		
 				"compositePassKeys": [10],
 				"compositeFailKeys" : [10],
 				"compositePassScores" : [10,32],
@@ -309,11 +317,11 @@ Here is an example of an "all" rule:
 				"active" : "true",
 				"effectiveDate" : null,
 				"expirationDate" : null,
-				"passKey" : "",
-				"passScore" : "",
-				"passFlag" : "",
-				"passReason" : "",
-				"passAction" : null,
+				"passKey" : [],
+				"passScore" : null,
+				"passFlag" : [],
+				"passReason" : [],
+				"passAction" : [],
 				"compositePassKeys": [],
 				"compositeFailKeys": [],
 				"compositePassScores" : [31, 32, 33],
@@ -344,8 +352,8 @@ If an API or a Java class needs to be used, simply create a new handler that imp
 				"description" : "Get forecast for today",
 				"expression" : null,
 				"handlerClass" : "com.yourcompany.handlers.CallWeatherServiceAPI",
-				"passFlag" : "Sunny",
-				"failFlag" : "Rain",
+				"passFlag" : ["Sunny"],
+				"failFlag" : ["Rain"],
 
 
 # Validation

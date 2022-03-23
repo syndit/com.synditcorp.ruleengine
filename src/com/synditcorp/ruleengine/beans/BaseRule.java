@@ -25,16 +25,16 @@ public class BaseRule implements Rule {
 	private Boolean active;
 	private Date expirationDate;
 	private Date effectiveDate;
-	private String passKey = null;
-	private String failKey = null;
+	private ArrayList<String> passKeys;
+	private ArrayList<String> failKeys;
 	private String passScore = null;
 	private String failScore = null;
-	private String passFlag = null;
-	private String failFlag = null;
-	private String passReason = null;
-	private String failReason = null;
-	private String passAction = null;
-	private String failAction = null;
+	private ArrayList<String> passFlags;
+	private ArrayList<String> failFlags;
+	private ArrayList<String> passReasons;
+	private ArrayList<String> failReasons;
+	private ArrayList<String> passActions;
+	private ArrayList<String> failActions;
 	
 
 	public BaseRule() {
@@ -42,43 +42,43 @@ public class BaseRule implements Rule {
 	}
 	
 	@Override
-	public String getPassFlag() {
-		return passFlag;
+	public ArrayList<String> getPassFlags() {
+		return passFlags;
 	}
 
 	@Override
-	public void setPassFlag(String passFlag) {
-		this.passFlag = passFlag;
+	public void setPassFlags(ArrayList<String> passFlags) {
+		this.passFlags = passFlags;
 	}
 
 	@Override
-	public String getFailFlag() {
-		return failFlag;
+	public ArrayList<String> getFailFlags() {
+		return failFlags;
 	}
 
 	@Override
-	public void setFailFlag(String failFlag) {
-		this.failFlag = failFlag;
+	public void setFailFlags(ArrayList<String> failFlags) {
+		this.failFlags = failFlags;
 	}
 
 	@Override
-	public String getPassReason() {
-		return passReason;
+	public ArrayList<String> getPassReasons() {
+		return passReasons;
 	}
 
 	@Override
-	public void setPassReason(String passReason) {
-		this.passReason = passReason;
+	public void setPassReasons(ArrayList<String> passReasons) {
+		this.passReasons = passReasons;
 	}
 
 	@Override
-	public String getFailReason() {
-		return failReason;
+	public ArrayList<String> getFailReasons() {
+		return failReasons;
 	}
 
 	@Override
-	public void setFailReason(String failReason) {
-		this.failReason = failReason;
+	public void setFailReasons(ArrayList<String> failReasons) {
+		this.failReasons = failReasons;
 	}
 
 
@@ -105,23 +105,23 @@ public class BaseRule implements Rule {
 	}
 
 	@Override
-	public void setPassKey(String passKey) {
-		this.passKey = passKey;
+	public void setPassKeys(ArrayList<String> passKeys) {
+		this.passKeys = passKeys;
 	}
 
 	@Override
-	public String getPassKey() {
-		return this.passKey;
+	public ArrayList<String> getPassKeys() {
+		return this.passKeys;
 	}
 
 	@Override
-	public void setFailKey(String failKey) {
-		this.failKey = failKey;
+	public void setFailKeys(ArrayList<String> failKeys) {
+		this.failKeys = failKeys;
 	}
 
 	@Override
-	public String getFailKey() {
-		return this.failKey;
+	public ArrayList<String> getFailKeys() {
+		return this.failKeys;
 	}
 
 	@Override
@@ -165,23 +165,23 @@ public class BaseRule implements Rule {
 	}
 
 	@Override
-	public void setFailAction(String failAction) {
-		this.failAction = failAction;
+	public void setFailActions(ArrayList<String> failActions) {
+		this.failActions = failActions;
 	}
 
 	@Override
-	public String getFailAction() {
-		return this.failAction;
+	public ArrayList<String> getFailActions() {
+		return this.failActions;
 	}
 
 	@Override
-	public void setPassAction(String passAction) {
-		this.passAction = passAction;
+	public void setPassActions(ArrayList<String> passActions) {
+		this.passActions = passActions;
 	}
 
 	@Override
-	public String getPassAction() {
-		return this.passAction;
+	public ArrayList<String> getPassActions() {
+		return this.passActions;
 	}
 
 	@Override

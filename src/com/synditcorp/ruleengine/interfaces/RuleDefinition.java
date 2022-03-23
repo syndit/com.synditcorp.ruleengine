@@ -28,16 +28,16 @@ public interface RuleDefinition {
 	public boolean isOrRule(Integer ruleNumber) throws Exception;
 	public boolean isAndRule(Integer ruleNumber) throws Exception;
 	public boolean isAllRule(Integer ruleNumber) throws Exception;
-	public String getPassKey(Integer ruleNumber) throws Exception;
-	public String getFailKey(Integer ruleNumber) throws Exception;
+	public ArrayList<String> getPassKeys(Integer ruleNumber) throws Exception;
+	public ArrayList<String> getFailKeys(Integer ruleNumber) throws Exception;
 	public String getPassScore(Integer ruleNumber) throws Exception;
 	public String getFailScore(Integer ruleNumber) throws Exception;
-	public String getPassFlag(Integer ruleNumber) throws Exception;
-	public String getFailFlag(Integer ruleNumber) throws Exception;
-	public String getPassReason(Integer ruleNumber) throws Exception;
-	public String getFailReason(Integer ruleNumber) throws Exception;
-	public String getPassAction(Integer ruleNumber) throws Exception;
-	public String getFailAction(Integer ruleNumber) throws Exception;
+	public ArrayList<String> getPassFlags(Integer ruleNumber) throws Exception;
+	public ArrayList<String> getFailFlags(Integer ruleNumber) throws Exception;
+	public ArrayList<String> getPassReasons(Integer ruleNumber) throws Exception;
+	public ArrayList<String> getFailReasons(Integer ruleNumber) throws Exception;
+	public ArrayList<String> getPassActions(Integer ruleNumber) throws Exception;
+	public ArrayList<String> getFailActions(Integer ruleNumber) throws Exception;
 	public String getExpression(Integer ruleNumber) throws Exception;
 	public String getHandlerClass(Integer ruleNumber) throws Exception;
 

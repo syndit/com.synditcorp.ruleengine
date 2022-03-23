@@ -94,9 +94,11 @@ public class RuleEvaluator {
 	 */
 	public boolean evaluateRule(Integer ruleNumber) throws Exception {
 		
-		boolean result = callRule(ruleNumber);
+		Boolean result = callRule(ruleNumber);
 		
-		return ( result );
+		if(result == null) throw new Exception("No rules were processed.");
+		
+		return ( result.booleanValue() );
 
 	}
 	
@@ -129,17 +131,17 @@ public class RuleEvaluator {
 	/**
 	 * Get the passKey for a particular rule.  This returns the passKey set in the rules document and that evaluated to "true" at runtime.
 	 */
-	public String getPassKey(Integer ruleNumber) throws Exception {
+	public ArrayList<String> getPassKeys(Integer ruleNumber) throws Exception {
 		if(!runtimePasses.contains(ruleNumber)) return null;
-		return ruleDefinition.getPassKey(ruleNumber);
+		return ruleDefinition.getPassKeys(ruleNumber);
 	}
 	
 	/**
 	 * Get the failKey for a particular rule.  This returns the failKey set in the rules document and that evaluated to "true" at runtime.
 	 */
-	public String getFailKey(Integer ruleNumber) throws Exception {
+	public ArrayList<String> getFailKeys(Integer ruleNumber) throws Exception {
 		if(!runtimeFails.contains(ruleNumber)) return null;
-		return ruleDefinition.getFailKey(ruleNumber);
+		return ruleDefinition.getFailKeys(ruleNumber);
 	}
 
 	/**
@@ -163,49 +165,49 @@ public class RuleEvaluator {
 	/**
 	 * Get the passFlag for a particular rule.  This returns the passFlag set in the rules document and that evaluated to "true" at runtime.
 	 */
-	public String getPassFlag(Integer ruleNumber) throws Exception {
+	public ArrayList<String> getPassFlags(Integer ruleNumber) throws Exception {
 		if(!runtimePasses.contains(ruleNumber)) return null;
-		return getRule(ruleNumber).getPassFlag();
+		return getRule(ruleNumber).getPassFlags();
 	}
 	
 	/**
 	 * Get the failFlag for a particular rule.  This returns the failFlag set in the rules document and that evaluated to "true" at runtime.
 	 */
-	public String getFailFlag(Integer ruleNumber) throws Exception {
+	public ArrayList<String> getFailFlags(Integer ruleNumber) throws Exception {
 		if(!runtimeFails.contains(ruleNumber)) return null;
-		return ruleDefinition.getFailFlag(ruleNumber);
+		return ruleDefinition.getFailFlags(ruleNumber);
 	}
 	
 	/**
 	 * Get the passReason for a particular rule.  This returns the passReason set in the rules document and that evaluated to "true" at runtime.
 	 */
-	public String getPassReason(Integer ruleNumber) throws Exception {
+	public ArrayList<String> getPassReasons(Integer ruleNumber) throws Exception {
 		if(!runtimePasses.contains(ruleNumber)) return null;
-		return ruleDefinition.getPassReason(ruleNumber);
+		return ruleDefinition.getPassReasons(ruleNumber);
 	}
 	
 	/**
 	 * Get the failReason for a particular rule.  This returns the failReason set in the rules document and that evaluated to "true" at runtime.
 	 */
-	public String getFailReason(Integer ruleNumber) throws Exception {
+	public ArrayList<String> getFailReasons(Integer ruleNumber) throws Exception {
 		if(!runtimeFails.contains(ruleNumber)) return null;
-		return ruleDefinition.getFailReason(ruleNumber);
+		return ruleDefinition.getFailReasons(ruleNumber);
 	}
 	
 	/**
 	 * Get the passAction for a particular rule.  This returns the passAction set in the rules document and that evaluated to "true" at runtime.
 	 */
-	public String getPassAction(Integer ruleNumber) throws Exception {
+	public ArrayList<String> getPassActions(Integer ruleNumber) throws Exception {
 		if(!runtimePasses.contains(ruleNumber)) return null;
-		return ruleDefinition.getPassAction(ruleNumber);
+		return ruleDefinition.getPassActions(ruleNumber);
 	}
 	
 	/**
 	 * Get the failAction for a particular rule.  This returns the failAction set in the rules document and that evaluated to "true" at runtime.
 	 */
-	public String getFailAction(Integer ruleNumber) throws Exception {
+	public ArrayList<String> getFailActions(Integer ruleNumber) throws Exception {
 		if(!runtimeFails.contains(ruleNumber)) return null;
-		return ruleDefinition.getFailAction(ruleNumber);
+		return ruleDefinition.getFailActions(ruleNumber);
 	}
 	
 	/**
@@ -238,8 +240,9 @@ public class RuleEvaluator {
 			if(list == null) return keys;
 
 			for (int i = 0; i < list.size(); i++) {
-				if(getPassKey(list.get(i)) == null) continue;
-				keys.add(getPassKey(list.get(i)));
+				ArrayList<String> passKeys = getPassKeys(list.get(i));
+				if(passKeys == null) continue;
+				for(int j = 0; j < passKeys.size(); j++) keys.add(passKeys.get(j));
 			}
 		}
 
@@ -262,8 +265,9 @@ public class RuleEvaluator {
 			if(list == null) return keys;
 
 			for (int i = 0; i < list.size(); i++) {
-				if(getFailKey(list.get(i)) == null) continue;
-				keys.add(getFailKey(list.get(i)));
+				ArrayList<String> failKeys = getFailKeys(list.get(i));
+				if(failKeys == null) continue;
+				for(int j = 0; j < failKeys.size(); j++) keys.add(failKeys.get(j));
 			}
 		}
 
@@ -334,8 +338,9 @@ public class RuleEvaluator {
 			if(list == null) return flags;
 			
 			for (int i = 0; i < list.size(); i++) {
-				if(getPassFlag(list.get(i)) == null) continue;
-				flags.add(getPassFlag(list.get(i)));
+				ArrayList<String> passFlags = getPassFlags(list.get(i));
+				if(passFlags == null) continue;
+				for(int j = 0; j < passFlags.size(); j++) flags.add(passFlags.get(j));
 			}
 		}
 
@@ -358,8 +363,9 @@ public class RuleEvaluator {
 			if(list == null) return flags;
 			
 			for (int i = 0; i < list.size(); i++) {
-				if(getFailFlag(list.get(i)) == null) continue;
-				flags.add(getFailFlag(list.get(i)));
+				ArrayList<String> failFlags = getFailFlags(list.get(i));
+				if(failFlags == null) continue;
+				for(int j = 0; j < failFlags.size(); j++) flags.add(failFlags.get(j));
 			}
 		}
 
@@ -382,8 +388,9 @@ public class RuleEvaluator {
 			if(list == null) return reasons;
 			
 			for (int i = 0; i < list.size(); i++) {
-				if(getPassReason(list.get(i)) == null) continue;
-				reasons.add(getPassReason(list.get(i)));
+				ArrayList<String> passReasons = getPassReasons(list.get(i));
+				if(passReasons == null) continue;
+				for(int j = 0; j < passReasons.size(); j++) reasons.add(passReasons.get(j));
 			}
 		}
 
@@ -406,8 +413,9 @@ public class RuleEvaluator {
 			if(list == null) return reasons;
 			
 			for (int i = 0; i < list.size(); i++) {
-				if(getFailReason(list.get(i)) == null) continue;
-				reasons.add(getFailReason(list.get(i)));
+				ArrayList<String> failReasons = getFailReasons(list.get(i));
+				if(failReasons == null) continue;
+				for(int j = 0; j < failReasons.size(); j++) reasons.add(failReasons.get(j));
 			}
 		}
 
@@ -430,8 +438,9 @@ public class RuleEvaluator {
 			if(list == null) return actions;
 			
 			for (int i = 0; i < list.size(); i++) {
-				if(getPassAction(list.get(i)) == null) continue;
-				actions.add(getPassAction(list.get(i)));
+				ArrayList<String> passActions = getPassActions(list.get(i));
+				if(passActions == null) continue;
+				for(int j = 0; j < passActions.size(); j++) actions.add(passActions.get(j));
 			}
 		}
 
@@ -454,8 +463,9 @@ public class RuleEvaluator {
 			if(list == null) return actions;
 			
 			for (int i = 0; i < list.size(); i++) {
-				if(getFailAction(list.get(i)) == null) continue;
-				actions.add(getFailAction(list.get(i)));
+				ArrayList<String> failActions = getFailActions(list.get(i));
+				if(failActions == null) continue;
+				for(int j = 0; j < failActions.size(); j++) actions.add(failActions.get(j));
 			}
 		}
 
@@ -476,20 +486,20 @@ public class RuleEvaluator {
 		
 		String ruleNoStr = ruleNumber.toString();
 
-		String passKey = getPassKey(ruleNumber); 
-		if(passKey != null) variables.put( ("passKey_" +ruleNoStr), passKey);
+		ArrayList<String> passKeys = getPassKeys(ruleNumber); 
+		if(passKeys != null && passKeys.size() > 0) variables.put( ("passKeys_" +ruleNoStr), passKeys);
 		
 		Double passScore = getPassScore(ruleNumber);
 		if(passScore != null) variables.put( ("passScore_" +ruleNoStr), passScore);
 
-		String passFlag = getPassFlag(ruleNumber); 
-		if(passFlag != null) variables.put( ("passFlag_" +ruleNoStr), passFlag);
+		ArrayList<String> passFlags = getPassFlags(ruleNumber); 
+		if(passFlags != null && passFlags.size() > 0) variables.put( ("passFlags_" +ruleNoStr), passFlags);
 		
-		String passReason = getPassReason(ruleNumber); 
-		if(passReason != null) variables.put( ("passReason_" +ruleNoStr), passReason);
+		ArrayList<String> passReasons = getPassReasons(ruleNumber); 
+		if(passReasons != null && passReasons.size() > 0) variables.put( ("passReasons_" +ruleNoStr), passReasons);
 
-		String passAction = getPassAction(ruleNumber); 
-		if(passAction != null) variables.put( ("passAction_" +ruleNoStr), passAction);
+		ArrayList<String> passActions = getPassActions(ruleNumber); 
+		if(passActions != null) variables.put( ("passActions_" +ruleNoStr), passActions);
 		
 	}
 	
@@ -504,20 +514,20 @@ public class RuleEvaluator {
 		
 		String ruleNumberStr = ruleNumber.toString();
 
-		String failKey = getFailKey(ruleNumber); 
-		if(failKey != null) variables.put( ("failKey_" + ruleNumberStr), failKey);
+		ArrayList<String> failKeys = getFailKeys(ruleNumber); 
+		if(failKeys != null && failKeys.size() > 0) variables.put( ("failKeys_" + ruleNumberStr), failKeys);
 		
 		Double failScore = getFailScore(ruleNumber);
 		if(failScore != null) variables.put( ("failScore_" + ruleNumberStr), failScore);
 		
-		String failFlag = getFailFlag(ruleNumber); 
-		if(failFlag != null) variables.put( ("failFlag_" + ruleNumberStr), failFlag);
+		ArrayList<String> failFlags = getFailFlags(ruleNumber); 
+		if(failFlags != null && failFlags.size() > 0) variables.put( ("failFlags_" + ruleNumberStr), failFlags);
 		
-		String failReason = getFailReason(ruleNumber); 
-		if(failReason != null) variables.put( ("failReason_" + ruleNumberStr), failReason);
+		ArrayList<String> failReasons = getFailReasons(ruleNumber); 
+		if(failReasons != null && failReasons.size() > 0) variables.put( ("failReasons_" + ruleNumberStr), failReasons);
 		
-		String failAction = getFailAction(ruleNumber); 
-		if(failAction != null) variables.put( ("failAction_" + ruleNumberStr), failAction);
+		ArrayList<String> failActions = getFailActions(ruleNumber); 
+		if(failActions != null && failActions.size() > 0) variables.put( ("failActions_" + ruleNumberStr), failActions);
 		
 	}
 	
@@ -581,7 +591,7 @@ public class RuleEvaluator {
 
 	}
 	
-	private boolean callRule(Integer ruleNumber) throws Exception {
+	private Boolean callRule(Integer ruleNumber) throws Exception {
 
 		if(isInCalcRules(ruleNumber)) return (processCalcRule(ruleNumber));
 
@@ -643,7 +653,7 @@ public class RuleEvaluator {
 		return (ruleDefinition.isAllRule(ruleNumber));
 	}
 	
-	private boolean processCalcRule(Integer ruleNumber) throws Exception {
+	private Boolean processCalcRule(Integer ruleNumber) throws Exception {
 
 		TimeTrack t = new TimeTrack();
 		
@@ -658,7 +668,7 @@ public class RuleEvaluator {
 		
 		addToCache(ruleNumber, result);
 
-		if(result) {
+		if(result.booleanValue()) {
 			addRuntimePass(ruleNumber);
 			addRulePassResultsToVariables(ruleNumber, variables);
 		}
@@ -677,14 +687,19 @@ public class RuleEvaluator {
 	 * The engine processes all rules listed in the AllRule bean compositeRules field list. AllRule rule types should be used when all rules must be processed
 	 * for such things as setting bean field values that will be accessed by other rules. 
 	 */
-	private boolean processAllRules(Integer ruleNumber) throws Exception {
+	private Boolean processAllRules(Integer ruleNumber) throws Exception {
 
 		TimeTrack t = new TimeTrack();
 		
+		boolean noRulesProcessed = true;
+		
 		ArrayList<Integer> compositeRuleList = getCompositeRulesList(ruleNumber);
+		if(compositeRuleList.size() == 0) return null;
 		for (int i = 0; i < compositeRuleList.size(); i++) {
-
-			if(processRule(compositeRuleList.get(i))) {
+			Boolean result = processRule(compositeRuleList.get(i));
+			if(result == null) continue;
+			noRulesProcessed = false;
+			if(result.booleanValue()) {
 				addRuntimePass(ruleNumber);
 				addCompositeRulePassResultsToVariables(ruleNumber, variables);
 				RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
@@ -695,6 +710,9 @@ public class RuleEvaluator {
 			}
 
 		}
+		
+		if(noRulesProcessed) return null;
+		
 		return true;
 		
 	}
@@ -703,13 +721,19 @@ public class RuleEvaluator {
 	 * The engine process all rules listed in the OrRule bean compositeRules field list up to the first pass.  Only those rules evaluated at runtime
 	 * set bean field values. 
 	 */
-	private boolean processOrRules(Integer ruleNumber) throws Exception {
+	private Boolean processOrRules(Integer ruleNumber) throws Exception {
 
 		TimeTrack t = new TimeTrack();
 		
+		boolean noRulesProcessed = true;
+		
 		ArrayList<Integer> compositeRuleList = getCompositeRulesList(ruleNumber);
+		if(compositeRuleList.size() == 0) return null;
 		for (int i = 0; i < compositeRuleList.size(); i++) {
-			if(processRule(compositeRuleList.get(i))) {
+			Boolean result = processRule(compositeRuleList.get(i));
+			if(result == null) continue;
+			noRulesProcessed = false;
+			if(result.booleanValue()) {
 				addRuntimePass(ruleNumber);
 				addCompositeRulePassResultsToVariables(ruleNumber, variables);
 				RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
@@ -717,6 +741,8 @@ public class RuleEvaluator {
 			}
 		}
 
+		if(noRulesProcessed) return null;
+		
 		addRuntimeFail(ruleNumber);
 		addCompositeRuleFailResultsToVariables(ruleNumber, variables);
 		RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
@@ -729,14 +755,19 @@ public class RuleEvaluator {
 	 * The engine processes all rules listed in the AndRule bean compositeRules field list up to the first fail.  Only those rules evaluated at runtime
 	 * set bean field values. 
 	 */
-	private boolean processAndRules(Integer ruleNumber) throws Exception {
+	private Boolean processAndRules(Integer ruleNumber) throws Exception {
 
 		TimeTrack t = new TimeTrack();
 
+		boolean noRulesProcessed = true;
+		
 		ArrayList<Integer> compositeRuleList = getCompositeRulesList(ruleNumber);
-
+		if(compositeRuleList.size() == 0) return null;
 		for (int i = 0; i < compositeRuleList.size(); i++) {
-			if(!processRule(compositeRuleList.get(i))) {
+			Boolean result = processRule(compositeRuleList.get(i));
+			if(result == null) continue;
+			noRulesProcessed = false;
+			if(!result.booleanValue()) {
 				addRuntimeFail(ruleNumber);
 				addCompositeRuleFailResultsToVariables(ruleNumber, variables);
 				RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
@@ -744,6 +775,8 @@ public class RuleEvaluator {
 			}			
 			
 		}
+		
+		if(noRulesProcessed) return null;
 		
 		addRuntimePass(ruleNumber);
 		addCompositeRulePassResultsToVariables(ruleNumber, variables);
@@ -753,10 +786,11 @@ public class RuleEvaluator {
 
 	}
 
-	private boolean processRule(Integer ruleNumber) throws Exception {
+	private Boolean processRule(Integer ruleNumber) throws Exception {
 
 		int abs = Math.abs(ruleNumber); 
-		boolean result = callRule(abs);
+		Boolean result = callRule(abs);
+		if(result == null) return null;
 		if( ruleNumber.intValue() < 0 ) { //negative number means a "not" rule
 			return (!result);
 		}

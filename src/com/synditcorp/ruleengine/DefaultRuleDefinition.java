@@ -128,15 +128,15 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 * Gets the passAction for a particular rule.  This returns the passAction set in the rules document.
 	 */
 	@Override
-	public String getPassAction(Integer ruleNumber) throws Exception {
-		return getRule(ruleNumber).getPassAction();	}
+	public ArrayList<String> getPassActions(Integer ruleNumber) throws Exception {
+		return getRule(ruleNumber).getPassActions();	}
 
 	/**
 	 * Gets the failAction for a particular rule.  This returns the failAction set in the rules document.
 	 */
 	@Override
-	public String getFailAction(Integer ruleNumber) throws Exception {
-		return getRule(ruleNumber).getFailAction();	}
+	public ArrayList<String> getFailActions(Integer ruleNumber) throws Exception {
+		return getRule(ruleNumber).getFailActions();	}
 
 	
 	/**
@@ -279,16 +279,16 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 * Returns the passKey for a particular rule as set in the rules document.
 	 */
 	@Override
-	public String getPassKey(Integer ruleNumber)  throws Exception {
-		return getRule(ruleNumber).getPassKey();
+	public ArrayList<String> getPassKeys(Integer ruleNumber)  throws Exception {
+		return getRule(ruleNumber).getPassKeys();
 	}
 	
 	/**
 	 * Returns the failKey for a particular rule as set in the rules document.
 	 */
 	@Override
-	public String getFailKey(Integer ruleNumber)  throws Exception {
-		return getRule(ruleNumber).getFailKey();
+	public ArrayList<String> getFailKeys(Integer ruleNumber)  throws Exception {
+		return getRule(ruleNumber).getFailKeys();
 	}
 
 	/**
@@ -311,32 +311,32 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 * Returns the passFlag for a particular rule as set in the rules document.
 	 */
 	@Override
-	public String getPassFlag(Integer ruleNumber) throws Exception {
-		return getRule(ruleNumber).getPassFlag();
+	public ArrayList<String> getPassFlags(Integer ruleNumber) throws Exception {
+		return getRule(ruleNumber).getPassFlags();
 	}
 
 	/**
 	 * Returns the failFlag for a particular rule as set in the rules document.
 	 */
 	@Override
-	public String getFailFlag(Integer ruleNumber) throws Exception {
-		return getRule(ruleNumber).getFailFlag();
+	public ArrayList<String> getFailFlags(Integer ruleNumber) throws Exception {
+		return getRule(ruleNumber).getFailFlags();
 	}
 
 	/**
 	 * Returns the passReason for a particular rule as set in the rules document.
 	 */
 	@Override
-	public String getPassReason(Integer ruleNumber) throws Exception {
-		return getRule(ruleNumber).getPassReason();
+	public ArrayList<String> getPassReasons(Integer ruleNumber) throws Exception {
+		return getRule(ruleNumber).getPassReasons();
 	}
 
 	/**
 	 * Returns the failReason for a particular rule as set in the rules document.
 	 */
 	@Override
-	public String getFailReason(Integer ruleNumber) throws Exception {
-		return getRule(ruleNumber).getFailReason();
+	public ArrayList<String> getFailReasons(Integer ruleNumber) throws Exception {
+		return getRule(ruleNumber).getFailReasons();
 	}
 
 	/**
