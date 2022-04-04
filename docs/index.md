@@ -68,6 +68,7 @@ For optional step 5, load any variables to be used by the rule expressions, APIs
 
 	TreeMap<String, Object> variables = new TreeMap<String, Object>();
 	Double amount = 11.50;
+	variables.put("AMOUNT", amount);
 	ruleEvaluator.setVariables(variables);
 
 ## Call a rule
