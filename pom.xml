@@ -2,7 +2,36 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.synditcorp</groupId>
   <artifactId>ruleengine</artifactId>
+  <packaging>jar</packaging>
   <version>2.1.0</version>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>A rule engine for buisness rule implementation</description>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <licenses>
+	  <license>
+	    <name>MIT License</name>
+	    <url>http://www.opensource.org/licenses/mit-license.php</url>
+	  </license>
+	</licenses>
+	<developers>
+    <developer>
+      <name>Alan Jack</name>
+      <email>alan.jack@synditcorp.com</email>
+      <organization>Syndit Business Solutions, Inc.</organization>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/syndit/com.synditcorp.ruleengine</connection>
+    <url>http://github.com/syndit/com.synditcorp.ruleengine/tree/2.1.0</url>
+   </scm>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -10,12 +39,44 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-           <source>1.8</source>
-          <target>1.8</target>
-          <release>1.8</release>
+           <source>11</source>
+          <target>11</target>
+          <release>11</release>
         </configuration>
       </plugin>
-    </plugins>
+	  <plugin>
+	    <groupId>org.apache.maven.plugins</groupId>
+	    <artifactId>maven-gpg-plugin</artifactId>
+	    <version>1.6</version>
+	    <executions>
+	      <execution>
+	        <id>sign-artifacts</id>
+	        <phase>verify</phase>
+	        <goals>
+	          <goal>sign</goal>
+	        </goals>
+			<configuration>
+				<keyname>${gpg.keyname}</keyname>
+ 				<passphraseServerId>${gpg.keyname}</passphraseServerId>
+			</configuration>
+ 	      </execution>
+	    </executions>
+	  </plugin>
+	 <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-deploy-plugin</artifactId>
+		<version>2.8.2</version>
+		<executions>
+			<execution>
+				<id>default-deploy</id>
+				<phase>deploy</phase>
+				<goals>
+					<goal>deploy</goal>
+				</goals>
+			</execution>
+		</executions>
+	</plugin>
+ 	</plugins>
   </build>
  <dependencies>
   	<dependency>

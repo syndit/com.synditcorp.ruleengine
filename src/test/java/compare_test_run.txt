@@ -1,0 +1,458 @@
+Document: ID TESTXXX, This is a test definition, version 0.0.1, tags: [test, partial]
+403 milliseconds to load rules
+Loop 0***************************************
+86 milleseconds to evaluate rule number 1 expression: amount1 >= 1 && name1.matches('Buggs.*') && ID.matches('.*654.*'), which evaluates to true
+2 milleseconds to evaluate rule number 2 expression: amount2 == 5.00 && passReasons_1.contains('1ReasonP') && phone.matches('.*[.]555[.].*'), which evaluates to true
+89 milleseconds to evaluate rule number 10, which evaluates to true
+0 milleseconds to evaluate rule number 3 expression: amount1 == amount2, which evaluates to false
+1 milleseconds to evaluate rule number 11, which evaluates to true
+90 milleseconds to evaluate rule number 13, which evaluates to true
+1 milleseconds to evaluate rule number 10, which evaluates to true
+2 milleseconds to evaluate rule number 12, which evaluates to true
+1 milleseconds to evaluate rule number 4 expression: compositePassScore_10 == 3 && compositePassScore_13 == 21 && failScore_3 == -3 && compositePassScore_12 == 10, which evaluates to false
+0 milleseconds to evaluate rule number 5 expression: compositePassFlags_10.contains('1FlagP') && compositePassFlags_13.contains('11FlagP') && compositePassFlags_10.contains('2FlagP'), which evaluates to true
+0 milleseconds to evaluate rule number 6 expression: compositePassReasons_10.contains('2ReasonP') && compositePassReasons_13.contains('11ReasonP') && compositePassReasons_10.contains('1ReasonP'), which evaluates to true
+1 milleseconds to evaluate rule number 7 expression: compositePassActions_10.contains('2ActionP') && compositePassActions_13.contains('10ActionP') && compositePassActions_10.contains('2ActionP'), which evaluates to true
+0 milleseconds to evaluate rule number 15, which evaluates to false
+0 milleseconds to evaluate rule number 8 expression: compositeFailScore_15 == -3 && compositeFailFlags_15.contains('3FlagF') && compositeFailReasons_15.contains('3ReasonF') && compositeFailActions_15.contains('3ActionF') , which evaluates to false
+1 milleseconds to evaluate rule number 9 expression: compositePassKeys_10.contains('passKey_1') && compositePassKeys_10.contains('passKey_2'), which evaluates to true
+0 milleseconds to evaluate rule number 16, which evaluates to true
+0 milleseconds to evaluate rule number 16, which evaluates to true
+0 milleseconds to evaluate rule number 16, which evaluates to false
+96 milleseconds to evaluate rule number 14, which evaluates to true
+Verify rules definitions was successful!
+97 milliseconds to process rules
+ID = 987654321
+amount1 = 1.5
+amount2 = 5.0
+compositeFailActions_15 = [3ActionF]
+compositeFailActions_16 = []
+compositeFailFlags_15 = [3FlagF]
+compositeFailFlags_16 = []
+compositeFailKeys_15 = [failKey_3]
+compositeFailKeys_16 = []
+compositeFailReasons_15 = [3ReasonF]
+compositeFailReasons_16 = []
+compositeFailScore_15 = -30.0
+compositeFailScore_16 = -30.0
+compositePassActions_10 = [1ActionP, 2ActionP]
+compositePassActions_11 = [1ActionP, 2ActionP]
+compositePassActions_12 = [10ActionP]
+compositePassActions_13 = [10ActionP, 11ActionP]
+compositePassActions_14 = [13ActionP]
+compositePassActions_16 = [2ActionP]
+compositePassFlags_10 = [1FlagP, 2FlagP]
+compositePassFlags_11 = [1FlagP, 2FlagP]
+compositePassFlags_12 = [10FlagP]
+compositePassFlags_13 = [10FlagP, 11FlagP]
+compositePassFlags_14 = [13FlagP]
+compositePassFlags_16 = [2FlagP]
+compositePassKeys_10 = [passKey_1, passKey_2]
+compositePassKeys_11 = [passKey_1, passKey_2]
+compositePassKeys_12 = [passKey_10]
+compositePassKeys_13 = [passKey_10, passKey_11]
+compositePassKeys_14 = []
+compositePassKeys_16 = [passKey_2]
+compositePassReasons_10 = [1ReasonP, 2ReasonP]
+compositePassReasons_11 = [1ReasonP, 2ReasonP]
+compositePassReasons_12 = [10ReasonP]
+compositePassReasons_13 = [10ReasonP, 11ReasonP]
+compositePassReasons_14 = [13ReasonP]
+compositePassReasons_16 = [2ReasonP]
+compositePassScore_10 = 15.0
+compositePassScore_11 = 15.0
+compositePassScore_12 = 115.0
+compositePassScore_13 = 126.0
+compositePassScore_14 = 13.0
+compositePassScore_16 = 15.0
+failActions_15 = [15ActionF]
+failActions_16 = [16ActionF]
+failActions_3 = [3ActionF]
+failActions_4 = [3ActionF]
+failActions_8 = [3ActionF]
+failFlags_15 = [15FlagF]
+failFlags_16 = [16FlagF]
+failFlags_3 = [3FlagF]
+failFlags_4 = [3FlagF]
+failFlags_8 = [3FlagF]
+failKeys_15 = [failKey_15]
+failKeys_16 = [failKey_16]
+failKeys_3 = [failKey_3]
+failKeys_4 = [failKey_4]
+failKeys_8 = [failKey_8]
+failReasons_15 = [15ReasonF]
+failReasons_16 = [16ReasonF]
+failReasons_3 = [3ReasonF]
+failReasons_4 = [3ReasonF]
+failReasons_8 = [3ReasonF]
+failScore_15 = -15.0
+failScore_16 = -12.0
+failScore_3 = -30.0
+failScore_4 = -3.0
+failScore_8 = -3.0
+name1 = Buggs Bunny
+passActions_1 = [1ActionP]
+passActions_10 = [10ActionP]
+passActions_11 = [11ActionP]
+passActions_12 = [12ActionP]
+passActions_13 = [13ActionP]
+passActions_14 = [14ActionP]
+passActions_16 = [16ActionP]
+passActions_2 = [2ActionP]
+passActions_5 = [3ActionP]
+passActions_6 = [3ActionP]
+passActions_7 = [3ActionP]
+passActions_9 = [9ActionP]
+passFlags_1 = [1FlagP]
+passFlags_10 = [10FlagP]
+passFlags_11 = [11FlagP]
+passFlags_12 = [12FlagP]
+passFlags_13 = [13FlagP]
+passFlags_14 = [14FlagP]
+passFlags_16 = [16FlagP]
+passFlags_2 = [2FlagP]
+passFlags_5 = [3FlagP]
+passFlags_6 = [3FlagP]
+passFlags_7 = [3FlagP]
+passFlags_9 = [9FlagP]
+passKeys_1 = [passKey_1]
+passKeys_10 = [passKey_10]
+passKeys_11 = [passKey_11]
+passKeys_12 = [passKey_12]
+passKeys_13 = [passKey_13]
+passKeys_14 = [passKey_14]
+passKeys_16 = [passKey_16]
+passKeys_2 = [passKey_2]
+passKeys_5 = [passKey_5]
+passKeys_6 = [passKey_6]
+passKeys_7 = [passKey_7]
+passKeys_9 = [passKey_9]
+passReasons_1 = [1ReasonP]
+passReasons_10 = [10ReasonP]
+passReasons_11 = [11ReasonP]
+passReasons_12 = [12ReasonP]
+passReasons_13 = [13ReasonP]
+passReasons_14 = [14ReasonP]
+passReasons_16 = [16ReasonP]
+passReasons_2 = [2ReasonP]
+passReasons_5 = [3ReasonP]
+passReasons_6 = [3ReasonP]
+passReasons_7 = [3ReasonP]
+passReasons_9 = [9ReasonP]
+passScore_1 = 1.0
+passScore_10 = 115.0
+passScore_11 = 11.0
+passScore_12 = 12.0
+passScore_13 = 13.0
+passScore_14 = 14.0
+passScore_16 = 12.0
+passScore_2 = 14.0
+passScore_5 = 3.0
+passScore_6 = 3.0
+passScore_7 = 3.0
+passScore_9 = 3.0
+phone = 724.555.1027
+Loop 1***************************************
+0 milleseconds to evaluate rule number 1 expression: amount1 >= 1 && name1.matches('Buggs.*') && ID.matches('.*654.*'), which evaluates to true
+0 milleseconds to evaluate rule number 2 expression: amount2 == 5.00 && passReasons_1.contains('1ReasonP') && phone.matches('.*[.]555[.].*'), which evaluates to true
+1 milleseconds to evaluate rule number 10, which evaluates to true
+0 milleseconds to evaluate rule number 3 expression: amount1 == amount2, which evaluates to false
+0 milleseconds to evaluate rule number 11, which evaluates to true
+1 milleseconds to evaluate rule number 13, which evaluates to true
+1 milleseconds to evaluate rule number 10, which evaluates to true
+1 milleseconds to evaluate rule number 12, which evaluates to true
+0 milleseconds to evaluate rule number 4 expression: compositePassScore_10 == 3 && compositePassScore_13 == 21 && failScore_3 == -3 && compositePassScore_12 == 10, which evaluates to false
+1 milleseconds to evaluate rule number 5 expression: compositePassFlags_10.contains('1FlagP') && compositePassFlags_13.contains('11FlagP') && compositePassFlags_10.contains('2FlagP'), which evaluates to true
+0 milleseconds to evaluate rule number 6 expression: compositePassReasons_10.contains('2ReasonP') && compositePassReasons_13.contains('11ReasonP') && compositePassReasons_10.contains('1ReasonP'), which evaluates to true
+0 milleseconds to evaluate rule number 7 expression: compositePassActions_10.contains('2ActionP') && compositePassActions_13.contains('10ActionP') && compositePassActions_10.contains('2ActionP'), which evaluates to true
+0 milleseconds to evaluate rule number 15, which evaluates to false
+2 milleseconds to evaluate rule number 8 expression: compositeFailScore_15 == -3 && compositeFailFlags_15.contains('3FlagF') && compositeFailReasons_15.contains('3ReasonF') && compositeFailActions_15.contains('3ActionF') , which evaluates to false
+0 milleseconds to evaluate rule number 9 expression: compositePassKeys_10.contains('passKey_1') && compositePassKeys_10.contains('passKey_2'), which evaluates to true
+0 milleseconds to evaluate rule number 16, which evaluates to true
+0 milleseconds to evaluate rule number 16, which evaluates to true
+1 milleseconds to evaluate rule number 16, which evaluates to false
+6 milleseconds to evaluate rule number 14, which evaluates to true
+Verify rules definitions was successful!
+6 milliseconds to process rules
+ID = 987654321
+amount1 = 1.5
+amount2 = 5.0
+compositeFailActions_15 = [3ActionF]
+compositeFailActions_16 = []
+compositeFailFlags_15 = [3FlagF]
+compositeFailFlags_16 = []
+compositeFailKeys_15 = [failKey_3]
+compositeFailKeys_16 = []
+compositeFailReasons_15 = [3ReasonF]
+compositeFailReasons_16 = []
+compositeFailScore_15 = -30.0
+compositeFailScore_16 = -30.0
+compositePassActions_10 = [1ActionP, 2ActionP]
+compositePassActions_11 = [1ActionP, 2ActionP]
+compositePassActions_12 = [10ActionP]
+compositePassActions_13 = [10ActionP, 11ActionP]
+compositePassActions_14 = [13ActionP]
+compositePassActions_16 = [2ActionP]
+compositePassFlags_10 = [1FlagP, 2FlagP]
+compositePassFlags_11 = [1FlagP, 2FlagP]
+compositePassFlags_12 = [10FlagP]
+compositePassFlags_13 = [10FlagP, 11FlagP]
+compositePassFlags_14 = [13FlagP]
+compositePassFlags_16 = [2FlagP]
+compositePassKeys_10 = [passKey_1, passKey_2]
+compositePassKeys_11 = [passKey_1, passKey_2]
+compositePassKeys_12 = [passKey_10]
+compositePassKeys_13 = [passKey_10, passKey_11]
+compositePassKeys_14 = []
+compositePassKeys_16 = [passKey_2]
+compositePassReasons_10 = [1ReasonP, 2ReasonP]
+compositePassReasons_11 = [1ReasonP, 2ReasonP]
+compositePassReasons_12 = [10ReasonP]
+compositePassReasons_13 = [10ReasonP, 11ReasonP]
+compositePassReasons_14 = [13ReasonP]
+compositePassReasons_16 = [2ReasonP]
+compositePassScore_10 = 15.0
+compositePassScore_11 = 15.0
+compositePassScore_12 = 115.0
+compositePassScore_13 = 126.0
+compositePassScore_14 = 13.0
+compositePassScore_16 = 15.0
+failActions_15 = [15ActionF]
+failActions_16 = [16ActionF]
+failActions_3 = [3ActionF]
+failActions_4 = [3ActionF]
+failActions_8 = [3ActionF]
+failFlags_15 = [15FlagF]
+failFlags_16 = [16FlagF]
+failFlags_3 = [3FlagF]
+failFlags_4 = [3FlagF]
+failFlags_8 = [3FlagF]
+failKeys_15 = [failKey_15]
+failKeys_16 = [failKey_16]
+failKeys_3 = [failKey_3]
+failKeys_4 = [failKey_4]
+failKeys_8 = [failKey_8]
+failReasons_15 = [15ReasonF]
+failReasons_16 = [16ReasonF]
+failReasons_3 = [3ReasonF]
+failReasons_4 = [3ReasonF]
+failReasons_8 = [3ReasonF]
+failScore_15 = -15.0
+failScore_16 = -12.0
+failScore_3 = -30.0
+failScore_4 = -3.0
+failScore_8 = -3.0
+name1 = Buggs Bunny
+passActions_1 = [1ActionP]
+passActions_10 = [10ActionP]
+passActions_11 = [11ActionP]
+passActions_12 = [12ActionP]
+passActions_13 = [13ActionP]
+passActions_14 = [14ActionP]
+passActions_16 = [16ActionP]
+passActions_2 = [2ActionP]
+passActions_5 = [3ActionP]
+passActions_6 = [3ActionP]
+passActions_7 = [3ActionP]
+passActions_9 = [9ActionP]
+passFlags_1 = [1FlagP]
+passFlags_10 = [10FlagP]
+passFlags_11 = [11FlagP]
+passFlags_12 = [12FlagP]
+passFlags_13 = [13FlagP]
+passFlags_14 = [14FlagP]
+passFlags_16 = [16FlagP]
+passFlags_2 = [2FlagP]
+passFlags_5 = [3FlagP]
+passFlags_6 = [3FlagP]
+passFlags_7 = [3FlagP]
+passFlags_9 = [9FlagP]
+passKeys_1 = [passKey_1]
+passKeys_10 = [passKey_10]
+passKeys_11 = [passKey_11]
+passKeys_12 = [passKey_12]
+passKeys_13 = [passKey_13]
+passKeys_14 = [passKey_14]
+passKeys_16 = [passKey_16]
+passKeys_2 = [passKey_2]
+passKeys_5 = [passKey_5]
+passKeys_6 = [passKey_6]
+passKeys_7 = [passKey_7]
+passKeys_9 = [passKey_9]
+passReasons_1 = [1ReasonP]
+passReasons_10 = [10ReasonP]
+passReasons_11 = [11ReasonP]
+passReasons_12 = [12ReasonP]
+passReasons_13 = [13ReasonP]
+passReasons_14 = [14ReasonP]
+passReasons_16 = [16ReasonP]
+passReasons_2 = [2ReasonP]
+passReasons_5 = [3ReasonP]
+passReasons_6 = [3ReasonP]
+passReasons_7 = [3ReasonP]
+passReasons_9 = [9ReasonP]
+passScore_1 = 1.0
+passScore_10 = 115.0
+passScore_11 = 11.0
+passScore_12 = 12.0
+passScore_13 = 13.0
+passScore_14 = 14.0
+passScore_16 = 12.0
+passScore_2 = 14.0
+passScore_5 = 3.0
+passScore_6 = 3.0
+passScore_7 = 3.0
+passScore_9 = 3.0
+phone = 724.555.1027
+Loop 2***************************************
+1 milleseconds to evaluate rule number 1 expression: amount1 >= 1 && name1.matches('Buggs.*') && ID.matches('.*654.*'), which evaluates to true
+0 milleseconds to evaluate rule number 2 expression: amount2 == 5.00 && passReasons_1.contains('1ReasonP') && phone.matches('.*[.]555[.].*'), which evaluates to true
+1 milleseconds to evaluate rule number 10, which evaluates to true
+0 milleseconds to evaluate rule number 3 expression: amount1 == amount2, which evaluates to false
+1 milleseconds to evaluate rule number 11, which evaluates to true
+2 milleseconds to evaluate rule number 13, which evaluates to true
+0 milleseconds to evaluate rule number 10, which evaluates to true
+0 milleseconds to evaluate rule number 12, which evaluates to true
+0 milleseconds to evaluate rule number 4 expression: compositePassScore_10 == 3 && compositePassScore_13 == 21 && failScore_3 == -3 && compositePassScore_12 == 10, which evaluates to false
+1 milleseconds to evaluate rule number 5 expression: compositePassFlags_10.contains('1FlagP') && compositePassFlags_13.contains('11FlagP') && compositePassFlags_10.contains('2FlagP'), which evaluates to true
+0 milleseconds to evaluate rule number 6 expression: compositePassReasons_10.contains('2ReasonP') && compositePassReasons_13.contains('11ReasonP') && compositePassReasons_10.contains('1ReasonP'), which evaluates to true
+0 milleseconds to evaluate rule number 7 expression: compositePassActions_10.contains('2ActionP') && compositePassActions_13.contains('10ActionP') && compositePassActions_10.contains('2ActionP'), which evaluates to true
+0 milleseconds to evaluate rule number 15, which evaluates to false
+0 milleseconds to evaluate rule number 8 expression: compositeFailScore_15 == -3 && compositeFailFlags_15.contains('3FlagF') && compositeFailReasons_15.contains('3ReasonF') && compositeFailActions_15.contains('3ActionF') , which evaluates to false
+1 milleseconds to evaluate rule number 9 expression: compositePassKeys_10.contains('passKey_1') && compositePassKeys_10.contains('passKey_2'), which evaluates to true
+0 milleseconds to evaluate rule number 16, which evaluates to true
+0 milleseconds to evaluate rule number 16, which evaluates to true
+0 milleseconds to evaluate rule number 16, which evaluates to false
+4 milleseconds to evaluate rule number 14, which evaluates to true
+Verify rules definitions was successful!
+4 milliseconds to process rules
+ID = 987654321
+amount1 = 1.5
+amount2 = 5.0
+compositeFailActions_15 = [3ActionF]
+compositeFailActions_16 = []
+compositeFailFlags_15 = [3FlagF]
+compositeFailFlags_16 = []
+compositeFailKeys_15 = [failKey_3]
+compositeFailKeys_16 = []
+compositeFailReasons_15 = [3ReasonF]
+compositeFailReasons_16 = []
+compositeFailScore_15 = -30.0
+compositeFailScore_16 = -30.0
+compositePassActions_10 = [1ActionP, 2ActionP]
+compositePassActions_11 = [1ActionP, 2ActionP]
+compositePassActions_12 = [10ActionP]
+compositePassActions_13 = [10ActionP, 11ActionP]
+compositePassActions_14 = [13ActionP]
+compositePassActions_16 = [2ActionP]
+compositePassFlags_10 = [1FlagP, 2FlagP]
+compositePassFlags_11 = [1FlagP, 2FlagP]
+compositePassFlags_12 = [10FlagP]
+compositePassFlags_13 = [10FlagP, 11FlagP]
+compositePassFlags_14 = [13FlagP]
+compositePassFlags_16 = [2FlagP]
+compositePassKeys_10 = [passKey_1, passKey_2]
+compositePassKeys_11 = [passKey_1, passKey_2]
+compositePassKeys_12 = [passKey_10]
+compositePassKeys_13 = [passKey_10, passKey_11]
+compositePassKeys_14 = []
+compositePassKeys_16 = [passKey_2]
+compositePassReasons_10 = [1ReasonP, 2ReasonP]
+compositePassReasons_11 = [1ReasonP, 2ReasonP]
+compositePassReasons_12 = [10ReasonP]
+compositePassReasons_13 = [10ReasonP, 11ReasonP]
+compositePassReasons_14 = [13ReasonP]
+compositePassReasons_16 = [2ReasonP]
+compositePassScore_10 = 15.0
+compositePassScore_11 = 15.0
+compositePassScore_12 = 115.0
+compositePassScore_13 = 126.0
+compositePassScore_14 = 13.0
+compositePassScore_16 = 15.0
+failActions_15 = [15ActionF]
+failActions_16 = [16ActionF]
+failActions_3 = [3ActionF]
+failActions_4 = [3ActionF]
+failActions_8 = [3ActionF]
+failFlags_15 = [15FlagF]
+failFlags_16 = [16FlagF]
+failFlags_3 = [3FlagF]
+failFlags_4 = [3FlagF]
+failFlags_8 = [3FlagF]
+failKeys_15 = [failKey_15]
+failKeys_16 = [failKey_16]
+failKeys_3 = [failKey_3]
+failKeys_4 = [failKey_4]
+failKeys_8 = [failKey_8]
+failReasons_15 = [15ReasonF]
+failReasons_16 = [16ReasonF]
+failReasons_3 = [3ReasonF]
+failReasons_4 = [3ReasonF]
+failReasons_8 = [3ReasonF]
+failScore_15 = -15.0
+failScore_16 = -12.0
+failScore_3 = -30.0
+failScore_4 = -3.0
+failScore_8 = -3.0
+name1 = Buggs Bunny
+passActions_1 = [1ActionP]
+passActions_10 = [10ActionP]
+passActions_11 = [11ActionP]
+passActions_12 = [12ActionP]
+passActions_13 = [13ActionP]
+passActions_14 = [14ActionP]
+passActions_16 = [16ActionP]
+passActions_2 = [2ActionP]
+passActions_5 = [3ActionP]
+passActions_6 = [3ActionP]
+passActions_7 = [3ActionP]
+passActions_9 = [9ActionP]
+passFlags_1 = [1FlagP]
+passFlags_10 = [10FlagP]
+passFlags_11 = [11FlagP]
+passFlags_12 = [12FlagP]
+passFlags_13 = [13FlagP]
+passFlags_14 = [14FlagP]
+passFlags_16 = [16FlagP]
+passFlags_2 = [2FlagP]
+passFlags_5 = [3FlagP]
+passFlags_6 = [3FlagP]
+passFlags_7 = [3FlagP]
+passFlags_9 = [9FlagP]
+passKeys_1 = [passKey_1]
+passKeys_10 = [passKey_10]
+passKeys_11 = [passKey_11]
+passKeys_12 = [passKey_12]
+passKeys_13 = [passKey_13]
+passKeys_14 = [passKey_14]
+passKeys_16 = [passKey_16]
+passKeys_2 = [passKey_2]
+passKeys_5 = [passKey_5]
+passKeys_6 = [passKey_6]
+passKeys_7 = [passKey_7]
+passKeys_9 = [passKey_9]
+passReasons_1 = [1ReasonP]
+passReasons_10 = [10ReasonP]
+passReasons_11 = [11ReasonP]
+passReasons_12 = [12ReasonP]
+passReasons_13 = [13ReasonP]
+passReasons_14 = [14ReasonP]
+passReasons_16 = [16ReasonP]
+passReasons_2 = [2ReasonP]
+passReasons_5 = [3ReasonP]
+passReasons_6 = [3ReasonP]
+passReasons_7 = [3ReasonP]
+passReasons_9 = [9ReasonP]
+passScore_1 = 1.0
+passScore_10 = 115.0
+passScore_11 = 11.0
+passScore_12 = 12.0
+passScore_13 = 13.0
+passScore_14 = 14.0
+passScore_16 = 12.0
+passScore_2 = 14.0
+passScore_5 = 3.0
+passScore_6 = 3.0
+passScore_7 = 3.0
+passScore_9 = 3.0
+phone = 724.555.1027
