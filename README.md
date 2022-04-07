@@ -16,7 +16,7 @@ The Syndit Rule Engine is a light-weight, simple rule engine that can be used to
 # Features
 
 1. Simple, document based.  The definition document has the intelligence, not the Java code.  
-1. The definition documents are self-contained, making it easy to store a complete set of rules for a give purpose.
+1. The definition documents are self-contained, making it easy to store a complete set of rules for a given purpose.
 1. The Engine's footprint is quite small, allowing as many instances as needed.
 1. Reusable rules (configure one rule to be used by other rules).
 1. Caches runtime rule results so reusable rules only needs to be executed once.
@@ -24,7 +24,7 @@ The Syndit Rule Engine is a light-weight, simple rule engine that can be used to
     1. MVEL expressions.
     1. Optional custom Java classes.
     1. Optional APIs.
-1. Sets and captures rule evaluation values that can be used in expressions and/or called externally for other needs:  
+1. Sets rule evaluation values that can be used in expressions and/or called externally for other needs:  
     1. Keys, intended for i18n keys.
     1. Scores, for such things as tree scoring
     1. Flags
@@ -71,7 +71,7 @@ In step 4, inject the definitions and the logger into the evaluator.
 
 ## Variables
 
-For optional step 5, load any variables to be used by the rule expressions, APIs handlers, or Java handlers.
+For optional step 5, load any variables to be used by the rule expressions, API handlers, or Java handlers.
 
 	TreeMap<String, Object> variables = new TreeMap<String, Object>();
 	Double amount = 11.50;
@@ -134,7 +134,7 @@ The optional "description" field holds a meaningful description for the rule.
 
 The optional "ruleTags" field is a String array useful in further describing a rule.  The ruleTags values are not used to evaluate rules at runtime.  They are intended for such things as authorization in databases or display control in custom document definition editors. 
 
-There are currently 10 other optional rule fields that can be used to store values associated with either a passing rule, or a failing rule.  These values can be accessed at runtime for whatever is needed.  For example, if a rule fails and the fail message needs to be presented in the UI, retrieve the rule's unique failKey field values, which are intended to hold an i18n keys (but really can hold values for whatever scheme is being used).  Note that field values are only available if the rule has been evaluated at runtime. The 10 fields are: 
+There are currently 10 other optional rule fields that can be used to store values associated with either a passing rule, or a failing rule.  These values can be accessed at runtime for whatever is needed.  For example, if a rule fails and the fail message needs to be presented in the UI, retrieve the rule's unique failKey field values, which are intended to hold i18n keys (but really can hold values for whatever scheme is being used).  Note that field values are only available if the rule has been evaluated at runtime. The 10 fields are: 
 
  1. passKeys - ArrayList<String>, intended to hold i18n keys
  1. failKeys - ArrayList<String> , intended to hold i18n keys
@@ -378,7 +378,7 @@ The Syndit Rule Engine code is intended to be very simple, with the JSON definit
 
 The Syndit Rule Engine is very flexible.  Because at runtime any rule can be called directly, you can put all your company's rules into one document.  Or, you can organize you rules into multiple documents for use in multiple instances.  Even if you have a decision tree within a document, nothing is stopping you from having other trees or other stand alone rules in the same document. 
 
-Rules can be organized into a common rule document and then use-specific rule documents.  A instance of the Engine with common rules can be injected into the use-specific instance by adding the common instance into the variables map object.  Then, a simple handler that implements RuleClassHandler can be written and used to refer to the common instance from the variables map.  Keep in mind the rule numbers must be unique across the common and use-specific documents.
+Rules can be organized into a common rule document and then use-specific rule documents.  An instance of the Engine with common rules can be injected into the use-specific instance by adding the common instance into the variables map object.  Then, a simple handler that implements RuleClassHandler can be written and used to refer to the common instance from the variables map.  Keep in mind the rule numbers must be unique across the common and use-specific documents.
 
 ## Expressions
 
