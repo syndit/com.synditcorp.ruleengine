@@ -80,10 +80,10 @@ For optional step 5, load any variables to be used by the rule expressions, APIs
 
 ## Call a rule
 
-Then, call a rule and use the Boolean value make a decision in the calling code.
+Then, call a rule and use the boolean value make a decision in the calling code.
 
 	Integer ruleNumber = 17;
-	Boolean result = ruleEvaluator.evaluateRule(ruleNumber);
+	boolean result = ruleEvaluator.evaluateRule(ruleNumber);
 	if(result) doThis();
 	else doThat();
 
