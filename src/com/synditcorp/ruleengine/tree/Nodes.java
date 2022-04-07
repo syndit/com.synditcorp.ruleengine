@@ -27,6 +27,8 @@ public class Nodes {
 	/**
 	 * Put paths to array list for injecting into rule engine with program 
 	 * rootNode is the first Node object in a tree
+	 * @param rootNode is the first node object in a tree
+	 * @return return a list of node numbers
 	 */
 	public static ArrayList<ArrayList<Integer>> getPaths(Node rootNode) {
 		

@@ -32,7 +32,7 @@ public class MinimalLogger implements Logger {
 	public static final int ERROR = 4;
 
 	/**
-	 * @param for logLevel, use one of the MinimalLogger constants
+	 * @param logLevel is one of the MinimalLogger constants
 	 */
 	public MinimalLogger(int logLevel) {
 		

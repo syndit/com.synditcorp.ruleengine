@@ -1,27 +1,27 @@
 Document: ID TESTXXX, This is a test definition, version 0.0.1, tags: [test, partial]
-403 milliseconds to load rules
+405 milliseconds to load rules
 Loop 0***************************************
-86 milleseconds to evaluate rule number 1 expression: amount1 >= 1 && name1.matches('Buggs.*') && ID.matches('.*654.*'), which evaluates to true
+122 milleseconds to evaluate rule number 1 expression: amount1 >= 1 && name1.matches('Buggs.*') && ID.matches('.*654.*'), which evaluates to true
 2 milleseconds to evaluate rule number 2 expression: amount2 == 5.00 && passReasons_1.contains('1ReasonP') && phone.matches('.*[.]555[.].*'), which evaluates to true
-89 milleseconds to evaluate rule number 10, which evaluates to true
-0 milleseconds to evaluate rule number 3 expression: amount1 == amount2, which evaluates to false
+125 milleseconds to evaluate rule number 10, which evaluates to true
+1 milleseconds to evaluate rule number 3 expression: amount1 == amount2, which evaluates to false
 1 milleseconds to evaluate rule number 11, which evaluates to true
-90 milleseconds to evaluate rule number 13, which evaluates to true
-1 milleseconds to evaluate rule number 10, which evaluates to true
-2 milleseconds to evaluate rule number 12, which evaluates to true
+126 milleseconds to evaluate rule number 13, which evaluates to true
+0 milleseconds to evaluate rule number 10, which evaluates to true
+0 milleseconds to evaluate rule number 12, which evaluates to true
 1 milleseconds to evaluate rule number 4 expression: compositePassScore_10 == 3 && compositePassScore_13 == 21 && failScore_3 == -3 && compositePassScore_12 == 10, which evaluates to false
 0 milleseconds to evaluate rule number 5 expression: compositePassFlags_10.contains('1FlagP') && compositePassFlags_13.contains('11FlagP') && compositePassFlags_10.contains('2FlagP'), which evaluates to true
-0 milleseconds to evaluate rule number 6 expression: compositePassReasons_10.contains('2ReasonP') && compositePassReasons_13.contains('11ReasonP') && compositePassReasons_10.contains('1ReasonP'), which evaluates to true
-1 milleseconds to evaluate rule number 7 expression: compositePassActions_10.contains('2ActionP') && compositePassActions_13.contains('10ActionP') && compositePassActions_10.contains('2ActionP'), which evaluates to true
+1 milleseconds to evaluate rule number 6 expression: compositePassReasons_10.contains('2ReasonP') && compositePassReasons_13.contains('11ReasonP') && compositePassReasons_10.contains('1ReasonP'), which evaluates to true
+0 milleseconds to evaluate rule number 7 expression: compositePassActions_10.contains('2ActionP') && compositePassActions_13.contains('10ActionP') && compositePassActions_10.contains('2ActionP'), which evaluates to true
 0 milleseconds to evaluate rule number 15, which evaluates to false
 0 milleseconds to evaluate rule number 8 expression: compositeFailScore_15 == -3 && compositeFailFlags_15.contains('3FlagF') && compositeFailReasons_15.contains('3ReasonF') && compositeFailActions_15.contains('3ActionF') , which evaluates to false
-1 milleseconds to evaluate rule number 9 expression: compositePassKeys_10.contains('passKey_1') && compositePassKeys_10.contains('passKey_2'), which evaluates to true
-0 milleseconds to evaluate rule number 16, which evaluates to true
-0 milleseconds to evaluate rule number 16, which evaluates to true
-0 milleseconds to evaluate rule number 16, which evaluates to false
-96 milleseconds to evaluate rule number 14, which evaluates to true
+0 milleseconds to evaluate rule number 9 expression: compositePassKeys_10.contains('passKey_1') && compositePassKeys_10.contains('passKey_2'), which evaluates to true
+1 milleseconds to evaluate rule number 16, which evaluates to true
+1 milleseconds to evaluate rule number 16, which evaluates to true
+1 milleseconds to evaluate rule number 16, which evaluates to false
+132 milleseconds to evaluate rule number 14, which evaluates to true
 Verify rules definitions was successful!
-97 milliseconds to process rules
+132 milliseconds to process rules
 ID = 987654321
 amount1 = 1.5
 amount2 = 5.0
@@ -153,23 +153,23 @@ passScore_7 = 3.0
 passScore_9 = 3.0
 phone = 724.555.1027
 Loop 1***************************************
-0 milleseconds to evaluate rule number 1 expression: amount1 >= 1 && name1.matches('Buggs.*') && ID.matches('.*654.*'), which evaluates to true
+1 milleseconds to evaluate rule number 1 expression: amount1 >= 1 && name1.matches('Buggs.*') && ID.matches('.*654.*'), which evaluates to true
 0 milleseconds to evaluate rule number 2 expression: amount2 == 5.00 && passReasons_1.contains('1ReasonP') && phone.matches('.*[.]555[.].*'), which evaluates to true
 1 milleseconds to evaluate rule number 10, which evaluates to true
 0 milleseconds to evaluate rule number 3 expression: amount1 == amount2, which evaluates to false
-0 milleseconds to evaluate rule number 11, which evaluates to true
-1 milleseconds to evaluate rule number 13, which evaluates to true
-1 milleseconds to evaluate rule number 10, which evaluates to true
-1 milleseconds to evaluate rule number 12, which evaluates to true
+1 milleseconds to evaluate rule number 11, which evaluates to true
+2 milleseconds to evaluate rule number 13, which evaluates to true
+0 milleseconds to evaluate rule number 10, which evaluates to true
+0 milleseconds to evaluate rule number 12, which evaluates to true
 0 milleseconds to evaluate rule number 4 expression: compositePassScore_10 == 3 && compositePassScore_13 == 21 && failScore_3 == -3 && compositePassScore_12 == 10, which evaluates to false
 1 milleseconds to evaluate rule number 5 expression: compositePassFlags_10.contains('1FlagP') && compositePassFlags_13.contains('11FlagP') && compositePassFlags_10.contains('2FlagP'), which evaluates to true
 0 milleseconds to evaluate rule number 6 expression: compositePassReasons_10.contains('2ReasonP') && compositePassReasons_13.contains('11ReasonP') && compositePassReasons_10.contains('1ReasonP'), which evaluates to true
-0 milleseconds to evaluate rule number 7 expression: compositePassActions_10.contains('2ActionP') && compositePassActions_13.contains('10ActionP') && compositePassActions_10.contains('2ActionP'), which evaluates to true
+1 milleseconds to evaluate rule number 7 expression: compositePassActions_10.contains('2ActionP') && compositePassActions_13.contains('10ActionP') && compositePassActions_10.contains('2ActionP'), which evaluates to true
 0 milleseconds to evaluate rule number 15, which evaluates to false
-2 milleseconds to evaluate rule number 8 expression: compositeFailScore_15 == -3 && compositeFailFlags_15.contains('3FlagF') && compositeFailReasons_15.contains('3ReasonF') && compositeFailActions_15.contains('3ActionF') , which evaluates to false
+1 milleseconds to evaluate rule number 8 expression: compositeFailScore_15 == -3 && compositeFailFlags_15.contains('3FlagF') && compositeFailReasons_15.contains('3ReasonF') && compositeFailActions_15.contains('3ActionF') , which evaluates to false
 0 milleseconds to evaluate rule number 9 expression: compositePassKeys_10.contains('passKey_1') && compositePassKeys_10.contains('passKey_2'), which evaluates to true
-0 milleseconds to evaluate rule number 16, which evaluates to true
-0 milleseconds to evaluate rule number 16, which evaluates to true
+1 milleseconds to evaluate rule number 16, which evaluates to true
+1 milleseconds to evaluate rule number 16, which evaluates to true
 1 milleseconds to evaluate rule number 16, which evaluates to false
 6 milleseconds to evaluate rule number 14, which evaluates to true
 Verify rules definitions was successful!
@@ -305,24 +305,24 @@ passScore_7 = 3.0
 passScore_9 = 3.0
 phone = 724.555.1027
 Loop 2***************************************
-1 milleseconds to evaluate rule number 1 expression: amount1 >= 1 && name1.matches('Buggs.*') && ID.matches('.*654.*'), which evaluates to true
+0 milleseconds to evaluate rule number 1 expression: amount1 >= 1 && name1.matches('Buggs.*') && ID.matches('.*654.*'), which evaluates to true
 0 milleseconds to evaluate rule number 2 expression: amount2 == 5.00 && passReasons_1.contains('1ReasonP') && phone.matches('.*[.]555[.].*'), which evaluates to true
-1 milleseconds to evaluate rule number 10, which evaluates to true
-0 milleseconds to evaluate rule number 3 expression: amount1 == amount2, which evaluates to false
-1 milleseconds to evaluate rule number 11, which evaluates to true
-2 milleseconds to evaluate rule number 13, which evaluates to true
 0 milleseconds to evaluate rule number 10, which evaluates to true
-0 milleseconds to evaluate rule number 12, which evaluates to true
+0 milleseconds to evaluate rule number 3 expression: amount1 == amount2, which evaluates to false
+0 milleseconds to evaluate rule number 11, which evaluates to true
+1 milleseconds to evaluate rule number 13, which evaluates to true
+0 milleseconds to evaluate rule number 10, which evaluates to true
+1 milleseconds to evaluate rule number 12, which evaluates to true
 0 milleseconds to evaluate rule number 4 expression: compositePassScore_10 == 3 && compositePassScore_13 == 21 && failScore_3 == -3 && compositePassScore_12 == 10, which evaluates to false
-1 milleseconds to evaluate rule number 5 expression: compositePassFlags_10.contains('1FlagP') && compositePassFlags_13.contains('11FlagP') && compositePassFlags_10.contains('2FlagP'), which evaluates to true
-0 milleseconds to evaluate rule number 6 expression: compositePassReasons_10.contains('2ReasonP') && compositePassReasons_13.contains('11ReasonP') && compositePassReasons_10.contains('1ReasonP'), which evaluates to true
+0 milleseconds to evaluate rule number 5 expression: compositePassFlags_10.contains('1FlagP') && compositePassFlags_13.contains('11FlagP') && compositePassFlags_10.contains('2FlagP'), which evaluates to true
+1 milleseconds to evaluate rule number 6 expression: compositePassReasons_10.contains('2ReasonP') && compositePassReasons_13.contains('11ReasonP') && compositePassReasons_10.contains('1ReasonP'), which evaluates to true
 0 milleseconds to evaluate rule number 7 expression: compositePassActions_10.contains('2ActionP') && compositePassActions_13.contains('10ActionP') && compositePassActions_10.contains('2ActionP'), which evaluates to true
 0 milleseconds to evaluate rule number 15, which evaluates to false
 0 milleseconds to evaluate rule number 8 expression: compositeFailScore_15 == -3 && compositeFailFlags_15.contains('3FlagF') && compositeFailReasons_15.contains('3ReasonF') && compositeFailActions_15.contains('3ActionF') , which evaluates to false
-1 milleseconds to evaluate rule number 9 expression: compositePassKeys_10.contains('passKey_1') && compositePassKeys_10.contains('passKey_2'), which evaluates to true
+0 milleseconds to evaluate rule number 9 expression: compositePassKeys_10.contains('passKey_1') && compositePassKeys_10.contains('passKey_2'), which evaluates to true
 0 milleseconds to evaluate rule number 16, which evaluates to true
-0 milleseconds to evaluate rule number 16, which evaluates to true
-0 milleseconds to evaluate rule number 16, which evaluates to false
+1 milleseconds to evaluate rule number 16, which evaluates to true
+1 milleseconds to evaluate rule number 16, which evaluates to false
 4 milleseconds to evaluate rule number 14, which evaluates to true
 Verify rules definitions was successful!
 4 milliseconds to process rules

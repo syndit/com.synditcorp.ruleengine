@@ -24,7 +24,7 @@ public class CalcRuleProcessor {
 	 * @param ruleExpression is the expression to evaluate
 	 * @param variables contains the variables needed by the expression
 	 * @return a boolean is returned based on the evaluation of the expression
-	 * @throws Exception
+	 * @throws Exception when any exception occurs
 	 */
 	public static Boolean processCalcRule(String ruleClassHandler, String ruleExpression, TreeMap<String, Object> variables) throws Exception {
 		
