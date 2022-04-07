@@ -5,7 +5,7 @@
   <packaging>jar</packaging>
   <version>2.1.0</version>
   <name>${project.groupId}:${project.artifactId}</name>
-  <description>A rule engine for buisness rule implementation</description>
+  <description>A rule engine for business rule implementations.</description>
   <url>https://github.com/syndit/com.synditcorp.ruleengine/tree/2.1.0</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

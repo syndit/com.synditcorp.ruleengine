@@ -1,3 +1,8 @@
+# Syndit Rule Engine
+
+The Syndit Rule Engine is a light-weight, simple rule engine that can be used to implement complex business rules using documents rather than code.
+
+
 - [Features](#features)
 - [Using](#using)
 - [Application structure](#application-structure)
@@ -7,10 +12,12 @@
 - [Usage tips](#usage-tips)
 - [License](#license)
 
+
 # Features
 
 1. Simple, document based.  The definition document has the intelligence, not the Java code.  
 1. The definition documents are self-contained, making it easy to store a complete set of rules for a give purpose.
+1. The Engine's footprint is quite small, allowing as many instances as needed.
 1. Reusable rules (configure one rule to be used by other rules).
 1. Caches runtime rule results so reusable rules only needs to be executed once.
 1. Evaluate rules with:
@@ -369,7 +376,9 @@ The Syndit Rule Engine code is intended to be very simple, with the JSON definit
 
 ## Document structure
 
-The Rule Engine is very flexible.  Because at runtime any rule can be called directly, you can put all your company's rules into one document.  Or, you can organize you rules into multiple documents.  Even if you have a decision tree within a document, nothing is stopping you from having other trees or other stand alone rules in the same document.  
+The Syndit Rule Engine is very flexible.  Because at runtime any rule can be called directly, you can put all your company's rules into one document.  Or, you can organize you rules into multiple documents for use in multiple instances.  Even if you have a decision tree within a document, nothing is stopping you from having other trees or other stand alone rules in the same document. 
+
+Rules can be organized into a common rule document and then use-specific rule documents.  A instance of the Engine with common rules can be injected into the use-specific instance by adding the common instance into the variables map object.  Then, a simple handler that implements RuleClassHandler can be written and used to refer to the common instance from the variables map.  Keep in mind the rule numbers must be unique across the common and use-specific documents.
 
 ## Expressions
 
