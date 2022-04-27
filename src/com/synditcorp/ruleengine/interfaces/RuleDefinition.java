@@ -28,6 +28,7 @@ public interface RuleDefinition {
 	public boolean isOrRule(Integer ruleNumber) throws Exception;
 	public boolean isAndRule(Integer ruleNumber) throws Exception;
 	public boolean isAllRule(Integer ruleNumber) throws Exception;
+	public boolean isThreadRule(Integer ruleNumber) throws Exception;
 	public ArrayList<String> getPassKeys(Integer ruleNumber) throws Exception;
 	public ArrayList<String> getFailKeys(Integer ruleNumber) throws Exception;
 	public String getPassScore(Integer ruleNumber) throws Exception;
@@ -41,6 +42,7 @@ public interface RuleDefinition {
 	public String getExpression(Integer ruleNumber) throws Exception;
 	public String getHandlerClass(Integer ruleNumber) throws Exception;
 
+	public ArrayList<Integer> getThreadRulesList(Integer ruleNumber) throws Exception;
 	public ArrayList<Integer> getCompositeRulesList(Integer ruleNumber) throws Exception;
 	public ArrayList<Integer>  getCompositePassKeysList(Integer ruleNumber) throws Exception;
 	public ArrayList<Integer>  getCompositeFailKeysList(Integer ruleNumber) throws Exception;

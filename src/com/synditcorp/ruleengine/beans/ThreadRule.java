@@ -9,28 +9,24 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+package com.synditcorp.ruleengine.beans;
 
-package com.synditcorp.ruleengine.tree;
+import java.util.ArrayList;
 
-import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
+public class ThreadRule extends BaseRule {
 
-public class NodeTest {
-
-	public static void main(String[] args) {
-
-		try {
-
-			LOGGER.info("Starting NodeTest");
-			
-			Node rootNode = TestTree.setTree();
-			Nodes.getPaths(rootNode);
-			
-		} catch (Exception e) {
-			System.out.println("RulesEngine exception: " + e );
-		}
-
-		
+	private ArrayList<Integer> threadRules;
+	
+	public ThreadRule() {
 		
 	}
 
+	public ArrayList<Integer> getThreadRules() {
+		return threadRules;
+	}
+
+	public void setThreadRules(ArrayList<Integer> threadRules) {
+		this.threadRules = threadRules;
+	}
+	
 }

@@ -26,6 +26,7 @@ public class BaseRules implements Rules {
 	private ArrayList<AndRule> andRules;
 	private ArrayList<OrRule> orRules;
 	private ArrayList<AllRule> allRules;
+	private ArrayList<ThreadRule> threadRules;
 	
 	public BaseRules() {
 		
@@ -67,7 +68,7 @@ public class BaseRules implements Rules {
 	public void setOrRules(ArrayList<OrRule> orRules) {
 		this.orRules = orRules;
 	}
-
+	
 	@Override
 	public ArrayList<AllRule> getAllRules() {
 		if(allRules == null) allRules = new ArrayList<AllRule>();
@@ -79,6 +80,17 @@ public class BaseRules implements Rules {
 		this.allRules = allRules;
 	}
 
+	@Override
+	public ArrayList<ThreadRule> getThreadRules() {
+		if(threadRules == null) threadRules = new ArrayList<ThreadRule>();
+		return threadRules;
+	}
+
+	@Override
+	public void setThreadRules(ArrayList<ThreadRule> threadRules) {
+		this.threadRules = threadRules;
+	}
+	
 	@Override
 	public String getDocumentId() {
 		return documentId;

@@ -10,7 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 
-package com.synditcorp.ruleengine;
+package com.synditcorp.ruleengine.processors;
 
 import java.util.TreeMap;
 

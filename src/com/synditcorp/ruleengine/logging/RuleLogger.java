@@ -1,3 +1,4 @@
+
 /*
 The MIT License (MIT)
 Copyright © 2021 Syndit Business Solutions, Inc. 
@@ -12,72 +13,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 package com.synditcorp.ruleengine.logging;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.synditcorp.ruleengine.RuleEvaluator;
 
 public class RuleLogger {
 
-	public static Logger logger;
+	public static final Logger LOGGER = LoggerFactory.getLogger(RuleEvaluator.class.getPackageName());
 
-	public static void log(String format, Object... args) {
-
-		if(logger.isDebugEnabled()) {
-			  debug(format, args);
-		}
-		else if(logger.isInfoEnabled()) {
-			  info(format, args);
-		}
-		else if(logger.isWarnEnabled()) {
-			  warn(format, args);
-		} 
-		else if(logger.isErrorEnabled()) {
-			  error(format, args);
-		} 
-		else if(logger.isTraceEnabled()) {
-			  trace(format, args);
-		} 
-		else {
-			System.out.println("No logger enabled");
-		}
-		
-	}
+	private RuleLogger() {}
 	
-	public static void debug(String format, Object... args) {
-		if(logger == null) {
-			System.out.println("No Logger injected.");
-			return;
-		}
-		logger.debug(format, args);
-	}
-
-	public static void info(String format, Object... args) {
-		if(logger == null) {
-			System.out.println("No Logger injected.");
-			return;
-		}
-		logger.info(format, args);
-	}
-
-	public static void warn(String format, Object... args) {
-		if(logger == null) {
-			System.out.println("No Logger injected.");
-			return;
-		}
-		logger.warn(format, args);
-	}
-
-	public static void error(String format, Object... args) {
-		if(logger == null) {
-			System.out.println("No Logger injected.");
-			return;
-		}
-		logger.error(format, args);
-	}
-
-	public static void trace(String format, Object... args) {
-		if(logger == null) {
-			System.out.println("No Logger injected.");
-			return;
-		}
-		logger.trace(format, args);
-	}
-
 }

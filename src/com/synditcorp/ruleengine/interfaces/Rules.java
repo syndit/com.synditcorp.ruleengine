@@ -17,6 +17,7 @@ import com.synditcorp.ruleengine.beans.AllRule;
 import com.synditcorp.ruleengine.beans.AndRule;
 import com.synditcorp.ruleengine.beans.CalcRule;
 import com.synditcorp.ruleengine.beans.OrRule;
+import com.synditcorp.ruleengine.beans.ThreadRule;
 
 public interface Rules {
 	
@@ -28,6 +29,8 @@ public interface Rules {
 	public void setOrRules(ArrayList<OrRule> orRules);
 	public ArrayList<AllRule> getAllRules();
 	public void setAllRules(ArrayList<AllRule> allRules);
+	public ArrayList<ThreadRule> getThreadRules();
+	public void setThreadRules(ArrayList<ThreadRule> threadRules);
 	public String getDocumentId();
 	public void setDocumentId(String documentId);
 	public String getDescription();

@@ -11,9 +11,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.tree;
 
-import java.util.ArrayList;
+import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
 
-import com.synditcorp.ruleengine.logging.RuleLogger;
+import java.util.ArrayList;
 
 /**
  * Nodes is a way to map the paths in a decision tree
@@ -47,14 +47,32 @@ public class Nodes {
 		path[len] = node.getNodeNumber();
         len++;
 		 
-		if(node.getTrueNode() == null && node.getFalseNode() == null) {
-			// leaf node is reached
+//		if(node.getTrueNode() == null && node.getFalseNode() == null) {
+//			// leaf node is reached
+//			paths.add( getPath(path,len) ); 
+//			return;
+//		}
+//		
+//		printAllPathsToLeaf(node.getTrueNode(), path, len, paths, true);
+//		printAllPathsToLeaf(node.getFalseNode(), path, len, paths, false);
+
+        
+        if(node.getTrueNode() == null && node.getFalseNode() == null) {
+			// leaf nodes is reached
 			paths.add( getPath(path,len) ); 
 			return;
+		}  else  if(node.getTrueNode() == null ) {
+			paths.add( getPath(path,len) ); 
+			printAllPathsToLeaf(node.getFalseNode(), path, len, paths, false);
+		} else if(node.getFalseNode() == null) {
+			path[len-1] = path[len-1]*-1;
+			paths.add( getPath(path,len) ); 
+			path[len-1] = path[len-1]*-1;
+			printAllPathsToLeaf(node.getTrueNode(), path, len, paths, true);
+		} else {
+			printAllPathsToLeaf(node.getTrueNode(), path, len, paths, true);
+			printAllPathsToLeaf(node.getFalseNode(), path, len, paths, false);
 		}
-		
-		printAllPathsToLeaf(node.getTrueNode(), path, len, paths, true);
-		printAllPathsToLeaf(node.getFalseNode(), path, len, paths, false);
 	
 	}
 
@@ -66,7 +84,7 @@ public class Nodes {
 				list.add(path[i]);
 	            pathList = pathList + " " + path[i];
 		}
-		RuleLogger.debug("Path: " + pathList);
+		LOGGER.debug("Path: " + pathList);
 		
 		return list;  
 	       

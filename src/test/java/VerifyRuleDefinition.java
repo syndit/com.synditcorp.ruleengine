@@ -11,16 +11,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package test.java;
 
+import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
+
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.slf4j.Logger;
-
-import com.synditcorp.ruleengine.logging.MinimalLogger;
-import com.synditcorp.ruleengine.logging.RuleLogger;
-import com.synditcorp.ruleengine.logging.TimeTrack;
 import com.synditcorp.ruleengine.DefaultRuleDefinition;
 import com.synditcorp.ruleengine.RuleEvaluator;
+import com.synditcorp.ruleengine.logging.TimeTrack;
 import com.synditcorp.ruleengine.parser.RuleJSONParser;
 
 public class VerifyRuleDefinition {
@@ -63,14 +61,12 @@ public class VerifyRuleDefinition {
 		DefaultRuleDefinition rules = new DefaultRuleDefinition();
 		rules.loadRules(parser);
 		
-		Logger logger = new MinimalLogger(MinimalLogger.DEBUG);
-
-		RuleEvaluator eval = new RuleEvaluator(rules, logger);
+		RuleEvaluator eval = new RuleEvaluator(rules);
 		eval.setVariables(variables);
 		
 		System.out.println("Document: ID " + eval.getDocumentId() + ", " + eval.getDescription() + ", version " + eval.getVersion() + ", tags: " + eval.getDocumentTags());
 		
-		RuleLogger.log(TimeTrack.getElapsedTime(t1) + " milliseconds to load rules");
+		LOGGER.debug(TimeTrack.getElapsedTime(t1) + " milliseconds to load rules");
 		
 		Integer startRule = eval.getStartRule();
 		Integer[] testRules = {startRule};
@@ -88,13 +84,13 @@ public class VerifyRuleDefinition {
 					String successMsg;
 					if(result) successMsg = "Verify rules definitions was successful!";
 					else successMsg = "Verify rules definitions failed.";
-					RuleLogger.log(successMsg);
+					LOGGER.debug(successMsg);
 				} catch (Exception e) {
 					System.out.println(e);
 				}
 			}
 			
-			RuleLogger.log(TimeTrack.getElapsedTime(t2) + " milliseconds to process rules");
+			LOGGER.debug(TimeTrack.getElapsedTime(t2) + " milliseconds to process rules");
 			
 			for (Map.Entry<String, Object> entry : variables.entrySet()) {
 		        System.out.println(entry.getKey() +  " = " + entry.getValue());

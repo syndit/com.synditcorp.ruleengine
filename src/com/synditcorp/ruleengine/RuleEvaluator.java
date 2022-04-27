@@ -11,33 +11,36 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine;
 
+import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
+
 import java.util.ArrayList;
 import java.util.TreeMap;
+import java.util.concurrent.ForkJoinPool;
 
-import org.slf4j.Logger;
-
-import com.synditcorp.ruleengine.logging.TimeTrack;
 import com.synditcorp.ruleengine.beans.CompositeRule;
+import com.synditcorp.ruleengine.beans.ThreadResults;
 import com.synditcorp.ruleengine.handlers.ExpressionHandler;
 import com.synditcorp.ruleengine.interfaces.Rule;
 import com.synditcorp.ruleengine.interfaces.RuleDefinition;
-import com.synditcorp.ruleengine.logging.RuleLogger;
+import com.synditcorp.ruleengine.logging.TimeTrack;
+import com.synditcorp.ruleengine.processors.CalcRuleProcessor;
+import com.synditcorp.ruleengine.processors.ThreadRuleProcessor;
 
 /**
  * This class provides the runtime methods for the rule engine.  Injected is a RuleDefinitions object that implements the RuleDefinitions interface.  This class is the 
  * primary class used to interact with the rule engine.  RuleDefinitions, the RuleParser, or other rule engine classes need not be accessed directly.
  */
-public class RuleEvaluator {
+public class RuleEvaluator implements Cloneable {
 
 	private RuleDefinition ruleDefinition;
 	private TreeMap<Integer, Boolean> cache = new TreeMap<Integer, Boolean>();
 	private TreeMap<String, Object> variables = new TreeMap<String, Object>();
-	private ArrayList<Integer> runtimePasses = new ArrayList<Integer>();
-	private ArrayList<Integer> runtimeFails = new ArrayList<Integer>();
+	private ArrayList<Integer> runtimePasses = new ArrayList<Integer>(1000);
+	private ArrayList<Integer> runtimeFails = new ArrayList<Integer>(1000);
+	private int threadBlockSize = 100;
 
-	public RuleEvaluator(RuleDefinition rulesDefinition, Logger logger) {
+	public RuleEvaluator(RuleDefinition rulesDefinition) {
 		this.ruleDefinition = rulesDefinition;
-		RuleLogger.logger = logger;
 	}
 	
 	/**
@@ -105,9 +108,13 @@ public class RuleEvaluator {
 	 */
 	public boolean evaluateRule(Integer ruleNumber) throws Exception {
 		
+		LOGGER.trace("Syndit Rule Engine evaluating rule number {}}", ruleNumber);
+
 		Boolean result = callRule(ruleNumber);
 		
 		if(result == null) throw new Exception("No rules were processed.");
+
+		LOGGER.trace("Syndit Rule Engine evaluated rule number {} with result equal to {}", ruleNumber, result);
 		
 		return ( result.booleanValue() );
 
@@ -123,6 +130,14 @@ public class RuleEvaluator {
 		clearRuntimePasses();
 		clearRuntimeFails();
 		clearVariables();
+	}
+
+	/**
+	 * Set the block size to use when processing ThreadRules.  The default is 100.
+	 * @param threadBlockSize for processing ThreadRules
+	 */
+	public void setThreadBlockSize(int threadBlockSize) {
+		this.threadBlockSize = threadBlockSize;
 	}
 	
 	/**
@@ -141,6 +156,30 @@ public class RuleEvaluator {
 		return this.variables;
 	}
 
+	/**
+	 * Get the runtime rule processing results cache.
+	 * @return the TreeMap object containing the rule number and Boolean processing results
+	 */
+	public TreeMap<Integer, Boolean> getCache() {
+		return this.cache;
+	}
+
+	/**
+	 * Get the list of rules that passed at runtime.
+	 * @return an ArrayList of rule numbers that passed
+	 */
+	public ArrayList<Integer> getRuntimePasses() {
+		return this.runtimePasses;
+	}
+
+	/**
+	 * Get the list of rules that failed at runtime.
+	 * @return an ArrayList of rule numbers that failed
+	 */
+	public ArrayList<Integer> getRuntimeFails() {
+		return this.runtimeFails;
+	}
+	
 	/**
 	 * Get the passKey for a particular rule.  This returns the passKey set in the rules document and that evaluated to "true" at runtime.
 	 * @return the pass keys for a rule
@@ -686,6 +725,8 @@ public class RuleEvaluator {
 		
 		if(isInAllRules(ruleNumber)) return (processAllRules(ruleNumber));
 		
+		if(isInThreadRules(ruleNumber)) return (processThreadRules(ruleNumber));
+
 		throw new Exception("Rule number " + ruleNumber + " not found in rule definitions.");
 
 	}
@@ -738,6 +779,10 @@ public class RuleEvaluator {
 		return (ruleDefinition.isAllRule(ruleNumber));
 	}
 	
+	private boolean isInThreadRules(Integer ruleNumber) throws Exception {
+		return (ruleDefinition.isThreadRule(ruleNumber));
+	}
+	
 	private Boolean processCalcRule(Integer ruleNumber) throws Exception {
 
 		TimeTrack t = new TimeTrack();
@@ -762,7 +807,8 @@ public class RuleEvaluator {
 			addRuleFailResultsToVariables(ruleNumber, variables);
 		}
 
-		RuleLogger.log("{} milleseconds to evaluate rule number {} expression: {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, expression, result);
+		LOGGER.debug("{} milleseconds to evaluate rule number {} expression: {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, expression, result);
+		LOGGER.info("{} milleseconds to evaluate rule number {} expression: {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, expression, result);
 		
 		return ( result );
 
@@ -776,7 +822,7 @@ public class RuleEvaluator {
 	 * @param ruleNumber value for a given rule number
 	 */
 	private Boolean processAllRules(Integer ruleNumber) throws Exception {
-
+		
 		TimeTrack t = new TimeTrack();
 		
 		boolean noRulesProcessed = true;
@@ -790,11 +836,13 @@ public class RuleEvaluator {
 			if(result.booleanValue()) {
 				addRuntimePass(ruleNumber);
 				addCompositeRulePassResultsToVariables(ruleNumber, variables);
-				RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
+				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
+				LOGGER.info("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 			} else {
 				addRuntimeFail(ruleNumber);
 				addCompositeRuleFailResultsToVariables(ruleNumber, variables);
-				RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
+				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
+				LOGGER.info("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 			}
 
 		}
@@ -802,6 +850,112 @@ public class RuleEvaluator {
 		if(noRulesProcessed) return null;
 		
 		return true;
+		
+	}
+
+	/**
+	 * The Engine processes thread rules listed in the ThreadRule bean compositeRules field list. Thread rule types can be used when rules in the compositeRules list can be processed
+	 * independently of other rules in the definition document, where processing order does not matter, and when performance is an issue. The rules are processed in blocks.  Set 
+	 * the block size by calling setThreadBlockSize() and pass a block size value that performs optimally in your environment.  Variables set in the threads do not persist when evaluation is complete. 
+	 * @return null if no rules are processed, otherwise if at least one rule passed, returns true, else returns false
+	 * @throws Exception when any exception occurs
+	 * @param ruleNumber value for a given rule number
+	 */
+	private Boolean processThreadRules(Integer ruleNumber ) throws Exception {
+
+		ArrayList<ThreadResults> threadResults = getThreadResults(ruleNumber);
+
+		boolean noRulesProcessed = true;
+		Boolean atLeastOneRulePassed = false;
+		boolean isPassScore = false;
+		boolean isFailScore = false;
+		double passScore = 0;
+		double failScore = 0;
+
+		//loop through all the rule results processed in the threads
+		for (int i = 0; i < threadResults.size(); i++) {
+
+			if( threadResults.get(i).getResult() == null )  continue;
+			noRulesProcessed = false;
+			
+			boolean thisRulePassed = false;
+
+			if( threadResults.get(i).getResult() ) {
+				atLeastOneRulePassed = true;
+				thisRulePassed = true;
+			}
+			
+			if( thisRulePassed && threadResults.get(i).getPassScore() != null ) {
+				isPassScore = true;
+				passScore += threadResults.get(i).getPassScore().doubleValue();
+			}
+			
+			if( !thisRulePassed && threadResults.get(i).getFailScore() != null ) {
+				isFailScore = true;
+				failScore += threadResults.get(i).getFailScore().doubleValue();
+			}
+			
+		}
+
+		if(noRulesProcessed) return null;
+
+		if(atLeastOneRulePassed) {
+			addRuntimePass(ruleNumber);
+			addRulePassResultsToVariables(ruleNumber, variables);
+			if(isPassScore) {
+				variables.put( ("compositePassScore_" + ruleNumber) , passScore);
+			}
+		}
+
+		addRuntimeFail(ruleNumber);
+		addRuleFailResultsToVariables(ruleNumber, variables);
+		
+		if(isFailScore) {
+			variables.put( ("compositeFailScore_" + ruleNumber) , failScore);
+		}
+		
+		return atLeastOneRulePassed;
+		
+	}
+		
+	/**
+	 * To improve performance, as the name implies, ThreadRules are processed using threads.
+	 * @return results in a ThreadResults object
+	 * @throws Exception when any exception occurs
+	 * @param ruleNumber value for a given rule number
+	 */
+	private ArrayList<ThreadResults> getThreadResults(Integer ruleNumber) throws Exception {
+
+		ForkJoinPool pool = new ForkJoinPool();
+		ArrayList<Integer> threadRulesList = getThreadRulesList(ruleNumber);
+		ArrayList<Integer> block = new ArrayList<Integer>();
+		ArrayList<ThreadRuleProcessor> tasks = new ArrayList<ThreadRuleProcessor>();
+		int listSize = threadRulesList.size();
+		int ctr = 0;
+		for (int i = 0; i < listSize; i++) {
+			block.add(threadRulesList.get(i));
+			ctr++;
+			if(ctr == threadBlockSize || (i+1) == listSize ) {
+				ArrayList<Integer> passBlock = new ArrayList<Integer>();
+				passBlock.addAll(block);
+				ThreadRuleProcessor threadRuleProcessor = new ThreadRuleProcessor(passBlock, (RuleEvaluator) this.clone());
+				tasks.add(threadRuleProcessor);
+				pool.execute(threadRuleProcessor);
+				block.clear();
+				ctr = 0;	
+			}
+		}
+
+		//wait for thread finish, put scores to variable
+		ArrayList<ThreadResults> threadResults = new ArrayList<ThreadResults>();
+		
+		for (int i = 0; i < tasks.size(); i++) {
+			threadResults.addAll( tasks.get(i).get() );
+		}
+
+		pool.shutdown();
+		
+		return threadResults;
 		
 	}
 	
@@ -827,7 +981,8 @@ public class RuleEvaluator {
 			if(result.booleanValue()) {
 				addRuntimePass(ruleNumber);
 				addCompositeRulePassResultsToVariables(ruleNumber, variables);
-				RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
+				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
+				LOGGER.info("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 				return (true);
 			}
 		}
@@ -836,7 +991,8 @@ public class RuleEvaluator {
 		
 		addRuntimeFail(ruleNumber);
 		addCompositeRuleFailResultsToVariables(ruleNumber, variables);
-		RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
+		LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
+		LOGGER.info("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
 
 		return false;
 
@@ -864,7 +1020,8 @@ public class RuleEvaluator {
 			if(!result.booleanValue()) {
 				addRuntimeFail(ruleNumber);
 				addCompositeRuleFailResultsToVariables(ruleNumber, variables);
-				RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
+				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
+				LOGGER.info("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
 				return false;
 			}			
 			
@@ -874,7 +1031,8 @@ public class RuleEvaluator {
 		
 		addRuntimePass(ruleNumber);
 		addCompositeRulePassResultsToVariables(ruleNumber, variables);
-		RuleLogger.log("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
+		LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
+		LOGGER.info("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 		
 		return true;
 
@@ -896,8 +1054,20 @@ public class RuleEvaluator {
 		return ruleDefinition.getCompositeRulesList(ruleNumber);
 	}
 
+	private ArrayList<Integer> getThreadRulesList(Integer ruleNumber) throws Exception {
+		return ruleDefinition.getThreadRulesList(ruleNumber);
+	}
+
 	private Double evaluateExpression(String expression) {
 		return ExpressionHandler.getProductOf(expression, variables);
+	}
+	
+	public  Object clone() {
+		
+		RuleEvaluator newRuleEvaluator = new RuleEvaluator(this.ruleDefinition);
+		newRuleEvaluator.setVariables(this.getVariables());
+		return newRuleEvaluator;
+		
 	}
 	
 	

@@ -11,19 +11,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine;
 
-import com.synditcorp.ruleengine.interfaces.RuleDefinition;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
 
 import com.synditcorp.ruleengine.beans.AllRule;
 import com.synditcorp.ruleengine.beans.AndRule;
-import com.synditcorp.ruleengine.beans.CalcRule;
-import com.synditcorp.ruleengine.beans.OrRule;
 import com.synditcorp.ruleengine.beans.BaseRules;
+import com.synditcorp.ruleengine.beans.CalcRule;
 import com.synditcorp.ruleengine.beans.CompositeRule;
+import com.synditcorp.ruleengine.beans.OrRule;
+import com.synditcorp.ruleengine.beans.ThreadRule;
 import com.synditcorp.ruleengine.interfaces.Rule;
+import com.synditcorp.ruleengine.interfaces.RuleDefinition;
 import com.synditcorp.ruleengine.interfaces.RuleParser;
 
 /**
@@ -38,6 +38,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	private TreeMap<Integer, OrRule> orRules = new TreeMap<Integer, OrRule>();
 	private TreeMap<Integer, AndRule> andRules = new TreeMap<Integer, AndRule>();
 	private TreeMap<Integer, AllRule> allRules = new TreeMap<Integer, AllRule>();
+	private TreeMap<Integer, ThreadRule> threadRules = new TreeMap<Integer, ThreadRule>();
 	
 	public DefaultRuleDefinition() {
 		
@@ -138,6 +139,14 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	public ArrayList<String> getFailActions(Integer ruleNumber) throws Exception {
 		return getRule(ruleNumber).getFailActions();	}
 
+	
+	/**
+	 * Gets the list of thread rule numbers for a particular thread rule's list that is set in the rules document.
+	 */
+	@Override
+	public ArrayList<Integer> getThreadRulesList(Integer ruleNumber) throws Exception {
+		return ((ThreadRule) getRule(ruleNumber)).getThreadRules();
+	}
 	
 	/**
 	 * Gets the list of composite rule numbers for a particular composite rule's list that is set in the rules document.
@@ -260,6 +269,14 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	}
 
 	/**
+	 * Returns "true" if the rule is a "thread" rule
+	 */
+	@Override
+	public boolean isThreadRule(Integer ruleNumber) throws Exception {
+		return threadRules.containsKey(ruleNumber);
+	}
+
+	/**
 	 * Returns a "base" rule's MVEL expression as is set in the rules document.
 	 */
 	@Override
@@ -353,6 +370,8 @@ public class DefaultRuleDefinition implements RuleDefinition {
 			return (Rule) orRules.get(ruleNumber);
 		} else if(isAllRule(ruleNumber)) {
 			return (Rule) allRules.get(ruleNumber);
+		} else if(isThreadRule(ruleNumber)) {
+			return (Rule) threadRules.get(ruleNumber);
 		}
 		
 		return null;
@@ -364,9 +383,10 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		setOrRulesToManifest(rules);
 		setAndRulesToManifest(rules);
 		setAllRulesToManifest(rules);
+		setThreadRulesToManifest(rules);
 	}
 	
-	private void setBaseRulesToManifest(BaseRules rules) {
+	private  void setBaseRulesToManifest(BaseRules rules) {
 		ArrayList<CalcRule> ar = rules.getCalcRules();
 		for (Iterator<CalcRule> iterator = ar.iterator(); iterator.hasNext();) {
 			CalcRule calcRule = (CalcRule) iterator.next();
@@ -389,13 +409,20 @@ public class DefaultRuleDefinition implements RuleDefinition {
 			andRules.put(andRule.getRuleNumber(), andRule);
 		}
 	}
-
 	
 	private void setAllRulesToManifest(BaseRules rules) {
 		ArrayList<AllRule> ar = rules.getAllRules();
 		for (Iterator<AllRule> iterator = ar.iterator(); iterator.hasNext();) {
 			AllRule allRule = (AllRule) iterator.next();
 			allRules.put(allRule.getRuleNumber(), allRule);
+		}
+	}
+
+	private void setThreadRulesToManifest(BaseRules rules) {
+		ArrayList<ThreadRule> ar = rules.getThreadRules();
+		for (Iterator<ThreadRule> iterator = ar.iterator(); iterator.hasNext();) {
+			ThreadRule threadRule = (ThreadRule) iterator.next();
+			threadRules.put(threadRule.getRuleNumber(), threadRule);
 		}
 	}
 

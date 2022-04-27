@@ -11,10 +11,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.handlers;
 
+import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
+
 import java.util.TreeMap;
 
 import com.synditcorp.ruleengine.interfaces.RuleClassHandler;
-import com.synditcorp.ruleengine.logging.RuleLogger;
 
 public class ExpressionRuleHandler implements RuleClassHandler {
 	
@@ -26,7 +27,8 @@ public class ExpressionRuleHandler implements RuleClassHandler {
 
 		} catch (Exception e) {
 
-			RuleLogger.log("Unable to process rule expression: \"" + ruleExpression + "\"");
+			LOGGER.debug("Unable to process rule expression: \"" + ruleExpression + "\"");
+			LOGGER.info("Unable to process rule expression: \"" + ruleExpression + "\"");
 			return false;
 
 		}
