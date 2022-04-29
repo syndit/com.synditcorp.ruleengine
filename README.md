@@ -119,7 +119,7 @@ Similar to an _and_ rule, an _or_ rule is a composite rule that references one o
 
 _All_ composite rules are for when all the rules referenced need to be evaluated.  This type of rule is used when variables need to be set that other rules rely upon.  _All_ rules always return TRUE.  Rules are evaluated in the order listed in the rule's definition.
 
-###Thread rules
+### Thread rules
 
 _Thread_ composite rules are for when multi-threaded processing is needed.  The _thread_ rule was created to process very large decision trees, but can be used in any circumstances where runtime is an issue.  Like _all_ rules, all the rules referenced will run regardless of individual rule outcome.  The difference is the rules will be separated into blocks of rules with each block being processed in a different thread.  The default block size is 100, but this value can be overridden by calling RuleEvaluator.setThreadBlockSize() method.  Variables set in the threads do not persist after evaluation.  _Thread_ rules return TRUE if any of the reference rules return TRUE, else FALSE is returned.  Use _thread_ rules when the referenced rules can be processed independently, when processing order does not matter, and when performance is an issue.
 
