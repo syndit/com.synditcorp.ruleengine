@@ -37,6 +37,7 @@ public class RuleEvaluator implements Cloneable {
 	private TreeMap<String, Object> variables = new TreeMap<String, Object>();
 	private ArrayList<Integer> runtimePasses = new ArrayList<Integer>(1000);
 	private ArrayList<Integer> runtimeFails = new ArrayList<Integer>(1000);
+	private ArrayList<Integer> runtineExpressionFails = new ArrayList<Integer>(1000);
 	private int threadBlockSize = 100;
 
 	public RuleEvaluator(RuleDefinition rulesDefinition) {
@@ -108,13 +109,13 @@ public class RuleEvaluator implements Cloneable {
 	 */
 	public boolean evaluateRule(Integer ruleNumber) throws Exception {
 		
-		LOGGER.trace("Syndit Rule Engine evaluating rule number {}}", ruleNumber);
+		LOGGER.debug("Syndit Rule Engine evaluating rule number {} using document ID {}, version {}", ruleNumber, this.getDocumentId(), this.getVersion());
 
 		Boolean result = callRule(ruleNumber);
 		
 		if(result == null) throw new Exception("No rules were processed.");
 
-		LOGGER.trace("Syndit Rule Engine evaluated rule number {} with result equal to {}", ruleNumber, result);
+		LOGGER.debug("Syndit Rule Engine completed evaluation of rule number {} with result equal to {}", ruleNumber, result);
 		
 		return ( result.booleanValue() );
 
@@ -180,6 +181,14 @@ public class RuleEvaluator implements Cloneable {
 		return this.runtimeFails;
 	}
 	
+	/**
+	 * Get the list of rules whose expressions failed at runtime.
+	 * @return an ArrayList of rule number expression that failed
+	 */
+	public ArrayList<Integer> getRuntimeExpressionFails() {
+		return this.runtineExpressionFails;
+	}
+
 	/**
 	 * Get the passKey for a particular rule.  This returns the passKey set in the rules document and that evaluated to "true" at runtime.
 	 * @return the pass keys for a rule
@@ -755,6 +764,10 @@ public class RuleEvaluator implements Cloneable {
 		if(!runtimeFails.contains(ruleNumber)) runtimeFails.add(ruleNumber);
 	}
 	
+	private void addExpressionFail(Integer ruleNumber) {
+		if(!runtineExpressionFails.contains(ruleNumber)) runtineExpressionFails.add(ruleNumber);
+	}
+	
 	private void clearRuntimePasses() {
 		runtimePasses.clear();
 	}
@@ -794,7 +807,15 @@ public class RuleEvaluator implements Cloneable {
 
 		String ruleHandler = ruleDefinition.getHandlerClass(ruleNumber);
 		String expression = ruleDefinition.getExpression(ruleNumber);
-		Boolean result = CalcRuleProcessor.processCalcRule(ruleHandler, expression, variables);
+		
+		Boolean result = null;
+		try {
+			result = CalcRuleProcessor.processCalcRule(ruleHandler, expression, variables);
+		} catch (Exception e) {
+			LOGGER.warn("Unable to process rule expression: \"" + expression + "\", error: " + e);
+			addExpressionFail(ruleNumber);
+			result = false;
+		}
 		
 		addToCache(ruleNumber, result);
 
@@ -808,7 +829,6 @@ public class RuleEvaluator implements Cloneable {
 		}
 
 		LOGGER.debug("{} milleseconds to evaluate rule number {} expression: {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, expression, result);
-		LOGGER.info("{} milleseconds to evaluate rule number {} expression: {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, expression, result);
 		
 		return ( result );
 
@@ -837,12 +857,10 @@ public class RuleEvaluator implements Cloneable {
 				addRuntimePass(ruleNumber);
 				addCompositeRulePassResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
-				LOGGER.info("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 			} else {
 				addRuntimeFail(ruleNumber);
 				addCompositeRuleFailResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
-				LOGGER.info("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 			}
 
 		}
@@ -982,7 +1000,6 @@ public class RuleEvaluator implements Cloneable {
 				addRuntimePass(ruleNumber);
 				addCompositeRulePassResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
-				LOGGER.info("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 				return (true);
 			}
 		}
@@ -992,7 +1009,6 @@ public class RuleEvaluator implements Cloneable {
 		addRuntimeFail(ruleNumber);
 		addCompositeRuleFailResultsToVariables(ruleNumber, variables);
 		LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
-		LOGGER.info("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
 
 		return false;
 
@@ -1021,7 +1037,6 @@ public class RuleEvaluator implements Cloneable {
 				addRuntimeFail(ruleNumber);
 				addCompositeRuleFailResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
-				LOGGER.info("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
 				return false;
 			}			
 			
@@ -1032,7 +1047,6 @@ public class RuleEvaluator implements Cloneable {
 		addRuntimePass(ruleNumber);
 		addCompositeRulePassResultsToVariables(ruleNumber, variables);
 		LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
-		LOGGER.info("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 		
 		return true;
 

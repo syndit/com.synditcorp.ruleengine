@@ -11,8 +11,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.handlers;
 
-import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
-
 import java.util.TreeMap;
 
 import com.synditcorp.ruleengine.interfaces.RuleClassHandler;
@@ -21,17 +19,7 @@ public class ExpressionRuleHandler implements RuleClassHandler {
 	
 	public Boolean processCalcRule(String ruleExpression, TreeMap<String,Object> variables) throws Exception {
 		
-		try {
-			
 			return ExpressionHandler.evaluateExpression(ruleExpression, variables);
-
-		} catch (Exception e) {
-
-			LOGGER.debug("Unable to process rule expression: \"" + ruleExpression + "\"");
-			LOGGER.info("Unable to process rule expression: \"" + ruleExpression + "\"");
-			return false;
-
-		}
 		
 	}
 
