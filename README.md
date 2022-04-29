@@ -33,11 +33,20 @@ The Syndit Rule Engine is a light-weight, simple rule engine that can be used to
 1. Easily allows for multiple tenant implementations:
     1. Separate documents for each client, division, department, etc.
 
-# Version 2.1.0 Changes
+# Changes
+
+## Version 2.2.0
+
+There are two changes in version 2.2.0
+
+ 1. A new rule type was added to support multi-threaded processing.  See Thread rules below for more information.
+ 1. Logging was changed to be easier to use.  Now, a logger doesn't need to be injected into the Evaluator.
+
+## Version 2.1.0
 
 There are two changes in version 2.1.0:
 
- 1. Support for empty _compositeRule_ fields to allow rules to be stubbed-out in preparation for future use.  Empty _compositeRule_ fields evaluate to null in the Engine.
+ 1. Support for empty _compositeRule_ fields to allow rules to be stubbed-out in preparation for future use: Empty _compositeRule_ fields evaluate to null in the Engine.
  1. Support for multiple rule field values, except for passScore and failScore.  Basically, the rule fields types were changed from String to ArrayList<String>. The rule field strings are intended be evaluated in whole, but if pattern matching is needed in an expression, then a target value will need to be referenced by index in the field's array.  
   
 
@@ -57,21 +66,15 @@ In step 2, inject the parser into a class that implements the RuleDefinition int
 	DefaultRuleDefinition rules = new DefaultRuleDefinition();
 	rules.loadRules(parser);
 
-## Logger
-
-In step 3, create a logger that implements org.slf4j.Logger interface.  Here com.synditcorp.ruleengine.logging.MinimalLogger is used.  MinimalLogger is intended to be replaced with your preferred logger.
-
-	Logger logger = new MinimalLogger(MinimalLogger.DEBUG);
-
 ## Evaluator
 
-In step 4, inject the definitions and the logger into the evaluator.
+In step 3, inject the definitions into the evaluator.
 
-	RuleEvaluator ruleEvaluator = new RuleEvaluator(rules, logger);
+	RuleEvaluator ruleEvaluator = new RuleEvaluator(rules);
 
 ## Variables
 
-For optional step 5, load any variables to be used by the rule expressions, API handlers, or Java handlers.
+For optional step 4, load any variables to be used by the rule expressions, API handlers, or Java handlers.
 
 	TreeMap<String, Object> variables = new TreeMap<String, Object>();
 	Double amount = 11.50;
@@ -94,7 +97,7 @@ And, get whatever you need before discarding the RuleEvaluator instance.
 
 # Application structure
 
-The Syndit Rule Engine uses "calc" rules, "and" rules, "or" rules, and "all" rules.
+The Syndit Rule Engine uses "calc" rules, "and" rules, "or" rules, "all", and "thread" rules.
 
 ## Calc rules
 
@@ -115,6 +118,10 @@ Similar to an _and_ rule, an _or_ rule is a composite rule that references one o
 ### All rules
 
 _All_ composite rules are for when all the rules referenced need to be evaluated.  This type of rule is used when variables need to be set that other rules rely upon.  _All_ rules always return TRUE.  Rules are evaluated in the order listed in the rule's definition.
+
+###Thread rules
+
+_Thread_ composite rules are for when multi-threaded processing is needed.  The _thread_ rule was created to process very large decision trees, but can be used in any circumstances where runtime is an issue.  Like _all_ rules, all the rules referenced will run regardless of individual rule outcome.  The difference is the rules will be separated into blocks of rules with each block being processed in a different thread.  The default block size is 100, but this value can be overridden by calling RuleEvaluator.setThreadBlockSize() method.  Variables set in the threads do not persist after evaluation.  _Thread_ rules return TRUE if any of the reference rules return TRUE, else FALSE is returned.  Use _thread_ rules when the referenced rules can be processed independently, when processing order does not matter, and when performance is an issue.
 
 ### Not rules
 
@@ -167,6 +174,10 @@ There are 10 other composite rule fields and these reference calc rule fields, o
  1. compositeFailActions -  ArrayList<String>
 
 If a composite field is not to be used, set it to an empty array ([]), or don't include it in the record.
+
+###Thread Rule fields
+
+_Thread_ rules are considered composite rules because they process all the rules listed in the compositeRules field list.  But, _thread_ rules only have the compositePassScore and compositeFailScore composite fields.  The scoring composite field lists cannot be set, but scores accumulated in the threads can be referenced after evaluation.  Also, none of the field values for the rules called by the rules listed in the compositeRules list are available outside the thread in which they are processed.  So, rules referenced by _thread_ rules must be able to be processed independently of other parent thread rules.  But, variable values in the Variables collection when the thread rule is called are available to the thread rules.
 
 ## Accessing field values from other rules at runtime
 
@@ -344,8 +355,31 @@ Here is an example of an "all" rule:
 
 
 
+Here is an example of a Thread rule:
 
-Note that _all_ rules evaluates all of the rules in the compositeRules field list, therefore an _all_ rule may set both true and false pass and fail field values depending upon the results of each of the rules it calls.  So, care should be taken using the _all_ rule field pass and fail values.  Note also the optional ruleTags field.
+
+	"threadRules" : 
+		[
+			{
+				"ruleType" : "thread",
+				"ruleNumber" : "24",
+				"ruleTags" : ["TREE"],				
+				"description" : "Evaluate all these rules",
+				"compositeRules" : [52, 74, 18, 93],
+				"active" : "true",
+				"effectiveDate" : null,
+				"expirationDate" : null,
+				"passKey" : [],
+				"passScore" : null,
+				"failScore" : null,
+				"passFlag" : [],
+				"passReason" : [],
+				"passAction" : [],
+			},
+
+
+
+Note that _thread_ rules evaluate all of the rules in the compositeRules field list in blocks, which are set using the RuleEvaluator.setThreadBlockSize() method.  So, if the block size is set to 1, each of the 4 rules listed in the example would process in a separate thread.
 
 # Calling an API or Java class
 
@@ -358,7 +392,6 @@ If an API or a Java class needs to be used, simply create a new handler that imp
 				"ruleType" : "calc",
 				"ruleNumber" : "117",
 				"description" : "Get forecast for today",
-				"expression" : null,
 				"handlerClass" : "com.yourcompany.handlers.CallWeatherServiceAPI",
 				"passFlag" : ["Sunny"],
 				"failFlag" : ["Rain"],
@@ -372,7 +405,7 @@ The Engine does not prevent mistakes in the definition document, like recursive 
 
 ## Keep it simple
 
-The Syndit Rule Engine code is intended to be very simple, with the JSON definition document providing the intelligence.  Over the years, the core Engine has not changed, only fields have been added, like passFlag and passScore.  So, avoid the temptation of coding changes to the Engine's functionality when a little bit of creativity with the definition document or a new handler can provide the solution.  
+The Syndit Rule Engine code is intended to be very simple, with the definition document providing the intelligence.  Over the years, the core Engine has not changed, only fields have been added, like passFlag and passScore.  So, avoid the temptation of coding changes to the Engine's functionality when a little bit of creativity with the definition document or a new handler can provide the solution.  
 
 ## Document structure
 
@@ -380,9 +413,17 @@ The Syndit Rule Engine is very flexible.  Because at runtime any rule can be cal
 
 Rules can be organized into a common rule document and then use-specific rule documents.  An instance of the Engine with common rules can be injected into the use-specific instance by adding the common instance into the variables map object.  Then, a simple handler that implements RuleClassHandler can be written and used to refer to the common instance from the variables map.  Keep in mind the rule numbers must be unique across the common and use-specific documents.
 
+## Use many instances
+
+The Engine's footprint is quite small.  Use as many implementations of the Engine as needed in your organization.  For instance, one instance can be used in an application for processing complete business rules with another instance in a different application providing simple rules for UI control.
+
 ## Expressions
 
 MVEL is the expression language used by the Engine (you can change if you want).  At runtime, it takes time for each type of expression to initialize, so if milliseconds are critical to your SLA, keep the RuleEvaluator instance in memory and reset after each request.
+
+## Logging
+
+Like any Java process, writing large volumes to log files will affect performance.  So, be sure to set your logger to 'warn' or 'error' before deploying to production.
 
 ## Be organized
 
@@ -393,7 +434,6 @@ Also, control is important, so limit definition maintenance to a team knowledgea
 ## CI/CD pipeline
 
 Do integrate the rule definition documents into the CI/CD pipeline.  Automated testing is very easy with the Engine.  And, be sure to put process in place to roll-back in the event it is discovered a new rule is too restrictive or too lax.  It is very easy to roll-back a rule definition document version: the definition documents are self contained.
-
 
 # License
 
