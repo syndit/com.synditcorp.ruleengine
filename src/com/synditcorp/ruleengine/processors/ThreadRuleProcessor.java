@@ -41,9 +41,9 @@ public class ThreadRuleProcessor extends RecursiveTask<ArrayList<ThreadResults>>
 				results.setRuleNumber(ruleNumber);
 				results.setResult(result);
 				if(result) {
-					results.setPassScore( (Double) ruleEvaluator.getVariables().get( ("compositePassScore_" + ruleNumber) ) );
+					results.setPassScore( (Double) ruleEvaluator.getVariables().get( ( ruleEvaluator.getDocumentId() + "_compositePassScore_" + ruleNumber) ) );
 				} 	else {
-					results.setFailScore( (Double) ruleEvaluator.getVariables().get( ("compositeFailScore_" + ruleNumber) ) );
+					results.setFailScore( (Double) ruleEvaluator.getVariables().get( (  ruleEvaluator.getDocumentId() +"_compositeFailScore_" + ruleNumber) ) );
 				}
 				threadResults.add(results);
 			} catch (Exception e) {

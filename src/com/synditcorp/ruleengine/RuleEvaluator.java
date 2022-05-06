@@ -109,13 +109,13 @@ public class RuleEvaluator implements Cloneable {
 	 */
 	public boolean evaluateRule(Integer ruleNumber) throws Exception {
 		
-		LOGGER.debug("Syndit Rule Engine evaluating rule number {} using document ID {}, version {}", ruleNumber, this.getDocumentId(), this.getVersion());
+		LOGGER.info("Syndit Rule Engine evaluating rule number {} using document ID {}, version {}", ruleNumber, this.getDocumentId(), this.getVersion());
 
 		Boolean result = callRule(ruleNumber);
 		
 		if(result == null) throw new Exception("No rules were processed.");
 
-		LOGGER.debug("Syndit Rule Engine completed evaluation of rule number {} with result equal to {}", ruleNumber, result);
+		LOGGER.info("Syndit Rule Engine completed evaluation of rule number {} with result equal to {}", ruleNumber, result);
 		
 		return ( result.booleanValue() );
 
@@ -614,19 +614,19 @@ public class RuleEvaluator implements Cloneable {
 		String ruleNoStr = ruleNumber.toString();
 
 		ArrayList<String> passKeys = getPassKeys(ruleNumber); 
-		if(passKeys != null && passKeys.size() > 0) variables.put( ("passKeys_" +ruleNoStr), passKeys);
+		if(passKeys != null && passKeys.size() > 0) variables.put( (this.getDocumentId() + "_passKeys_" +ruleNoStr), passKeys);
 		
 		Double passScore = getPassScore(ruleNumber);
-		if(passScore != null) variables.put( ("passScore_" +ruleNoStr), passScore);
+		if(passScore != null) variables.put( (this.getDocumentId() + "_passScore_" +ruleNoStr), passScore);
 
 		ArrayList<String> passFlags = getPassFlags(ruleNumber); 
-		if(passFlags != null && passFlags.size() > 0) variables.put( ("passFlags_" +ruleNoStr), passFlags);
+		if(passFlags != null && passFlags.size() > 0) variables.put( (this.getDocumentId() + "_passFlags_" +ruleNoStr), passFlags);
 		
 		ArrayList<String> passReasons = getPassReasons(ruleNumber); 
-		if(passReasons != null && passReasons.size() > 0) variables.put( ("passReasons_" +ruleNoStr), passReasons);
+		if(passReasons != null && passReasons.size() > 0) variables.put( (this.getDocumentId() + "_passReasons_" +ruleNoStr), passReasons);
 
 		ArrayList<String> passActions = getPassActions(ruleNumber); 
-		if(passActions != null) variables.put( ("passActions_" +ruleNoStr), passActions);
+		if(passActions != null) variables.put( (this.getDocumentId() + "_passActions_" +ruleNoStr), passActions);
 		
 	}
 	
@@ -644,19 +644,19 @@ public class RuleEvaluator implements Cloneable {
 		String ruleNumberStr = ruleNumber.toString();
 
 		ArrayList<String> failKeys = getFailKeys(ruleNumber); 
-		if(failKeys != null && failKeys.size() > 0) variables.put( ("failKeys_" + ruleNumberStr), failKeys);
+		if(failKeys != null && failKeys.size() > 0) variables.put( (this.getDocumentId() + "_failKeys_" + ruleNumberStr), failKeys);
 		
 		Double failScore = getFailScore(ruleNumber);
-		if(failScore != null) variables.put( ("failScore_" + ruleNumberStr), failScore);
+		if(failScore != null) variables.put( (this.getDocumentId() + "_failScore_" + ruleNumberStr), failScore);
 		
 		ArrayList<String> failFlags = getFailFlags(ruleNumber); 
-		if(failFlags != null && failFlags.size() > 0) variables.put( ("failFlags_" + ruleNumberStr), failFlags);
+		if(failFlags != null && failFlags.size() > 0) variables.put( (this.getDocumentId() + "_failFlags_" + ruleNumberStr), failFlags);
 		
 		ArrayList<String> failReasons = getFailReasons(ruleNumber); 
-		if(failReasons != null && failReasons.size() > 0) variables.put( ("failReasons_" + ruleNumberStr), failReasons);
+		if(failReasons != null && failReasons.size() > 0) variables.put( (this.getDocumentId() + "_failReasons_" + ruleNumberStr), failReasons);
 		
 		ArrayList<String> failActions = getFailActions(ruleNumber); 
-		if(failActions != null && failActions.size() > 0) variables.put( ("failActions_" + ruleNumberStr), failActions);
+		if(failActions != null && failActions.size() > 0) variables.put( (this.getDocumentId() + "_failActions_" + ruleNumberStr), failActions);
 		
 	}
 	
@@ -676,19 +676,19 @@ public class RuleEvaluator implements Cloneable {
 		String ruleNumberStr = ruleNumber.toString();
 
 		ArrayList<String> passKeys = getCompositePassKeys(ruleNumber);
-		variables.put( ("compositePassKeys_" + ruleNumberStr), passKeys);
+		variables.put( (this.getDocumentId() + "_compositePassKeys_" + ruleNumberStr), passKeys);
 		
 		Double passScore = getCompositePassScore(ruleNumber);
-		variables.put( ("compositePassScore_" + ruleNumberStr), passScore);
+		variables.put( (this.getDocumentId() + "_compositePassScore_" + ruleNumberStr), passScore);
 		
 		ArrayList<String> passFlags = getCompositePassFlags(ruleNumber);
-		variables.put( ("compositePassFlags_" + ruleNumberStr), passFlags);
+		variables.put( (this.getDocumentId() + "_compositePassFlags_" + ruleNumberStr), passFlags);
 		
 		ArrayList<String> passReasons = getCompositePassReasons(ruleNumber);
-		variables.put( ("compositePassReasons_" + ruleNumberStr), passReasons);
+		variables.put( (this.getDocumentId() + "_compositePassReasons_" + ruleNumberStr), passReasons);
 		
 		ArrayList<String> passActions = getCompositePassActions(ruleNumber);
-		variables.put( ("compositePassActions_" + ruleNumberStr), passActions);
+		variables.put( (this.getDocumentId() + "_compositePassActions_" + ruleNumberStr), passActions);
 
 	}
 
@@ -708,19 +708,19 @@ public class RuleEvaluator implements Cloneable {
 		String ruleNumberStr = ruleNumber.toString();
 
 		ArrayList<String> failKeys = getCompositeFailKeys(ruleNumber);
-		variables.put( ("compositeFailKeys_" + ruleNumberStr), failKeys);
+		variables.put( (this.getDocumentId() + "_compositeFailKeys_" + ruleNumberStr), failKeys);
 		
 		Double failScore = getCompositeFailScore(ruleNumber);
-		variables.put( ("compositeFailScore_" + ruleNumberStr), failScore);
+		variables.put( (this.getDocumentId() + "_compositeFailScore_" + ruleNumberStr), failScore);
 
 		ArrayList<String> failFlags = getCompositeFailFlags(ruleNumber);
-		variables.put( ("compositeFailFlags_" + ruleNumberStr), failFlags);
+		variables.put( (this.getDocumentId() + "_compositeFailFlags_" + ruleNumberStr), failFlags);
 		
 		ArrayList<String> failReasons = getCompositeFailReasons(ruleNumber);
-		variables.put( ("compositeFailReasons_" + ruleNumberStr), failReasons);
+		variables.put( (this.getDocumentId() + "_compositeFailReasons_" + ruleNumberStr), failReasons);
 		
 		ArrayList<String> failActions = getCompositeFailActions(ruleNumber);
-		variables.put( ("compositeFailActions_" + ruleNumberStr), failActions);
+		variables.put( (this.getDocumentId() + "_compositeFailActions_" + ruleNumberStr), failActions);
 
 	}
 	
@@ -812,7 +812,7 @@ public class RuleEvaluator implements Cloneable {
 		try {
 			result = CalcRuleProcessor.processCalcRule(ruleHandler, expression, variables);
 		} catch (Exception e) {
-			LOGGER.warn("Unable to process rule expression: \"" + expression + "\", error: " + e);
+			LOGGER.info("Unable to process rule expression: \"" + expression + "\", reason: " + e);
 			addExpressionFail(ruleNumber);
 			result = false;
 		}
@@ -921,7 +921,7 @@ public class RuleEvaluator implements Cloneable {
 			addRuntimePass(ruleNumber);
 			addRulePassResultsToVariables(ruleNumber, variables);
 			if(isPassScore) {
-				variables.put( ("compositePassScore_" + ruleNumber) , passScore);
+				variables.put( ( this.getDocumentId() + "_compositePassScore_" + ruleNumber) , passScore);
 			}
 		}
 
@@ -929,7 +929,7 @@ public class RuleEvaluator implements Cloneable {
 		addRuleFailResultsToVariables(ruleNumber, variables);
 		
 		if(isFailScore) {
-			variables.put( ("compositeFailScore_" + ruleNumber) , failScore);
+			variables.put( ( this.getDocumentId() + "_compositeFailScore_" + ruleNumber) , failScore);
 		}
 		
 		return atLeastOneRulePassed;
