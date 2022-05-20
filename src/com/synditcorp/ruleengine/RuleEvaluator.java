@@ -19,6 +19,7 @@ import java.util.concurrent.ForkJoinPool;
 
 import com.synditcorp.ruleengine.beans.CompositeRule;
 import com.synditcorp.ruleengine.beans.ThreadResults;
+import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 import com.synditcorp.ruleengine.handlers.ExpressionHandler;
 import com.synditcorp.ruleengine.interfaces.Rule;
 import com.synditcorp.ruleengine.interfaces.RuleDefinition;
@@ -39,6 +40,7 @@ public class RuleEvaluator implements Cloneable {
 	private ArrayList<Integer> runtimeFails = new ArrayList<Integer>(1000);
 	private ArrayList<Integer> runtineExpressionFails = new ArrayList<Integer>(1000);
 	private int threadBlockSize = 100;
+	private ForkJoinPool pool = null;
 
 	public RuleEvaluator(RuleDefinition rulesDefinition) {
 		this.ruleDefinition = rulesDefinition;
@@ -113,7 +115,7 @@ public class RuleEvaluator implements Cloneable {
 
 		Boolean result = callRule(ruleNumber);
 		
-		if(result == null) throw new Exception("No rules were processed.");
+		if(result == null) throw new NoRuleEvaluatedException();
 
 		LOGGER.info("Syndit Rule Engine completed evaluation of rule number {} with result equal to {}", ruleNumber, result);
 		
@@ -901,6 +903,9 @@ public class RuleEvaluator implements Cloneable {
 			if( threadResults.get(i).getResult() ) {
 				atLeastOneRulePassed = true;
 				thisRulePassed = true;
+				//addRuntimePass(threadResults.get(i).getRuleNumber());
+			} else {
+				//addRuntimeFail(threadResults.get(i).getRuleNumber());
 			}
 			
 			if( thisRulePassed && threadResults.get(i).getPassScore() != null ) {
@@ -944,7 +949,8 @@ public class RuleEvaluator implements Cloneable {
 	 */
 	private ArrayList<ThreadResults> getThreadResults(Integer ruleNumber) throws Exception {
 
-		ForkJoinPool pool = new ForkJoinPool();
+		if(pool == null) pool = new ForkJoinPool();
+		
 		ArrayList<Integer> threadRulesList = getThreadRulesList(ruleNumber);
 		ArrayList<Integer> block = new ArrayList<Integer>();
 		ArrayList<ThreadRuleProcessor> tasks = new ArrayList<ThreadRuleProcessor>();
@@ -964,15 +970,12 @@ public class RuleEvaluator implements Cloneable {
 			}
 		}
 
-		//wait for thread finish, put scores to variable
 		ArrayList<ThreadResults> threadResults = new ArrayList<ThreadResults>();
 		
 		for (int i = 0; i < tasks.size(); i++) {
 			threadResults.addAll( tasks.get(i).get() );
 		}
 
-		pool.shutdown();
-		
 		return threadResults;
 		
 	}
