@@ -19,7 +19,7 @@ The Syndit Rule Engine is a light-weight, simple rule engine that can be used to
 1. The definition documents are self-contained, making it easy to store a complete set of rules for a given purpose.
 1. The Engine's footprint is quite small, allowing as many instances as needed.
 1. Reusable rules (configure one rule to be used by other rules).
-1. Caches runtime rule results so reusable rules only needs to be executed once.
+1. Caches runtime rule results so reusable rules only need to be executed once.
 1. Evaluate rules with:
     1. MVEL expressions.
     1. Optional custom Java classes.
@@ -37,9 +37,10 @@ The Syndit Rule Engine is a light-weight, simple rule engine that can be used to
 
 ## Version 2.2.0
 
-There are two changes in version 2.2.0
+There are three changes in version 2.2.0
 
  1. A new rule type was added to support multi-threaded processing.  See Thread rules below for more information.
+ 1. Uniquely identify document-specific field artifacts using namespaces. 
  1. Logging was changed to be easier to use.  Now, a logger doesn't need to be injected into the Evaluator.
 
 ## Version 2.1.0
@@ -97,11 +98,11 @@ And, get whatever you need before discarding the RuleEvaluator instance.
 
 # Application structure
 
-The Syndit Rule Engine uses "calc" rules, "and" rules, "or" rules, "all", and "thread" rules.
+The Syndit Rule Engine uses "calc" rules, "and" rules, "or" rules, "all" rules, and "thread" rules.
 
 ## Calc rules
 
-_Calc_ (calculated) rules are where the expressions are evaluated, APIs called, or Java libraries called.  A _calc_ rule returns a Boolean based on the expression's evaluation, or the API's or Java class' results. A _calc_ rule cannot reference other _calc_ rules.
+_Calc_ (calculated) rules are where the expressions are evaluated, APIs called, or Java libraries called.  A _calc_ rule returns a Boolean based on the expression's evaluation, or the API's or Java class' results. A _calc_ rule cannot reference other _calc_ rules.  MVEL is the default expression language.
 
 ## Composite rules
 
@@ -117,7 +118,7 @@ Similar to an _and_ rule, an _or_ rule is a composite rule that references one o
 
 ### All rules
 
-_All_ composite rules are for when all the rules referenced need to be evaluated.  This type of rule is used when variables need to be set that other rules rely upon.  _All_ rules always return TRUE.  Rules are evaluated in the order listed in the rule's definition.
+_All_ composite rules are for when all the rules referenced need to be evaluated.  This type of rule is used when variable artifacts need to be set that other rules rely upon.  _All_ rules always return TRUE.  Rules are evaluated in the order listed in the rule's definition.
 
 ### Thread rules
 
@@ -131,9 +132,9 @@ _Not_ rules are _calc_ rules or composite rules referenced in a composite rule t
 
 There are 3 required fields:
 
- 1. ruleType - either "calc", "or", "and", or "all".
+ 1. ruleType - either "calc", "or", "and", "all", or "thread".
  1. ruleNumber - an Integer unique to the particular rule JSON document.
- 1. handlerClass - is a Java class that implements RuleClassHandler and evaluates the MVEL expression, or makes an API or Java class call.
+ 1. handlerClass - is a Java class that implements RuleClassHandler and evaluates the MVEL expression, or makes an API or Java class call.  The handlerClass to evaluate MVEL expressions is `com.synditcorp.ruleengine.handlers.ExpressionRuleHandler`.
 
 If a MVEL expression is to be used, then an "expression" field is required.
 
@@ -179,15 +180,11 @@ If a composite field is not to be used, set it to an empty array ([]), or don't 
 
 _Thread_ rules are considered composite rules because they process all the rules listed in the compositeRules field list.  But, _thread_ rules only have the compositePassScore and compositeFailScore composite fields.  The scoring composite field lists cannot be set, but scores accumulated in the threads can be referenced after evaluation.  Also, none of the field values for the rules called by the rules listed in the compositeRules list are available outside the thread in which they are processed.  So, rules referenced by _thread_ rules must be able to be processed independently of other parent thread rules.  But, variable values in the Variables collection when the thread rule is called are available to the thread rules.
 
-## Accessing field values from other rules at runtime
-
-Each of the rule fields values can be accessed by other rules at runtime.  They are added to the variables collection and can be referenced using the field name followed by an underscore and then the rule number.  For example to access the passReason value for rule 15, use `passReason_15`.  To access the compositePassActions list, use `compositePassActions_15`.  Scores can be used to calculate expressions, like `passScore_231 * (passScore_17 / compositePassScore_31)`.
-
 ## Document definition fields
 
 There are five fields for use in identifying a particular document:
 
- 1. documentId - an ID unique to the particular document.  This is useful at runtime, particularly when retrieving a rule definition from a no-sql database, like MongoDB.
+ 1. documentId - an ID unique to the particular document.  It is recommended the documentId be set as it is quite useful for identifying various definition documents.  It is also used for field artifact namespace at runtime, and for this reason no spaces should be used.  It is recommended the documentId value be kept to a minimum so variable names are manageable: use the description field when more detail is needed.
  1. description - this is for providing a meaningful description of the rules in the document.
  1. version - always a good idea to version your documents.
  1. documentTags - document tags are used to further define a document.  Tags can be used for things like authorization in databases or display control in custom rule definition editors.
@@ -200,7 +197,9 @@ There are five fields for use in identifying a particular document:
 	"documentTags" : ["test","partial"],
 	"startRule" : "14",
 
-Note that these values are not used when evaluating rules at runtime.
+## Accessing field artifact values from other rules at runtime
+
+Each of the rule field artifact values can be accessed by other rules at runtime.  Again, field artifacts are available only if the rule has been evaluated at runtime.  They are added to the variables collection and can be referenced using the documentId, the field name, and the rule number.  For example to access the passReason value for rule 15 in document "CORE_RULES_27", use `CORE_RULES_27_passReason_15`.  To access the compositePassActions list, use `CORE_RULES_27_compositePassActions_15`.  Scores can be used to calculate expressions, like `CORE_RULES_27_passScore_231 * (CORE_RULES_27_passScore_17 / CORE_RULES_27_compositePassScore_31)`.
 
 ## Fields not yet implemented
 
@@ -218,8 +217,8 @@ Here is an example of a calc rule:
 				"ruleType" : "calc",
 				"ruleNumber" : "1",
 				"description" : "Rule 1 passes",
-				"expression" : "amount1 >= 1 && name1.matches('Buggs.*') && compositePassFlags_23.contains('Sunny')",
-				"handlerClass" : "com.synditcorp.rulesengine.handlers.DefaultRuleHandler",`
+				"expression" : "amount1 >= 1 && name1.matches('Buggs.*') && CORE_RULES_27_compositePassFlags_23.contains('Sunny')",
+				"handlerClass" : "com.synditcorp.ruleengine.handlers.ExpressionRuleHandler",`
 				"active" : "true",
 				"effectiveDate" : null,
 				"expirationDate" : null,
@@ -256,8 +255,8 @@ Here is an example of an "and" rule:
 				"expirationDate" : null,
 				"passKey" : ["passKey_10"],
 				"failKey" : ["failKey_10"],
-				"passScore" : "passScore_27 + 13",
-				"failScore" : "passScore_27 - 13",			
+				"passScore" : "CORE_RULES_27_passScore_27 + 13",
+				"failScore" : "CORE_RULES_27_passScore_27 - 13",			
 				"passFlag" : ["10FlagP"],
 				"failFlag" : ["10FlagF"],
 				"passReason" : ["10ReasonP"],
@@ -411,7 +410,28 @@ The Syndit Rule Engine code is intended to be very simple, with the definition d
 
 The Syndit Rule Engine is very flexible.  Because at runtime any rule can be called directly, you can put all your company's rules into one document.  Or, you can organize you rules into multiple documents for use in multiple instances.  Even if you have a decision tree within a document, nothing is stopping you from having other trees or other stand alone rules in the same document. 
 
-Rules can be organized into a common rule document and then use-specific rule documents.  An instance of the Engine with common rules can be injected into the use-specific instance by adding the common instance into the variables map object.  Then, a simple handler that implements RuleClassHandler can be written and used to refer to the common instance from the variables map.  Keep in mind the rule numbers must be unique across the common and use-specific documents.
+Rules can be organized into a common rule document and then use-specific rule documents.  An instance of the Engine with common rules can be injected into the use-specific instance by adding the common instance into the variables map object.  Then, a simple handler that implements RuleClassHandler can be written and used to refer to the common instance from the variables map.  Keep in mind the documentId field value is used for variable namespace to keep the variable artifact names unique across the common and use-specific documents.
+
+	public class CommonRuleHandler implements RuleClassHandler {
+	
+		public Boolean processCalcRule(String ruleExpression, TreeMap<String, Object> variables) throws Exception {
+			try {
+				RuleEvaluator ruleEvaluator = (RuleEvaluator) variables.get("myCommonRuleEvaluator"); 
+				variables.remove("myCommonRuleEvaluator"); //remove so no recursive collection reference
+				ruleEvaluator.setVariables(variables);
+				Integer ruleNumber = Integer.parseInt(ruleExpression); //pass the myCommonRuleEvaluator rule number in the expression
+				boolean result = ruleEvaluator.evaluateRule(ruleNumber);
+				ruleEvaluator.setVariables(null); 
+				variables.put("myCommonRuleEvaluator", ruleEvaluator); //put back to collection
+				return Boolean.valueOf(result);
+			} catch(Exception e) {
+				LOGGER.debug("Unable to process expression");
+				return false;
+			}
+		}
+	}
+
+Note, in the use-specific definition document, the handlerClass value of the calc rule that calls the common document rule will be the fully-qualified name of this class.
 
 ## Use many instances
 
