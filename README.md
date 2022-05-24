@@ -410,28 +410,31 @@ The Syndit Rule Engine code is intended to be very simple, with the definition d
 
 The Syndit Rule Engine is very flexible.  Because at runtime any rule can be called directly, you can put all your company's rules into one document.  Or, you can organize you rules into multiple documents for use in multiple instances.  Even if you have a decision tree within a document, nothing is stopping you from having other trees or other stand alone rules in the same document. 
 
-Rules can be organized into a common rule document and then use-specific rule documents.  An instance of the Engine with common rules can be injected into the use-specific instance by adding the common instance into the variables map object.  Then, a simple handler that implements RuleClassHandler can be written and used to refer to the common instance from the variables map.  Keep in mind the documentId field value is used for variable namespace to keep the variable artifact names unique across the common and use-specific documents.
+###Calling rules in other documents
 
-	public class CommonRuleHandler implements RuleClassHandler {
+Rules can reference other document rules.  For instance, rules can be organized into a common rules document and then use-specific rule documents.  To refer to other document rules, write a simple handler that extends InstanceHandler:
+
+	import com.synditcorp.ruleengine.handlers.InstanceHandler;
 	
-		public Boolean processCalcRule(String ruleExpression, TreeMap<String, Object> variables) throws Exception {
-			try {
-				RuleEvaluator ruleEvaluator = (RuleEvaluator) variables.get("myCommonRuleEvaluator"); 
-				variables.remove("myCommonRuleEvaluator"); //remove so no recursive collection reference
-				ruleEvaluator.setVariables(variables);
-				Integer ruleNumber = Integer.parseInt(ruleExpression); //pass the myCommonRuleEvaluator rule number in the expression
-				boolean result = ruleEvaluator.evaluateRule(ruleNumber);
-				ruleEvaluator.setVariables(null); 
-				variables.put("myCommonRuleEvaluator", ruleEvaluator); //put back to collection
-				return Boolean.valueOf(result);
-			} catch(Exception e) {
-				LOGGER.debug("Unable to process expression");
-				return false;
-			}
+	public class CommonRuleHandler extends InstanceHandler {
+	
+		public CommonRuleHandler() {
+			super.instanceName = "commonRuleHandler";
 		}
 	}
+	
+Reference this handler class in main document calc rules.  The "expression" field contains the rule number in the common rule document.
 
-Note, in the use-specific definition document, the handlerClass value of the calc rule that calls the common document rule will be the fully-qualified name of this class.
+	"handlerClass" : "com.yourcompany.handlers.CommonRuleHandler",
+	"expression" : "23"
+
+Then, create an instance of the Engine with common rules and add this instance to the main Engine instance's variables collection.  
+
+	mainInstance.getVariables().put("commonRuleHandler", commonInstance);
+
+Keep in mind the documentId field value is used for variable namespace to keep the variable artifact names unique across the common and use-specific documents.
+
+An example of nesting Rule Engine instances can be found in the test.java package.
 
 ## Use many instances
 

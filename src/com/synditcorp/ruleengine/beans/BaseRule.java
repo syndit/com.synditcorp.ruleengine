@@ -16,7 +16,7 @@ import java.util.Date;
 
 import com.synditcorp.ruleengine.interfaces.Rule;
 
-public class BaseRule implements Rule {
+abstract class BaseRule implements Rule {
 
 	private Integer ruleNumber;
 	private String ruleType;

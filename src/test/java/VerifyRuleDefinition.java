@@ -11,8 +11,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package test.java;
 
-import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
-
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -28,8 +26,9 @@ public class VerifyRuleDefinition {
 		try {
 
 			String jsonFileName = (String) args[0];
+			String jsonCommonFileName = (String) args[1];
 			
-			verifyRules(jsonFileName);
+			verifyRules(jsonFileName, jsonCommonFileName);
 			
 		} catch (Exception e) {
 			System.out.println("RuleEngine exception: " + e );
@@ -37,7 +36,7 @@ public class VerifyRuleDefinition {
 
 	}
 
-	private static void verifyRules(String jsonFileName) throws Exception {
+	private static void verifyRules(String jsonFileName, String jsonCommonFileName) throws Exception {
 		
 		TreeMap<String, Object> variables = new TreeMap<String, Object>();
 		
@@ -55,6 +54,7 @@ public class VerifyRuleDefinition {
 		
 		TimeTrack t1 = new TimeTrack();
 		
+		//main Rule Engine instance
 		RuleJSONParser parser = new RuleJSONParser();
 		parser.loadRules(jsonFileName);
 		
@@ -64,14 +64,28 @@ public class VerifyRuleDefinition {
 		RuleEvaluator eval = new RuleEvaluator(rules);
 		eval.setVariables(variables);
 		
+		//common Rule Engine instance
+		RuleJSONParser commonParser = new RuleJSONParser();
+		commonParser.loadRules(jsonCommonFileName);
+		
+		DefaultRuleDefinition commonRules = new DefaultRuleDefinition();
+		commonRules.loadRules(commonParser);
+		
+		RuleEvaluator common = new RuleEvaluator(commonRules);
+		
+		//set common rules to main rules TreeMap collection
+		eval.getVariables().put("commonRuleHandler", common);
+		
 		System.out.println("Document: ID " + eval.getDocumentId() + ", " + eval.getDescription() + ", version " + eval.getVersion() + ", tags: " + eval.getDocumentTags());
 		
-		LOGGER.debug(TimeTrack.getElapsedTime(t1) + " milliseconds to load rules");
+		System.out.println(TimeTrack.getElapsedTime(t1) + " milliseconds to load rules");
 		
 		Integer startRule = eval.getStartRule();
 		Integer[] testRules = {startRule};
+		
+		int loopCount = 3;
 
-		for (int j = 0; j < 3; j++) {
+		for (int j = 0; j < loopCount; j++) {
 			
 			//RulesEvaluator's MVEL expressions initialized in first loop
 			System.out.println("Loop " + j + "***************************************");
@@ -84,13 +98,13 @@ public class VerifyRuleDefinition {
 					String successMsg;
 					if(result) successMsg = "Verify rules definitions was successful!";
 					else successMsg = "Verify rules definitions failed.";
-					LOGGER.debug(successMsg);
+					System.out.println(successMsg);
 				} catch (Exception e) {
 					System.out.println(e);
 				}
 			}
 			
-			LOGGER.debug(TimeTrack.getElapsedTime(t2) + " milliseconds to process rules");
+			System.out.println(TimeTrack.getElapsedTime(t2) + " milliseconds to process rules");
 			
 			for (Map.Entry<String, Object> entry : variables.entrySet()) {
 		        System.out.println(entry.getKey() +  " = " + entry.getValue());
