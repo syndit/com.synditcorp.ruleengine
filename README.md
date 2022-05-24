@@ -410,7 +410,7 @@ The Syndit Rule Engine code is intended to be very simple, with the definition d
 
 The Syndit Rule Engine is very flexible.  Because at runtime any rule can be called directly, you can put all your company's rules into one document.  Or, you can organize you rules into multiple documents for use in multiple instances.  Even if you have a decision tree within a document, nothing is stopping you from having other trees or other stand alone rules in the same document. 
 
-###Calling rules in other documents
+### Calling rules in other documents
 
 Rules can reference other document rules.  For instance, rules can be organized into a common rules document and then use-specific rule documents.  To refer to other document rules, write a simple handler that extends InstanceHandler:
 
