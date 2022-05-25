@@ -176,7 +176,7 @@ There are 10 other composite rule fields and these reference calc rule fields, o
 
 If a composite field is not to be used, set it to an empty array ([]), or don't include it in the record.
 
-###Thread Rule fields
+### Thread Rule fields
 
 _Thread_ rules are considered composite rules because they process all the rules listed in the compositeRules field list.  But, _thread_ rules only have the compositePassScore and compositeFailScore composite fields.  The scoring composite field lists cannot be set, but scores accumulated in the threads can be referenced after evaluation.  Also, none of the field values for the rules called by the rules listed in the compositeRules list are available outside the thread in which they are processed.  So, rules referenced by _thread_ rules must be able to be processed independently of other parent thread rules.  But, variable values in the Variables collection when the thread rule is called are available to the thread rules.
 
@@ -189,6 +189,7 @@ There are five fields for use in identifying a particular document:
  1. version - always a good idea to version your documents.
  1. documentTags - document tags are used to further define a document.  Tags can be used for things like authorization in databases or display control in custom rule definition editors.
  1. startRule - for decision trees, this holds the value of the base rule of the tree.  It is intended for the developers to retrieve at runtime so you don't have to rely on Jira tickets, emails, text messages, etc. to know the base rule to call. 
+
 
 
 	"definitionID" : "ORDACC",
