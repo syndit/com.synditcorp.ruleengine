@@ -122,7 +122,7 @@ _All_ composite rules are for when all the rules referenced need to be evaluated
 
 ### Thread rules
 
-_Thread_ composite rules are for when multi-threaded processing is needed.  The _thread_ rule was created to process very large decision trees, but can be used in any circumstances where runtime is an issue.  Like _all_ rules, all the rules referenced will run regardless of individual rule outcome.  The difference is the rules will be separated into blocks of rules with each block being processed in a different thread.  The default block size is 100, but this value can be overridden by calling RuleEvaluator.setThreadBlockSize() method.  Variables set in the threads do not persist after evaluation.  _Thread_ rules return TRUE if any of the reference rules return TRUE, else FALSE is returned.  Use _thread_ rules when the referenced rules can be processed independently, when processing order does not matter, and when performance is an issue.
+_Thread_ composite rules are for when multi-threaded processing is needed.  The _thread_ rule was created to process very large decision trees, but can be used in any circumstances where runtime is an issue.  Like _all_ rules, all the rules referenced will run regardless of individual rule outcome.  The difference is the rules will be separated into blocks of rules with each block being processed in a different thread.  The default block size is 100, but this value can be overridden by calling RuleEvaluator.setThreadBlockSize() method.  Variables set in the threads do not persist after evaluation.  _Thread_ rules return TRUE if any of the referenced rules return TRUE, else FALSE is returned.  Use _thread_ rules when the referenced rules can be processed independently, when processing order does not matter, and when performance is an issue.
 
 ### Not rules
 
@@ -441,9 +441,15 @@ An example of nesting Rule Engine instances can be found in the test.java packag
 
 The Engine's footprint is quite small.  Use as many implementations of the Engine as needed in your organization.  For instance, one instance can be used in an application for processing complete business rules with another instance in a different application providing simple rules for UI control.
 
-## Expressions
+## Performance
 
-MVEL is the expression language used by the Engine (you can change if you want).  At runtime, it takes time for each type of expression to initialize, so if milliseconds are critical to your SLA, keep the RuleEvaluator instance in memory and reset after each request.
+### Thread safe
+
+It takes time to parse rule documents, but the RuleDocument object is thread safe, so instances can be stored in application cache.  Do not store a RuleEvaluator object instance as it is not thread safe.
+
+### Expressions
+
+MVEL is the expression language used by the Engine.  At runtime, it takes time for each type of expression to initialize, so if milliseconds are critical to your SLA, keep the RuleEvaluator instance in memory for a given transaction's processing and, be sure to reset if variables need to be refreshed between calls.  But, Rule Evaluators are not thread safe so be mindful of this when saving an object instance.
 
 ## Logging
 
