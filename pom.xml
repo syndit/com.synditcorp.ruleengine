@@ -6,7 +6,7 @@
   <version>2.2.0</version>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>A rule engine for business rule implementations.</description>
-  <url>https://github.com/syndit/com.synditcorp.ruleengine/tree/2.1.0</url>
+  <url>https://github.com/syndit/com.synditcorp.ruleengine/tree/2.2.0</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -24,9 +24,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:git://github.com/syndit/com.synditcorp.ruleengine/tree/2.1.0</connection>
-    <url>https://github.com/syndit/com.synditcorp.ruleengine/tree/2.1.0</url>
- 	<developerConnection>scm:git:git://github.com/syndit/com.synditcorp.ruleengine/tree/2.1.0</developerConnection>
+    <connection>scm:git:git://github.com/syndit/com.synditcorp.ruleengine/tree/2.2.0</connection>
+    <url>https://github.com/syndit/com.synditcorp.ruleengine/tree/2.2.0</url>
+ 	<developerConnection>scm:git:git://github.com/syndit/com.synditcorp.ruleengine/tree/2.2.0</developerConnection>
    </scm>
 	 <distributionManagement>
 	  <snapshotRepository>
