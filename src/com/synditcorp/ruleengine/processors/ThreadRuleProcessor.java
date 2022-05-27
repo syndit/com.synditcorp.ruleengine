@@ -11,11 +11,14 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 package com.synditcorp.ruleengine.processors;
 
+import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
+
 import java.util.ArrayList;
 import java.util.concurrent.RecursiveTask;
 
 import com.synditcorp.ruleengine.RuleEvaluator;
 import com.synditcorp.ruleengine.beans.ThreadResults;
+import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 
 public class ThreadRuleProcessor extends RecursiveTask<ArrayList<ThreadResults>> {
 
@@ -36,18 +39,29 @@ public class ThreadRuleProcessor extends RecursiveTask<ArrayList<ThreadResults>>
 		for (int i = 0; i < block.size(); i++) {
 			Integer ruleNumber = block.get(i);
 			try {
-				Boolean result = ruleEvaluator.evaluateRule(ruleNumber);
 				ThreadResults results = new ThreadResults();
 				results.setRuleNumber(ruleNumber);
-				results.setResult(result);
+				threadResults.add(results);
+
+				Boolean result = null;
+				try {
+					result  = ruleEvaluator.evaluateRule(ruleNumber);
+					results.setResult(result);
+				} catch (NullPointerException e) {
+					LOGGER.info("Null pointer exception when evaluating " +  ruleNumber + " in Thread rule.");
+					continue;
+				}
+
 				if(result) {
 					results.setPassScore( (Double) ruleEvaluator.getVariables().get( ( ruleEvaluator.getDocumentId() + "_compositePassScore_" + ruleNumber) ) );
 				} 	else {
 					results.setFailScore( (Double) ruleEvaluator.getVariables().get( (  ruleEvaluator.getDocumentId() +"_compositeFailScore_" + ruleNumber) ) );
 				}
-				threadResults.add(results);
+
+			} catch (NoRuleEvaluatedException e) {
+				LOGGER.info("Rule number " + ruleNumber + " not evaluated in Thread rule.");				
 			} catch (Exception e) {
-				//let it throw back to caller
+				LOGGER.info("Exception in thread when evaluating rule number " + ruleNumber + ": " + e);
 			}
 		}
 

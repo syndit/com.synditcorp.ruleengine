@@ -2,10 +2,10 @@ package com.synditcorp.ruleengine.beans;
 
 public class ThreadResults {
 
-	private Integer ruleNumber;
-	private Boolean result;
-	private Double passScore;
-	private Double failScore;
+	private Integer ruleNumber = null;
+	private Boolean result = null;
+	private Double passScore = null;
+	private Double failScore = null;
 
 	public Integer getRuleNumber() {
 		return ruleNumber;

@@ -813,6 +813,9 @@ public class RuleEvaluator implements Cloneable {
 		Boolean result = null;
 		try {
 			result = CalcRuleProcessor.processCalcRule(ruleHandler, expression, variables);
+		} catch (NoRuleEvaluatedException e) {
+			LOGGER.info("Unable to process rule expression: \"" + expression + "\", reason: " + e);
+			throw e; 
 		} catch (Exception e) {
 			LOGGER.info("Unable to process rule expression: \"" + expression + "\", reason: " + e);
 			addExpressionFail(ruleNumber);
@@ -895,7 +898,10 @@ public class RuleEvaluator implements Cloneable {
 		//loop through all the rule results processed in the threads
 		for (int i = 0; i < threadResults.size(); i++) {
 
-			if( threadResults.get(i).getResult() == null )  continue;
+			if( threadResults.get(i).getResult() == null )  {
+				throw new NoRuleEvaluatedException(); 
+			}
+			
 			noRulesProcessed = false;
 			
 			boolean thisRulePassed = false;
@@ -1082,7 +1088,9 @@ public class RuleEvaluator implements Cloneable {
 	public  Object clone() {
 		
 		RuleEvaluator newRuleEvaluator = new RuleEvaluator(this.ruleDefinition);
-		newRuleEvaluator.setVariables(this.getVariables());
+		TreeMap<String, Object> cloneVars = new TreeMap<String, Object>();
+		cloneVars.putAll(getVariables());
+		newRuleEvaluator.setVariables(cloneVars);
 		return newRuleEvaluator;
 		
 	}

@@ -15,6 +15,7 @@ import java.util.TreeMap;
 
 import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
 import com.synditcorp.ruleengine.RuleEvaluator;
+import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 import com.synditcorp.ruleengine.interfaces.RuleClassHandler;
 
 /**
@@ -43,8 +44,11 @@ public abstract class InstanceHandler implements RuleClassHandler {
             ruleEvaluator.setVariables(null); 
             variables.put(instanceName, ruleEvaluator); //put it back to collection
             return Boolean.valueOf(result);
-        } catch(Exception e) {
-            LOGGER.debug("Unable to process expression");
+		} catch (NoRuleEvaluatedException e) {
+			 LOGGER.info("Rule number " + ruleExpression + " not evaluated.");
+			throw e;
+       } catch(Exception e) {
+            LOGGER.info("Unable to process expression in InstanceHandler");
             return false;
         }
     }
