@@ -31,26 +31,46 @@ public abstract class InstanceHandler implements RuleClassHandler {
 	 * This method evaluates a rule found in a separate Rule Engine instance that has been added to the main instance's variable collection.
 	 * @return A Boolean is returned.
 	 * @throws Exception when any exception occurs
-	 * @param The ruleExpression variable contains the rule number to call in the nested instance.  The main variables' TreeMap collection contains the 
+	 * @param ruleExpression variable contains the rule number to call in the nested instance.  The main variables' TreeMap collection contains the 
 	 * nested Rule Engine instance.
 	 */
 	public Boolean processCalcRule(String ruleExpression, TreeMap<String, Object> variables) throws Exception {
-        try {
-            RuleEvaluator ruleEvaluator = (RuleEvaluator) variables.get(instanceName); 
-            variables.remove(instanceName); //remove so don't have recursive collection
-            ruleEvaluator.setVariables(variables);
+
+		RuleEvaluator ruleEvaluator = null;
+		
+		try {
+
+        	ruleEvaluator = (RuleEvaluator) variables.get(instanceName);
+        	set(ruleEvaluator, variables);
             Integer ruleNumber = Integer.parseInt(ruleExpression); 
-            boolean result = ruleEvaluator.evaluateRule(ruleNumber);
-            ruleEvaluator.setVariables(null); 
-            variables.put(instanceName, ruleEvaluator); //put it back to collection
-            return Boolean.valueOf(result);
+			boolean result = ruleEvaluator.evaluateRule(ruleNumber);
+			reset(ruleEvaluator, variables);
+			return Boolean.valueOf(result);
+
 		} catch (NoRuleEvaluatedException e) {
-			 LOGGER.info("Rule number " + ruleExpression + " not evaluated.");
-			throw e;
-       } catch(Exception e) {
-            LOGGER.info("Unable to process expression in InstanceHandler");
-            return false;
+			LOGGER.info("Rule number " + ruleExpression + " not evaluated.");
+			reset(ruleEvaluator, variables);
+			throw e;		
+		} catch(Exception e) {
+            LOGGER.info("Unable to process expression in InstanceHandler: " + e.toString());
+            reset(ruleEvaluator, variables);
+            throw e;
         }
     }
+	
+	private void set(RuleEvaluator ruleEvaluator, TreeMap<String, Object> variables) throws Exception {
+
+		if(ruleEvaluator == null ) throw new Exception("RuleEvaluator nested instance is null.");
+        variables.remove(instanceName); //remove so don't have recursive collection
+        ruleEvaluator.setVariables(variables);
+
+	}
+	
+	private void reset(RuleEvaluator ruleEvaluator, TreeMap<String, Object> variables) throws Exception {
+
+		if(ruleEvaluator != null) ruleEvaluator.setVariables(null); 
+        variables.put(instanceName, ruleEvaluator); //put it back to collection
+
+	}
 
 }

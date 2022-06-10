@@ -13,9 +13,6 @@ package com.synditcorp.ruleengine.beans;
 
 import java.util.ArrayList;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-
 public class CompositeRule extends BaseRule {
 
 	private ArrayList<Integer> compositeRules;
