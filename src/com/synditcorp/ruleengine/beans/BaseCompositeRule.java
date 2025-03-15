@@ -9,28 +9,41 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.synditcorp.ruleengine.interfaces;
+package com.synditcorp.ruleengine.beans;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-public interface Rule {
+import com.synditcorp.ruleengine.interfaces.CompositeRule;
+import com.synditcorp.ruleengine.interfaces.CompositeRuleOutcome;
 
-	public void setRuleNumber(Integer ruleRef) throws IllegalArgumentException;
-	public Integer getRuleNumber();
-	public void setRuleType(String ruleType) throws IllegalArgumentException;
-	public String getRuleType();
-	public ArrayList<String> getRuleTags();
-	public void setRuleTags(ArrayList<String> ruleTags);
-	public void setDescription(String ruleDescription);
-	public String getDescription();
-	public void setActive(Boolean active);
-	public Boolean getActive();
-	public void setEffectiveDate(Date date);
-	public Date getEffectiveDate();
-	public void setExpirationDate(Date date);
-	public Date getExpirationDate();
-	public void setOutcomes(ArrayList<RuleOutcome> outcomes);
-	public ArrayList<RuleOutcome> getOutcomes();
+public class BaseCompositeRule extends BaseRule implements CompositeRule {
+
+	private ArrayList<Integer> compositeRules;
+	private ArrayList<CompositeRuleOutcome> compositeOutcomes;
 	
+	public BaseCompositeRule() {
+		
+	}
+
+	public ArrayList<Integer> getCompositeRules() {
+		return compositeRules;
+	}
+
+	public void setCompositeRules(ArrayList<Integer> compositeRules) {
+		this.compositeRules = compositeRules;
+	}
+
+
+	@Override
+	public void setCompositeOutcomes(ArrayList<CompositeRuleOutcome> compositeOutcomes) {
+		this.compositeOutcomes = compositeOutcomes;
+		
+	}
+
+
+	@Override
+	public ArrayList<CompositeRuleOutcome> getCompositeOutcomes() {
+		return this.compositeOutcomes;
+	}
+
 }

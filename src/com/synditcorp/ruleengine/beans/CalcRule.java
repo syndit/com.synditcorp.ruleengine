@@ -24,7 +24,8 @@ public class CalcRule extends BaseRule {
 		return expression;
 	}
 
-	public void setExpression(String expression) {
+	public void setExpression(String expression) throws IllegalArgumentException {
+		if(expression == null) throw new IllegalArgumentException("Expression must be specified for CalcRule");
 		this.expression = expression;
 	}
 
@@ -32,7 +33,8 @@ public class CalcRule extends BaseRule {
 		return this.handlerClass;
 	}
 
-	public void setHandlerClass(String handlerClass) {
+	public void setHandlerClass(String handlerClass) throws IllegalArgumentException  {
+		if(handlerClass == null) throw new IllegalArgumentException("HandlerClass must be specified for CalcRule");
 		this.handlerClass = handlerClass;
 	}
 

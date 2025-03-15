@@ -29,30 +29,11 @@ public interface RuleDefinition {
 	public boolean isAndRule(Integer ruleNumber) throws Exception;
 	public boolean isAllRule(Integer ruleNumber) throws Exception;
 	public boolean isThreadRule(Integer ruleNumber) throws Exception;
-	public ArrayList<String> getPassKeys(Integer ruleNumber) throws Exception;
-	public ArrayList<String> getFailKeys(Integer ruleNumber) throws Exception;
-	public String getPassScore(Integer ruleNumber) throws Exception;
-	public String getFailScore(Integer ruleNumber) throws Exception;
-	public ArrayList<String> getPassFlags(Integer ruleNumber) throws Exception;
-	public ArrayList<String> getFailFlags(Integer ruleNumber) throws Exception;
-	public ArrayList<String> getPassReasons(Integer ruleNumber) throws Exception;
-	public ArrayList<String> getFailReasons(Integer ruleNumber) throws Exception;
-	public ArrayList<String> getPassActions(Integer ruleNumber) throws Exception;
-	public ArrayList<String> getFailActions(Integer ruleNumber) throws Exception;
 	public String getExpression(Integer ruleNumber) throws Exception;
 	public String getHandlerClass(Integer ruleNumber) throws Exception;
-
+	public ArrayList<RuleOutcome> getOutcomes(Integer ruleNumber) throws Exception;
+	public ArrayList<CompositeRuleOutcome> getCompositeOutcomes(Integer RuleNumber) throws Exception;
 	public ArrayList<Integer> getThreadRulesList(Integer ruleNumber) throws Exception;
 	public ArrayList<Integer> getCompositeRulesList(Integer ruleNumber) throws Exception;
-	public ArrayList<Integer>  getCompositePassKeysList(Integer ruleNumber) throws Exception;
-	public ArrayList<Integer>  getCompositeFailKeysList(Integer ruleNumber) throws Exception;
-	public ArrayList<Integer>  getCompositePassScoreList(Integer ruleNumber) throws Exception;
-	public ArrayList<Integer>  getCompositeFailScoreList(Integer ruleNumber) throws Exception;
-	public ArrayList<Integer>  getCompositePassFlagsList(Integer ruleNumber) throws Exception;
-	public ArrayList<Integer>  getCompositeFailFlagsList(Integer ruleNumber) throws Exception;
-	public ArrayList<Integer>  getCompositePassReasonsList(Integer ruleNumber) throws Exception;
-	public ArrayList<Integer>  getCompositeFailReasonsList(Integer ruleNumber) throws Exception;
-	public ArrayList<Integer>  getCompositePassActionsList(Integer ruleNumber) throws Exception;
-	public ArrayList<Integer>  getCompositeFailActionsList(Integer ruleNumber) throws Exception;
 
 }

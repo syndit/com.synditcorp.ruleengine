@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.synditcorp.ruleengine.interfaces.Rule;
+import com.synditcorp.ruleengine.interfaces.RuleOutcome;
 
 abstract class BaseRule implements Rule {
 
@@ -25,65 +26,15 @@ abstract class BaseRule implements Rule {
 	private Boolean active;
 	private Date expirationDate;
 	private Date effectiveDate;
-	private ArrayList<String> passKeys;
-	private ArrayList<String> failKeys;
-	private String passScore = null;
-	private String failScore = null;
-	private ArrayList<String> passFlags;
-	private ArrayList<String> failFlags;
-	private ArrayList<String> passReasons;
-	private ArrayList<String> failReasons;
-	private ArrayList<String> passActions;
-	private ArrayList<String> failActions;
-	
+	private ArrayList<RuleOutcome> outcomes;
+
 
 	public BaseRule() {
 		
 	}
 	
 	@Override
-	public ArrayList<String> getPassFlags() {
-		return passFlags;
-	}
-
-	@Override
-	public void setPassFlags(ArrayList<String> passFlags) {
-		this.passFlags = passFlags;
-	}
-
-	@Override
-	public ArrayList<String> getFailFlags() {
-		return failFlags;
-	}
-
-	@Override
-	public void setFailFlags(ArrayList<String> failFlags) {
-		this.failFlags = failFlags;
-	}
-
-	@Override
-	public ArrayList<String> getPassReasons() {
-		return passReasons;
-	}
-
-	@Override
-	public void setPassReasons(ArrayList<String> passReasons) {
-		this.passReasons = passReasons;
-	}
-
-	@Override
-	public ArrayList<String> getFailReasons() {
-		return failReasons;
-	}
-
-	@Override
-	public void setFailReasons(ArrayList<String> failReasons) {
-		this.failReasons = failReasons;
-	}
-
-
-	@Override
-	public void setRuleType(String ruleType) {
+	public void setRuleType(String ruleType) throws IllegalArgumentException {
 		this.ruleType = ruleType;
 	}
 
@@ -95,33 +46,13 @@ abstract class BaseRule implements Rule {
 
 
 	@Override
-	public void setRuleNumber(Integer ruleNumber) {
+	public void setRuleNumber(Integer ruleNumber) throws IllegalArgumentException {
 		this.ruleNumber = ruleNumber;
 	}
 
 	@Override
 	public Integer getRuleNumber() {
 		return this.ruleNumber;
-	}
-
-	@Override
-	public void setPassKeys(ArrayList<String> passKeys) {
-		this.passKeys = passKeys;
-	}
-
-	@Override
-	public ArrayList<String> getPassKeys() {
-		return this.passKeys;
-	}
-
-	@Override
-	public void setFailKeys(ArrayList<String> failKeys) {
-		this.failKeys = failKeys;
-	}
-
-	@Override
-	public ArrayList<String> getFailKeys() {
-		return this.failKeys;
 	}
 
 	@Override
@@ -164,45 +95,6 @@ abstract class BaseRule implements Rule {
 		return this.expirationDate;
 	}
 
-	@Override
-	public void setFailActions(ArrayList<String> failActions) {
-		this.failActions = failActions;
-	}
-
-	@Override
-	public ArrayList<String> getFailActions() {
-		return this.failActions;
-	}
-
-	@Override
-	public void setPassActions(ArrayList<String> passActions) {
-		this.passActions = passActions;
-	}
-
-	@Override
-	public ArrayList<String> getPassActions() {
-		return this.passActions;
-	}
-
-	@Override
-	public String getPassScore() {
-		return passScore;
-	}
-
-	@Override
-	public void setPassScore(String passScore) {
-		this.passScore = passScore;
-	}
-
-	@Override
-	public String getFailScore() {
-		return failScore;
-	}
-
-	@Override
-	public void setFailScore(String failScore) {
-		this.failScore = failScore;
-	}
 
 	public ArrayList<String> getRuleTags() {
 		return ruleTags;
@@ -212,6 +104,16 @@ abstract class BaseRule implements Rule {
 		this.ruleTags = ruleTags;
 	}
 
+	@Override
+	public void setOutcomes(ArrayList<RuleOutcome> outcomes) {
+		this.outcomes = outcomes;
+		
+	}
+
+	@Override
+	public ArrayList<RuleOutcome> getOutcomes() {
+		return this.outcomes;
+	}
 	
 	
 }

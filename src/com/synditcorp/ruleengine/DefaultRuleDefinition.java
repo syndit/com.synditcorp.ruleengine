@@ -19,11 +19,13 @@ import com.synditcorp.ruleengine.beans.AllRule;
 import com.synditcorp.ruleengine.beans.AndRule;
 import com.synditcorp.ruleengine.beans.BaseRules;
 import com.synditcorp.ruleengine.beans.CalcRule;
-import com.synditcorp.ruleengine.beans.CompositeRule;
 import com.synditcorp.ruleengine.beans.OrRule;
 import com.synditcorp.ruleengine.beans.ThreadRule;
+import com.synditcorp.ruleengine.interfaces.CompositeRule;
+import com.synditcorp.ruleengine.interfaces.CompositeRuleOutcome;
 import com.synditcorp.ruleengine.interfaces.Rule;
 import com.synditcorp.ruleengine.interfaces.RuleDefinition;
+import com.synditcorp.ruleengine.interfaces.RuleOutcome;
 import com.synditcorp.ruleengine.interfaces.RuleParser;
 
 /**
@@ -34,11 +36,7 @@ import com.synditcorp.ruleengine.interfaces.RuleParser;
 public class DefaultRuleDefinition implements RuleDefinition {
 
 	private BaseRules baseRules;
-	private TreeMap<Integer, CalcRule> calcRules = new TreeMap<Integer, CalcRule>();
-	private TreeMap<Integer, OrRule> orRules = new TreeMap<Integer, OrRule>();
-	private TreeMap<Integer, AndRule> andRules = new TreeMap<Integer, AndRule>();
-	private TreeMap<Integer, AllRule> allRules = new TreeMap<Integer, AllRule>();
-	private TreeMap<Integer, ThreadRule> threadRules = new TreeMap<Integer, ThreadRule>();
+	private TreeMap<Integer, Rule> rules = new TreeMap<Integer, Rule>();
 	
 	public DefaultRuleDefinition() {
 		
@@ -107,7 +105,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	public void loadRules(RuleParser parser) throws Exception {
 		
 		this.baseRules = parser.getRules();
-		setManifest(this.baseRules);
+		setToRulesMap();
 		
 	}
 	
@@ -124,22 +122,65 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		loadRules(parser);
 		
 	}
-	
-	/**
-	 * Gets the passAction for a particular rule.  This returns the passAction set in the rules document.
-	 */
-	@Override
-	public ArrayList<String> getPassActions(Integer ruleNumber) throws Exception {
-		return getRule(ruleNumber).getPassActions();	}
+
 
 	/**
-	 * Gets the failAction for a particular rule.  This returns the failAction set in the rules document.
+	 * Returns "true" if the rule is a "base" rule
 	 */
 	@Override
-	public ArrayList<String> getFailActions(Integer ruleNumber) throws Exception {
-		return getRule(ruleNumber).getFailActions();	}
-
+	public boolean isCalcRule(Integer ruleNumber) throws Exception {
+		return rules.get(ruleNumber).getClass().toString().equalsIgnoreCase("calcRule");
+	}
 	
+	/**
+	 * Returns "true" if the rule is an "or" rule
+	 */
+	@Override
+	public boolean isOrRule(Integer ruleNumber) throws Exception {
+		return rules.get(ruleNumber).getClass().toString().equalsIgnoreCase("orRule");
+	}
+	
+	/**
+	 * Returns "true" if the rule is an "and" rule
+	 */
+	@Override
+	public boolean isAndRule(Integer ruleNumber) throws Exception {
+		return rules.get(ruleNumber).getClass().toString().equalsIgnoreCase("andRule");
+	}
+
+	/**
+	 * Returns "true" if the rule is an "all" rule
+	 */
+	@Override
+	public boolean isAllRule(Integer ruleNumber) throws Exception {
+		return rules.get(ruleNumber).getClass().toString().equalsIgnoreCase("allRule");
+	}
+
+	/**
+	 * Returns "true" if the rule is a "thread" rule
+	 */
+	@Override
+	public boolean isThreadRule(Integer ruleNumber) throws Exception {
+		return rules.get(ruleNumber).getClass().toString().equalsIgnoreCase("threadRule");
+	}
+
+	/**
+	 * Returns a "base" rule's expression as is set in the rules document.
+	 */
+	@Override
+	public String getExpression(Integer ruleNumber) throws Exception {
+		return ((CalcRule) getRule(ruleNumber)).getExpression();
+	}
+	
+	/**
+	 * Returns a "base" rule's Java handler class as is set in the rules document.
+	 */
+	@Override
+	public String getHandlerClass(Integer ruleNumber) throws Exception {
+		return ((CalcRule) getRule(ruleNumber)).getHandlerClass();
+	}
+	
+
 	/**
 	 * Gets the list of thread rule numbers for a particular thread rule's list that is set in the rules document.
 	 */
@@ -155,274 +196,80 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	public ArrayList<Integer> getCompositeRulesList(Integer ruleNumber) throws Exception {
 		return ((CompositeRule) getRule(ruleNumber)).getCompositeRules();
 	}
-	
-	/**
-	 * Gets the list of composite rule numbers for a particular composite rule's passScore list that is set in the rules document.
-	 */
-	@Override
-	public ArrayList<Integer> getCompositePassScoreList(Integer ruleNumber) throws Exception {
-		return ((CompositeRule) getRule(ruleNumber)).getCompositePassScore();
-	}
 
-	/**
-	 * Gets the list of composite rule numbers for a particular composite rule's failScore list that is set in the rules document.
-	 */
-	@Override
-	public ArrayList<Integer> getCompositeFailScoreList(Integer ruleNumber) throws Exception {
-		return ((CompositeRule) getRule(ruleNumber)).getCompositeFailScore();
-	}
-
-	/**
-	 * Gets the list of composite rule numbers for a particular composite rule's passActions list that is set in the rules document.
-	 */
-	@Override
-	public ArrayList<Integer> getCompositePassActionsList(Integer ruleNumber) throws Exception {
-		return ((CompositeRule) getRule(ruleNumber)).getCompositePassActions();
-	}
-
-	/**
-	 * Gets the list of composite rule numbers for a particular composite rule's failActions list that is set in the rules document.
-	 */
-	@Override
-	public ArrayList<Integer> getCompositeFailActionsList(Integer ruleNumber) throws Exception {
-		return ((CompositeRule) getRule(ruleNumber)).getCompositeFailActions();
-	}
-
-	/**
-	 * Gets the list of composite rule numbers for a particular composite rule's passFlags list that is set in the rules document.
-	 */
-	@Override
-	public ArrayList<Integer> getCompositePassFlagsList(Integer ruleNumber) throws Exception {
-		return ((CompositeRule) getRule(ruleNumber)).getCompositePassFlags();
-	}
-
-	/**
-	 * Gets the list of composite rule numbers for a particular composite rule's failFlags list that is set in the rules document.
-	 */
-	@Override
-	public ArrayList<Integer> getCompositeFailFlagsList(Integer ruleNumber) throws Exception {
-		return ((CompositeRule) getRule(ruleNumber)).getCompositeFailFlags();
-	}
-
-	/**
-	 * Gets the list of composite rule numbers for a particular composite rule's passReasons list that is set in the rules document.
-	 */
-	@Override
-	public ArrayList<Integer> getCompositePassReasonsList(Integer ruleNumber) throws Exception {
-		return ((CompositeRule) getRule(ruleNumber)).getCompositePassReasons();
-	}
-
-	/**
-	 * Gets the list of composite rule numbers for a particular composite rule's failReasons list that is set in the rules document.
-	 */
-	@Override
-	public ArrayList<Integer> getCompositeFailReasonsList(Integer ruleNumber) throws Exception {
-		return ((CompositeRule) getRule(ruleNumber)).getCompositeFailReasons();
-	}
-
-	/**
-	 * Gets the list of composite rule numbers for a particular composite rule's passKeys list that is set in the rules document.
-	 */
-	@Override
-	public ArrayList<Integer> getCompositePassKeysList(Integer ruleNumber) throws Exception {
-		return ((CompositeRule) getRule(ruleNumber)).getCompositePassKeys();
-	}
-
-	/**
-	 * Gets the list of composite rule numbers for a particular composite rule's failKeys list that is set in the rules document.
-	 */
-	@Override
-	public ArrayList<Integer> getCompositeFailKeysList(Integer ruleNumber) throws Exception {
-		return ((CompositeRule) getRule(ruleNumber)).getCompositeFailKeys();
-	}
-
-	/**
-	 * Returns "true" if the rule is a "base" rule
-	 */
-	@Override
-	public boolean isCalcRule(Integer ruleNumber) throws Exception {
-		return calcRules.containsKey(ruleNumber);
-	}
-	
-	/**
-	 * Returns "true" if the rule is an "or" rule
-	 */
-	@Override
-	public boolean isOrRule(Integer ruleNumber) throws Exception {
-		return orRules.containsKey(ruleNumber);
-	}
-	
-	/**
-	 * Returns "true" if the rule is an "and" rule
-	 */
-	@Override
-	public boolean isAndRule(Integer ruleNumber) throws Exception {
-		return andRules.containsKey(ruleNumber);
-	}
-
-	/**
-	 * Returns "true" if the rule is an "all" rule
-	 */
-	@Override
-	public boolean isAllRule(Integer ruleNumber) throws Exception {
-		return allRules.containsKey(ruleNumber);
-	}
-
-	/**
-	 * Returns "true" if the rule is a "thread" rule
-	 */
-	@Override
-	public boolean isThreadRule(Integer ruleNumber) throws Exception {
-		return threadRules.containsKey(ruleNumber);
-	}
-
-	/**
-	 * Returns a "base" rule's MVEL expression as is set in the rules document.
-	 */
-	@Override
-	public String getExpression(Integer ruleNumber) throws Exception {
-		return calcRules.get(ruleNumber).getExpression();
-	}
-	
-	/**
-	 * Returns a "base" rule's Java handler class as is set in the rules document.
-	 */
-	@Override
-	public String getHandlerClass(Integer ruleNumber) throws Exception {
-		return calcRules.get(ruleNumber).getHandlerClass();
-	}
-	
-	/**
-	 * Returns the passKey for a particular rule as set in the rules document.
-	 */
-	@Override
-	public ArrayList<String> getPassKeys(Integer ruleNumber)  throws Exception {
-		return getRule(ruleNumber).getPassKeys();
-	}
-	
-	/**
-	 * Returns the failKey for a particular rule as set in the rules document.
-	 */
-	@Override
-	public ArrayList<String> getFailKeys(Integer ruleNumber)  throws Exception {
-		return getRule(ruleNumber).getFailKeys();
-	}
 
 	/**
 	 * Returns the passScore for a particular rule as set in the rules document.
 	 */
 	@Override
-	public String getPassScore(Integer ruleNumber)  throws Exception {
-		return getRule(ruleNumber).getPassScore();
+	public ArrayList<RuleOutcome> getOutcomes(Integer ruleNumber) throws Exception {
+		return ((Rule) getRule(ruleNumber)).getOutcomes();
 	}
 	
 	/**
 	 * Returns the failScore for a particular rule as set in the rules document.
 	 */
 	@Override
-	public String getFailScore(Integer ruleNumber)  throws Exception {
-		return getRule(ruleNumber).getFailScore();
+	public ArrayList<CompositeRuleOutcome> getCompositeOutcomes(Integer ruleNumber)  throws Exception {
+		return ((CompositeRule) getRule(ruleNumber)).getCompositeOutcomes();
 	}
 
-	/**
-	 * Returns the passFlag for a particular rule as set in the rules document.
-	 */
-	@Override
-	public ArrayList<String> getPassFlags(Integer ruleNumber) throws Exception {
-		return getRule(ruleNumber).getPassFlags();
-	}
-
-	/**
-	 * Returns the failFlag for a particular rule as set in the rules document.
-	 */
-	@Override
-	public ArrayList<String> getFailFlags(Integer ruleNumber) throws Exception {
-		return getRule(ruleNumber).getFailFlags();
-	}
-
-	/**
-	 * Returns the passReason for a particular rule as set in the rules document.
-	 */
-	@Override
-	public ArrayList<String> getPassReasons(Integer ruleNumber) throws Exception {
-		return getRule(ruleNumber).getPassReasons();
-	}
-
-	/**
-	 * Returns the failReason for a particular rule as set in the rules document.
-	 */
-	@Override
-	public ArrayList<String> getFailReasons(Integer ruleNumber) throws Exception {
-		return getRule(ruleNumber).getFailReasons();
-	}
 
 	/**
 	 * Returns a Rule object for a particular rule number	
 	 */
 	@Override
 	public Rule getRule(Integer ruleNumber) throws Exception {
-
-		if(isCalcRule(ruleNumber)) {
-			return (Rule) calcRules.get(ruleNumber);
-		} else if(isAndRule(ruleNumber)) {
-			return (Rule) andRules.get(ruleNumber);
-		} else if(isOrRule(ruleNumber)) {
-			return (Rule) orRules.get(ruleNumber);
-		} else if(isAllRule(ruleNumber)) {
-			return (Rule) allRules.get(ruleNumber);
-		} else if(isThreadRule(ruleNumber)) {
-			return (Rule) threadRules.get(ruleNumber);
-		}
 		
-		return null;
+		return rules.get(ruleNumber);
 		
 	}
 
-	private void setManifest(BaseRules rules) {
-		setBaseRulesToManifest(rules);
-		setOrRulesToManifest(rules);
-		setAndRulesToManifest(rules);
-		setAllRulesToManifest(rules);
-		setThreadRulesToManifest(rules);
+	private void setToRulesMap() {
+		setBaseRules();
+		setOrRules();
+		setAndRules();
+		setAllRules();
+		setThreadRules();
 	}
 	
-	private  void setBaseRulesToManifest(BaseRules rules) {
-		ArrayList<CalcRule> ar = rules.getCalcRules();
+	private  void setBaseRules() {
+		ArrayList<CalcRule> ar = this.baseRules.getCalcRules();
 		for (Iterator<CalcRule> iterator = ar.iterator(); iterator.hasNext();) {
 			CalcRule calcRule = (CalcRule) iterator.next();
-			calcRules.put(calcRule.getRuleNumber(), calcRule);
+			this.rules.put(calcRule.getRuleNumber(), calcRule);
 		}
 	}
 
-	private void setOrRulesToManifest(BaseRules rules) {
-		ArrayList<OrRule> ar = rules.getOrRules();
+	private void setOrRules() {
+		ArrayList<OrRule> ar = this.baseRules.getOrRules();
 		for (Iterator<OrRule> iterator = ar.iterator(); iterator.hasNext();) {
 			OrRule orRule = (OrRule) iterator.next();
-			orRules.put(orRule.getRuleNumber(), orRule);
+			rules.put(orRule.getRuleNumber(), orRule);
 		}
 	}
 	
-	private void setAndRulesToManifest(BaseRules rules) {
-		ArrayList<AndRule> ar = rules.getAndRules();
+	private void setAndRules() {
+		ArrayList<AndRule> ar = this.baseRules.getAndRules();
 		for (Iterator<AndRule> iterator = ar.iterator(); iterator.hasNext();) {
 			AndRule andRule = (AndRule) iterator.next();
-			andRules.put(andRule.getRuleNumber(), andRule);
+			rules.put(andRule.getRuleNumber(), andRule);
 		}
 	}
 	
-	private void setAllRulesToManifest(BaseRules rules) {
-		ArrayList<AllRule> ar = rules.getAllRules();
+	private void setAllRules() {
+		ArrayList<AllRule> ar = this.baseRules.getAllRules();
 		for (Iterator<AllRule> iterator = ar.iterator(); iterator.hasNext();) {
 			AllRule allRule = (AllRule) iterator.next();
-			allRules.put(allRule.getRuleNumber(), allRule);
+			rules.put(allRule.getRuleNumber(), allRule);
 		}
 	}
 
-	private void setThreadRulesToManifest(BaseRules rules) {
-		ArrayList<ThreadRule> ar = rules.getThreadRules();
+	private void setThreadRules() {
+		ArrayList<ThreadRule> ar = this.baseRules.getThreadRules();
 		for (Iterator<ThreadRule> iterator = ar.iterator(); iterator.hasNext();) {
 			ThreadRule threadRule = (ThreadRule) iterator.next();
-			threadRules.put(threadRule.getRuleNumber(), threadRule);
+			rules.put(threadRule.getRuleNumber(), threadRule);
 		}
 	}
 
