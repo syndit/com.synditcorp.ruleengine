@@ -11,6 +11,8 @@ public class BaseOutcome implements Outcome {
 	private String key;
 	private String result;
 	private String type;
+	private String expression;
+	private Boolean global;
 	
 
 	@Override
@@ -48,6 +50,25 @@ public class BaseOutcome implements Outcome {
 		return this.key;
 	}
 
+	@Override
+	public void setExpression(String expression) {
+		this.expression = expression;
+	}
+
+	@Override
+	public String getExpression() {
+		return this.expression;
+	}
+
+	@Override
+	public void setGlobal(Boolean global) {
+		this.global = global;
+	}
+
+	@Override
+	public Boolean getGlobal() {
+		return this.global;
+	}
 	
 	
 }

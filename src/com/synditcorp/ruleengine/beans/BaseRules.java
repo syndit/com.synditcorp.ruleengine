@@ -22,7 +22,7 @@ public class BaseRules implements Rules {
 	private String version;
 	private Integer startRule;
 	private ArrayList<String> documentTags;
-	private ArrayList<CalcRule> calcRules;
+	private ArrayList<BaseCalcRule> calcRules;
 	private ArrayList<AndRule> andRules;
 	private ArrayList<OrRule> orRules;
 	private ArrayList<AllRule> allRules;
@@ -33,13 +33,13 @@ public class BaseRules implements Rules {
 	}
 
 	@Override
-	public ArrayList<CalcRule> getCalcRules() {
-		if(calcRules == null) calcRules = new ArrayList<CalcRule>();
+	public ArrayList<BaseCalcRule> getCalcRules() {
+		if(calcRules == null) calcRules = new ArrayList<BaseCalcRule>();
 		return calcRules;
 	}
 
 	@Override
-	public void setCalcRules(ArrayList<CalcRule> calcRules) {
+	public void setCalcRules(ArrayList<BaseCalcRule> calcRules) {
 		this.calcRules = calcRules;
 	}
 

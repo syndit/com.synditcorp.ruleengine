@@ -30,7 +30,5 @@ public interface Rule {
 	public Date getEffectiveDate();
 	public void setExpirationDate(Date date);
 	public Date getExpirationDate();
-	public void setOutcomes(ArrayList<RuleOutcome> outcomes);
-	public ArrayList<RuleOutcome> getOutcomes();
 	
 }

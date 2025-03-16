@@ -1,8 +1,8 @@
 package com.synditcorp.ruleengine.beans;
 
-import com.synditcorp.ruleengine.interfaces.RuleOutcome;
+import com.synditcorp.ruleengine.interfaces.Outcome;
 
-public class BaseRuleOutcome extends BaseOutcome implements RuleOutcome {
+public class BaseRuleOutcome extends BaseOutcome implements Outcome {
 	
 	private String expression;
 	private Boolean global;

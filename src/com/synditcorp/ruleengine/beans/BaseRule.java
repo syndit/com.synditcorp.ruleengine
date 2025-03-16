@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.synditcorp.ruleengine.interfaces.Rule;
-import com.synditcorp.ruleengine.interfaces.RuleOutcome;
 
 abstract class BaseRule implements Rule {
 
@@ -26,8 +25,6 @@ abstract class BaseRule implements Rule {
 	private Boolean active;
 	private Date expirationDate;
 	private Date effectiveDate;
-	private ArrayList<RuleOutcome> outcomes;
-
 
 	public BaseRule() {
 		
@@ -94,26 +91,18 @@ abstract class BaseRule implements Rule {
 	public Date getExpirationDate() {
 		return this.expirationDate;
 	}
-
-
+	
+	@Override
 	public ArrayList<String> getRuleTags() {
-		return ruleTags;
+		return this.ruleTags;
 	}
 
+	@Override
 	public void setRuleTags(ArrayList<String> ruleTags) {
+		if(this.ruleTags == null) this.ruleTags = new ArrayList<String>();
 		this.ruleTags = ruleTags;
 	}
 
-	@Override
-	public void setOutcomes(ArrayList<RuleOutcome> outcomes) {
-		this.outcomes = outcomes;
-		
-	}
 
-	@Override
-	public ArrayList<RuleOutcome> getOutcomes() {
-		return this.outcomes;
-	}
-	
-	
+
 }

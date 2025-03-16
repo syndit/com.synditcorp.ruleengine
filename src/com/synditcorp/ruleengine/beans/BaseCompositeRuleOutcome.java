@@ -2,20 +2,20 @@ package com.synditcorp.ruleengine.beans;
 
 import java.util.ArrayList;
 
-import com.synditcorp.ruleengine.interfaces.CompositeRuleOutcome;
+import com.synditcorp.ruleengine.interfaces.CompositeOutcome;
 
-public class BaseCompositeRuleOutcome extends BaseOutcome implements CompositeRuleOutcome {
+public class BaseCompositeRuleOutcome extends BaseOutcome implements CompositeOutcome {
 	
-	private ArrayList<Integer> rules;
+	private ArrayList<Integer> compositeRules;
 	
 	@Override
-	public void setRules(ArrayList<Integer> rules) {
-		this.rules = rules;
+	public void setCompositeRules(ArrayList<Integer> rules) {
+		this.compositeRules = rules;
 	}
 
 	@Override
-	public ArrayList<Integer> getRules() {
-		return this.rules;
+	public ArrayList<Integer> getCompositeRules() {
+		return this.compositeRules;
 	}
 
 	

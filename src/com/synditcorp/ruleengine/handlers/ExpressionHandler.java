@@ -20,10 +20,20 @@ public class ExpressionHandler {
 	/*
 	 * Run expressions where a Boolean is returned, i.e. expressions that have '==', '>', '<', 'matches', 'contains', etc. 
 	 */
-	public static Boolean evaluateExpression(String expression, TreeMap<String, Object> variables) {
+	public static Boolean evaluateBooleanExpression(String expression, TreeMap<String, Object> variables) {
 
 		Object obj = runExpression(expression, variables);
 		return (Boolean) obj;
+
+	}
+
+	/*
+	 * Run expressions where a String is returned 
+	 */
+	public static String evaluateStringExpression(String expression, TreeMap<String, Object> variables) {
+
+		Object obj = runExpression(expression, variables);
+		return (String) obj;
 
 	}
 

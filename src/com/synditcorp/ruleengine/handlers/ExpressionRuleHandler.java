@@ -19,7 +19,7 @@ public class ExpressionRuleHandler implements RuleClassHandler {
 	
 	public Boolean processCalcRule(String ruleExpression, TreeMap<String,Object> variables) throws Exception {
 		
-			return ExpressionHandler.evaluateExpression(ruleExpression, variables);
+			return ExpressionHandler.evaluateBooleanExpression(ruleExpression, variables);
 		
 	}
 

@@ -14,12 +14,12 @@ package com.synditcorp.ruleengine.beans;
 import java.util.ArrayList;
 
 import com.synditcorp.ruleengine.interfaces.CompositeRule;
-import com.synditcorp.ruleengine.interfaces.CompositeRuleOutcome;
+import com.synditcorp.ruleengine.interfaces.CompositeOutcome;
 
 public class BaseCompositeRule extends BaseRule implements CompositeRule {
 
 	private ArrayList<Integer> compositeRules;
-	private ArrayList<CompositeRuleOutcome> compositeOutcomes;
+	private ArrayList<CompositeOutcome> compositeOutcomes;
 	
 	public BaseCompositeRule() {
 		
@@ -35,14 +35,13 @@ public class BaseCompositeRule extends BaseRule implements CompositeRule {
 
 
 	@Override
-	public void setCompositeOutcomes(ArrayList<CompositeRuleOutcome> compositeOutcomes) {
+	public void setCompositeOutcomes(ArrayList<CompositeOutcome> compositeOutcomes) {
 		this.compositeOutcomes = compositeOutcomes;
 		
 	}
 
-
 	@Override
-	public ArrayList<CompositeRuleOutcome> getCompositeOutcomes() {
+	public ArrayList<CompositeOutcome> getCompositeOutcomes() {
 		return this.compositeOutcomes;
 	}
 

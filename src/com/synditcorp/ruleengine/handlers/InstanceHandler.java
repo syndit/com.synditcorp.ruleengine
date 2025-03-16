@@ -11,9 +11,10 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 package com.synditcorp.ruleengine.handlers;
 
+import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
+
 import java.util.TreeMap;
 
-import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
 import com.synditcorp.ruleengine.RuleEvaluator;
 import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 import com.synditcorp.ruleengine.interfaces.RuleClassHandler;
