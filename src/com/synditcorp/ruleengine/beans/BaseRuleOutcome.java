@@ -1,12 +1,12 @@
 package com.synditcorp.ruleengine.beans;
 
+import java.util.List;
+
 import com.synditcorp.ruleengine.interfaces.Outcome;
 
 public class BaseRuleOutcome extends BaseOutcome implements Outcome {
 	
 	private String expression;
-	private Boolean global;
-
 	
 	@Override
 	public void setExpression(String expression) {
@@ -17,18 +17,5 @@ public class BaseRuleOutcome extends BaseOutcome implements Outcome {
 	public String getExpression() {
 		return this.expression;
 	}
-
-	@Override
-	public void setGlobal(Boolean global) {
-		this.global = global;
-	}
-
-	@Override
-	public Boolean getGlobal() {
-		return this.global;
-	}
-
-	
-	
 
 }

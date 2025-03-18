@@ -24,7 +24,7 @@ public interface Rule {
 	public void setRuleTags(ArrayList<String> ruleTags);
 	public void setDescription(String ruleDescription);
 	public String getDescription();
-	public void setActive(Boolean active);
+	public void setActive(String active);
 	public Boolean getActive();
 	public void setEffectiveDate(Date date);
 	public Date getEffectiveDate();

@@ -13,6 +13,7 @@ package com.synditcorp.ruleengine.beans;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.synditcorp.ruleengine.interfaces.Rule;
 
@@ -25,6 +26,9 @@ abstract class BaseRule implements Rule {
 	private Boolean active;
 	private Date expirationDate;
 	private Date effectiveDate;
+	private static List<String> validRuleTypes = List.of("calc", "and", "or", "all", "thread");
+	private static List<String> validTrue = List.of("true", "t", "1");
+	private static List<String> validFalse = List.of("false", "f", "0");
 
 	public BaseRule() {
 		
@@ -32,6 +36,7 @@ abstract class BaseRule implements Rule {
 	
 	@Override
 	public void setRuleType(String ruleType) throws IllegalArgumentException {
+		if(!validRuleTypes.contains(ruleType)) throw new IllegalArgumentException("Rule type not valid.  Must be one of these: " + validRuleTypes);
 		this.ruleType = ruleType;
 	}
 
@@ -63,8 +68,17 @@ abstract class BaseRule implements Rule {
 	}
 
 	@Override
-	public void setActive(Boolean active) {
-		this.active = active;
+	public void setActive(String active) throws IllegalArgumentException {
+		if(active == null) return;
+		if(validTrue.contains(active)) {
+			this.active = true;
+			return;
+		}
+		if(validFalse.contains(active)) {
+			this.active = false;
+			return;
+		}
+		throw new IllegalArgumentException("Active field must be true, false, or null");
 	}
 
 	@Override
