@@ -13,6 +13,8 @@ package com.synditcorp.ruleengine.interfaces;
 
 import java.util.ArrayList;
 
+import com.synditcorp.ruleengine.beans.BaseOutcome;
+
 public interface RuleDefinition {
 
 	public String getDocumentId();
@@ -31,8 +33,8 @@ public interface RuleDefinition {
 	public boolean isThreadRule(Integer ruleNumber) throws Exception;
 	public String getExpression(Integer ruleNumber) throws Exception;
 	public String getHandlerClass(Integer ruleNumber) throws Exception;
-	public ArrayList<Outcome> getOutcomes(Integer ruleNumber) throws Exception;
-	public ArrayList<CompositeOutcome> getCompositeOutcomes(Integer RuleNumber) throws Exception;
+	public ArrayList<BaseOutcome> getOutcomes(Integer ruleNumber) throws Exception;
+	//public ArrayList<CompositeOutcome> getCompositeOutcomes(Integer RuleNumber) throws Exception;
 	public ArrayList<Integer> getThreadRulesList(Integer ruleNumber) throws Exception;
 	public ArrayList<Integer> getCompositeRulesList(Integer ruleNumber) throws Exception;
 

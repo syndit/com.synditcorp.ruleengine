@@ -11,16 +11,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.beans;
 
-import java.util.ArrayList;
-
 import com.synditcorp.ruleengine.interfaces.CalcRule;
-import com.synditcorp.ruleengine.interfaces.Outcome;
 
 public class BaseCalcRule extends BaseRule implements CalcRule {
 
 	private String expression = null;
 	private String handlerClass = null;
-	private ArrayList<Outcome> outcomes;
 
 	public BaseCalcRule() {
 		
@@ -43,17 +39,5 @@ public class BaseCalcRule extends BaseRule implements CalcRule {
 		if(handlerClass == null) throw new IllegalArgumentException("HandlerClass must be specified for CalcRule");
 		this.handlerClass = handlerClass;
 	}
-
-	@Override
-	public void setOutcomes(ArrayList<Outcome> outcomes) {
-		if( this.outcomes == null) outcomes = new ArrayList<Outcome>();
-		this.outcomes = outcomes;
-	}
-
-	@Override
-	public ArrayList<Outcome> getOutcomes() {
-		return this.outcomes;
-	}
-
 
 }

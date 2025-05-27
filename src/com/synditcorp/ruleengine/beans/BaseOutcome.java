@@ -1,5 +1,18 @@
+/*
+The MIT License (MIT)
+Copyright © 2021 Syndit Business Solutions, Inc. 
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+
 package com.synditcorp.ruleengine.beans;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -13,11 +26,12 @@ public class BaseOutcome implements Outcome {
 	private String type;
 	private String expression;
 	private Boolean global;
+	private ArrayList<Integer> compositeOutcomeRules;
 	private static final Set<String> validTypes = Set.of("number", "tag");
 	private static final List<String> validResult = List.of("pass", "fail");
 	private static final List<String> validTrue = List.of("true", "t", "1");
 	private static final List<String> validFalse = List.of("false", "f", "0");
-	
+
 
 	@Override
 	public void setResult(String result) throws IllegalArgumentException {
@@ -40,12 +54,12 @@ public class BaseOutcome implements Outcome {
 
 	@Override
 	public String getType() {
-		return this.getType();
+		return this.type;
 	}
 
 	@Override
 	public void setKey(String key) throws IllegalArgumentException {
-		if(result == null)  throw new IllegalArgumentException("Outcome key must be specified");
+		if(key == null)  throw new IllegalArgumentException("Outcome key must be specified");
 		this.key = key;
 		
 	}
@@ -84,6 +98,16 @@ public class BaseOutcome implements Outcome {
 	@Override
 	public Boolean getGlobal() {
 		return this.global;
+	}
+
+	@Override
+	public void setCompositeOutcomeRules(ArrayList<Integer> compositeOutcomeRules) {
+		this.compositeOutcomeRules = compositeOutcomeRules;
+	}
+
+	@Override
+	public ArrayList<Integer> getCompositeOutcomeRules() {
+		return this.compositeOutcomeRules;
 	}
 	
 	

@@ -14,18 +14,17 @@ package com.synditcorp.ruleengine;
 import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.concurrent.ForkJoinPool;
 
+import com.synditcorp.ruleengine.beans.BaseOutcome;
 import com.synditcorp.ruleengine.beans.ThreadResults;
 import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 import com.synditcorp.ruleengine.handlers.ExpressionHandler;
-import com.synditcorp.ruleengine.interfaces.CompositeOutcome;
-import com.synditcorp.ruleengine.interfaces.CompositeRule;
 import com.synditcorp.ruleengine.interfaces.Outcome;
 import com.synditcorp.ruleengine.interfaces.Rule;
 import com.synditcorp.ruleengine.interfaces.RuleDefinition;
-import com.synditcorp.ruleengine.interfaces.RuleOutcome;
 import com.synditcorp.ruleengine.logging.TimeTrack;
 import com.synditcorp.ruleengine.processors.CalcRuleProcessor;
 import com.synditcorp.ruleengine.processors.ThreadRuleProcessor;
@@ -217,555 +216,673 @@ public class RuleEvaluator implements Cloneable {
 
 	
 	
-	/**
-	 * Get the passKey for a particular rule.  This returns the passKey set in the rules document and that evaluated to "true" at runtime.
-	 * @return the pass keys for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getPassTags(Integer ruleNumber, String key) throws Exception {
-		if(!runtimePasses.contains(ruleNumber)) return null;
-		return getPassOutcomeTags(ruleNumber, key);
-	}
-	
-	/**
-	 * Get the failKeys for a particular rule.  This returns the failKey set in the rules document and that evaluated to "true" at runtime.
-	 * @return the fail keys a the rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getFailTags(Integer ruleNumber, String key) throws Exception {
-		if(!runtimeFails.contains(ruleNumber)) return null;
-		return getFailOutcomeTags(ruleNumber, key);
-	}
-
-	/**
-	 * Get the passScore for a particular rule.  This returns the results of the passScore expression set in the rules document and that evaluated to "true" at runtime.
-	 * @return the pass score a the rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public Double getPassNumber(Integer ruleNumber, String key) throws Exception {
-		if(!runtimePasses.contains(ruleNumber)) return null;
-		return getPassOutcomeNumber(ruleNumber, key);
-	}
-	
-	/**
-	 * Get the failScore for a particular rule.  This returns the results of the failScore expression set in the rules document and that evaluated to "true" at runtime.
-	 * @return the fail score for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public Double getFailNumber(Integer ruleNumber, String key) throws Exception {
-		if(!runtimeFails.contains(ruleNumber)) return null;
-		return getFailOutcomeNumber(ruleNumber, key);
-	}
-
+//	/**
+//	 * Get the passKey for a particular rule.  This returns the passKey set in the rules document and that evaluated to "true" at runtime.
+//	 * @return the pass keys for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getPassTags(Integer ruleNumber, String key) throws Exception {
+//		if(!runtimePasses.contains(ruleNumber)) return null;
+//		return getPassOutcomeTags(ruleNumber, key);
+//	}
+//	
+//	/**
+//	 * Get the failKeys for a particular rule.  This returns the failKey set in the rules document and that evaluated to "true" at runtime.
+//	 * @return the fail keys a the rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getFailTags(Integer ruleNumber, String key) throws Exception {
+//		if(!runtimeFails.contains(ruleNumber)) return null;
+//		return getFailOutcomeTags(ruleNumber, key);
+//	}
+//
+//	/**
+//	 * Get the passScore for a particular rule.  This returns the results of the passScore expression set in the rules document and that evaluated to "true" at runtime.
+//	 * @return the pass score a the rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public Double getPassNumber(Integer ruleNumber, String key) throws Exception {
+//		if(!runtimePasses.contains(ruleNumber)) return null;
+//		return getPassOutcomeNumber(ruleNumber, key);
+//	}
+//	
+//	/**
+//	 * Get the failScore for a particular rule.  This returns the results of the failScore expression set in the rules document and that evaluated to "true" at runtime.
+//	 * @return the fail score for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public Double getFailNumber(Integer ruleNumber, String key) throws Exception {
+//		if(!runtimeFails.contains(ruleNumber)) return null;
+//		return getFailOutcomeNumber(ruleNumber, key);
+//	}
+//
 	
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 
 	
-	/**
-	 * Get the passFlags for a particular rule.  This returns the passFlag set in the rules document and that evaluated to "true" at runtime.
-	 * @return the pass flags for the rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getPassFlags(Integer ruleNumber) throws Exception {
-		if(!runtimePasses.contains(ruleNumber)) return null;
-		return getRule(ruleNumber).getPassFlags();
-	}
-	
-	/**
-	 * Get the failFlags for a particular rule.  This returns the failFlag set in the rules document and that evaluated to "true" at runtime.
-	 * @return the fail flags for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getFailFlags(Integer ruleNumber) throws Exception {
-		if(!runtimeFails.contains(ruleNumber)) return null;
-		return ruleDefinition.getFailFlags(ruleNumber);
-	}
-	
-	/**
-	 * Get the passReasons for a particular rule.  This returns the passReason set in the rules document and that evaluated to "true" at runtime.
-	 * @return the pass reasons for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getPassReasons(Integer ruleNumber) throws Exception {
-		if(!runtimePasses.contains(ruleNumber)) return null;
-		return ruleDefinition.getPassReasons(ruleNumber);
-	}
-	
-	/**
-	 * Get the failReasons for a particular rule.  This returns the failReason set in the rules document and that evaluated to "true" at runtime.
-	 * @return the fail reasons for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getFailReasons(Integer ruleNumber) throws Exception {
-		if(!runtimeFails.contains(ruleNumber)) return null;
-		return ruleDefinition.getFailReasons(ruleNumber);
-	}
-	
-	/**
-	 * Get the passAction for a particular rule.  This returns the passAction set in the rules document and that evaluated to "true" at runtime.
-	 * @return the pass actions for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getPassActions(Integer ruleNumber) throws Exception {
-		if(!runtimePasses.contains(ruleNumber)) return null;
-		return ruleDefinition.getPassActions(ruleNumber);
-	}
-	
-	/**
-	 * Get the failAction for a particular rule.  This returns the failAction set in the rules document and that evaluated to "true" at runtime.
-	 * @return the fail actions for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getFailActions(Integer ruleNumber) throws Exception {
-		if(!runtimeFails.contains(ruleNumber)) return null;
-		return ruleDefinition.getFailActions(ruleNumber);
-	}
-
-	/**
-	 * Gets the compositePassKeys for a particular rule.  This returns a list of passKeys for the composite rule (set in the rules document)    
-	 * that evaluated to "true" at runtime.
-	 * @return the composite pass keys for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getCompositePassKeys(Integer ruleNumber) throws Exception {
-
-		ArrayList<String> keys = new ArrayList<String>();
-
-		Rule rule = getRule(ruleNumber);
-		if( rule instanceof CompositeRule) {
-			CompositeRule cr = (CompositeRule) rule;
-			ArrayList<Integer> list = cr.getCompositePassKeys();
-			if(list == null) return keys;
-
-			for (int i = 0; i < list.size(); i++) {
-				ArrayList<String> passKeys = getPassKeys(list.get(i));
-				if(passKeys == null) continue;
-				for(int j = 0; j < passKeys.size(); j++) keys.add(passKeys.get(j));
-			}
-		}
-
-		return keys;
-
-	}
-
-	/**
-	 * Gets the compositeFailKeys for a particular rule.  This returns a list of failKeys for the composite rule (set in the rules document)    
-	 * that evaluated to "false" at runtime.
-	 * @return the composite fail keys for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getCompositeFailKeys(Integer ruleNumber) throws Exception {
-
-		ArrayList<String> keys = new ArrayList<String>();
-
-		Rule rule = getRule(ruleNumber);
-		if( rule instanceof CompositeRule) {
-			CompositeRule cr = (CompositeRule) rule;
-			ArrayList<Integer> list = cr.getCompositeFailKeys();
-			if(list == null) return keys;
-
-			for (int i = 0; i < list.size(); i++) {
-				ArrayList<String> failKeys = getFailKeys(list.get(i));
-				if(failKeys == null) continue;
-				for(int j = 0; j < failKeys.size(); j++) keys.add(failKeys.get(j));
-			}
-		}
-
-		return keys;
-
-	}
-
-	/**
-	 * Gets the compositePassScore for a particular rule.  This returns the sum of the passScores for the composite rule (set in the rules document)    
-	 * that evaluated to "true" at runtime.
-	 * @return the composite pass score for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public Double getCompositePassScore(Integer ruleNumber) throws Exception {
-
-		double calcScore = 0.00;
-
-		Rule rule = getRule(ruleNumber);
-		if( rule instanceof CompositeRule) {
-			CompositeRule cr = (CompositeRule) rule;
-			ArrayList<Integer> list = cr.getCompositePassScore();			
-			if(list == null) return null;
-			for (int i = 0; i < list.size(); i++) {
-				if(getPassScore(list.get(i)) == null) continue;
-				double ruleScore = getPassScore(list.get(i)).doubleValue();
-				calcScore = calcScore + ruleScore;
-			}
-		}
-		
-		return Double.valueOf(calcScore);
-
-	}
-
-	/**
-	 * Gets the compositeFailScore for a particular rule.  This returns the sum of the failScores for the composite rule (set in the rules document)    
-	 * that evaluated to "false" at runtime.
-	 * @return the composite fail score for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public Double getCompositeFailScore(Integer ruleNumber) throws Exception {
-
-		double calcScore = 0.00;
-
-		Rule rule = getRule(ruleNumber);
-		if( rule instanceof CompositeRule) {
-			CompositeRule cr = (CompositeRule) rule;
-			ArrayList<Integer> list = cr.getCompositeFailScore();
-			if(list == null) return null;
-			for (int i = 0; i < list.size(); i++) {
-				if(getFailScore(list.get(i)) == null) continue;
-				double ruleScore = getFailScore(list.get(i)).doubleValue();
-				calcScore = calcScore + ruleScore;
-			}
-		}
-
-		return Double.valueOf(calcScore);
-
-	}
-
-	/**
-	 * Gets the compositePassFlags for a particular rule.  This returns a list of passFlags for the composite rule (set in the rules document)    
-	 * that evaluated to "true" at runtime.
-	 * @return the composite pass flags for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getCompositePassFlags(Integer ruleNumber) throws Exception {
-
-		ArrayList<String> flags = new ArrayList<String>();
-
-		Rule rule = getRule(ruleNumber);
-		if( rule instanceof CompositeRule) {
-			CompositeRule cr = (CompositeRule) rule;
-			ArrayList<Integer> list = cr.getCompositePassFlags();
-			if(list == null) return flags;
-			
-			for (int i = 0; i < list.size(); i++) {
-				ArrayList<String> passFlags = getPassFlags(list.get(i));
-				if(passFlags == null) continue;
-				for(int j = 0; j < passFlags.size(); j++) flags.add(passFlags.get(j));
-			}
-		}
-
-		return flags;
-
-	}
-
-	/**
-	 * Gets the compositeFailFlags for a particular rule.  This returns a list of failFlags for the composite rule (set in the rules document)    
-	 * that evaluated to "false" at runtime.
-	 * @return the composite fail flags for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getCompositeFailFlags(Integer ruleNumber) throws Exception {
-
-		ArrayList<String> flags = new ArrayList<String>();
-
-		Rule rule = getRule(ruleNumber);
-		if( rule instanceof CompositeRule) {
-			CompositeRule cr = (CompositeRule) rule;
-			ArrayList<Integer> list = cr.getCompositeFailFlags();
-			if(list == null) return flags;
-			
-			for (int i = 0; i < list.size(); i++) {
-				ArrayList<String> failFlags = getFailFlags(list.get(i));
-				if(failFlags == null) continue;
-				for(int j = 0; j < failFlags.size(); j++) flags.add(failFlags.get(j));
-			}
-		}
-
-		return flags;
-
-	}
-
-	/**
-	 * Gets the compositePassReasons for a particular rule.  This returns a list of passReasons for the composite rule (set in the rules document)    
-	 * that evaluated to "true" at runtime.
-	 * @return the composite pass reasons for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getCompositePassReasons(Integer ruleNumber) throws Exception {
-
-		ArrayList<String> reasons = new ArrayList<String>();
-
-		Rule rule = getRule(ruleNumber);
-		if( rule instanceof CompositeRule) {
-			CompositeRule cr = (CompositeRule) rule;
-			ArrayList<Integer> list = cr.getCompositePassReasons();
-			if(list == null) return reasons;
-			
-			for (int i = 0; i < list.size(); i++) {
-				ArrayList<String> passReasons = getPassReasons(list.get(i));
-				if(passReasons == null) continue;
-				for(int j = 0; j < passReasons.size(); j++) reasons.add(passReasons.get(j));
-			}
-		}
-
-		return reasons;
-
-	}
-
-	/**
-	 * Gets the compositeFailReasons for a particular rule.  This returns a list of failReasons for the composite rule (set in the rules document)    
-	 * that evaluated to "false" at runtime.
-	 * @return the composite fail reasons for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getCompositeFailReasons(Integer ruleNumber) throws Exception {
-
-		ArrayList<String> reasons = new ArrayList<String>();
-
-		Rule rule = getRule(ruleNumber);
-		if( rule instanceof CompositeRule) {
-			CompositeRule cr = (CompositeRule) rule;
-			ArrayList<Integer> list = cr.getCompositeFailReasons();
-			if(list == null) return reasons;
-			
-			for (int i = 0; i < list.size(); i++) {
-				ArrayList<String> failReasons = getFailReasons(list.get(i));
-				if(failReasons == null) continue;
-				for(int j = 0; j < failReasons.size(); j++) reasons.add(failReasons.get(j));
-			}
-		}
-
-		return reasons;
-
-	}
-
-	/**
-	 * Gets the compositePassActions for a particular rule.  This returns a list of passActions for the composite rule (set in the rules document)    
-	 * that evaluated to "true" at runtime.
-	 * @return the composite pass actions for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getCompositePassActions(Integer ruleNumber) throws Exception {
-
-		ArrayList<String> actions = new ArrayList<String>();
-
-		Rule rule = getRule(ruleNumber);
-		if( rule instanceof CompositeRule) {
-			CompositeRule cr = (CompositeRule) rule;
-			ArrayList<Integer> list = cr.getCompositePassActions();
-			if(list == null) return actions;
-			
-			for (int i = 0; i < list.size(); i++) {
-				ArrayList<String> passActions = getPassActions(list.get(i));
-				if(passActions == null) continue;
-				for(int j = 0; j < passActions.size(); j++) actions.add(passActions.get(j));
-			}
-		}
-
-		return actions;
-
-	}
-
-	/**
-	 * Gets the compositeFailActions for a particular rule.  This returns a list of failActions for the composite rule (set in the rules document)    
-	 * that evaluated to "false" at runtime.
-	 * @return the composite fail actions for a rule
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber value for a given rule number
-	 */
-	public ArrayList<String> getCompositeFailActions(Integer ruleNumber) throws Exception {
-
-		ArrayList<String> actions = new ArrayList<String>();
-
-		Rule rule = getRule(ruleNumber);
-		if( rule instanceof CompositeRule) {
-			CompositeRule cr = (CompositeRule) rule;
-			ArrayList<Integer> list = cr.getCompositeFailActions();
-			if(list == null) return actions;
-			
-			for (int i = 0; i < list.size(); i++) {
-				ArrayList<String> failActions = getFailActions(list.get(i));
-				if(failActions == null) continue;
-				for(int j = 0; j < failActions.size(); j++) actions.add(failActions.get(j));
-			}
-		}
-
-		return actions;
-
-	}
+//	/**
+//	 * Get the passFlags for a particular rule.  This returns the passFlag set in the rules document and that evaluated to "true" at runtime.
+//	 * @return the pass flags for the rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getPassFlags(Integer ruleNumber) throws Exception {
+//		if(!runtimePasses.contains(ruleNumber)) return null;
+//		return getRule(ruleNumber).getPassFlags();
+//	}
+//	
+//	/**
+//	 * Get the failFlags for a particular rule.  This returns the failFlag set in the rules document and that evaluated to "true" at runtime.
+//	 * @return the fail flags for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getFailFlags(Integer ruleNumber) throws Exception {
+//		if(!runtimeFails.contains(ruleNumber)) return null;
+//		return ruleDefinition.getFailFlags(ruleNumber);
+//	}
+//	
+//	/**
+//	 * Get the passReasons for a particular rule.  This returns the passReason set in the rules document and that evaluated to "true" at runtime.
+//	 * @return the pass reasons for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getPassReasons(Integer ruleNumber) throws Exception {
+//		if(!runtimePasses.contains(ruleNumber)) return null;
+//		return ruleDefinition.getPassReasons(ruleNumber);
+//	}
+//	
+//	/**
+//	 * Get the failReasons for a particular rule.  This returns the failReason set in the rules document and that evaluated to "true" at runtime.
+//	 * @return the fail reasons for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getFailReasons(Integer ruleNumber) throws Exception {
+//		if(!runtimeFails.contains(ruleNumber)) return null;
+//		return ruleDefinition.getFailReasons(ruleNumber);
+//	}
+//	
+//	/**
+//	 * Get the passAction for a particular rule.  This returns the passAction set in the rules document and that evaluated to "true" at runtime.
+//	 * @return the pass actions for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getPassActions(Integer ruleNumber) throws Exception {
+//		if(!runtimePasses.contains(ruleNumber)) return null;
+//		return ruleDefinition.getPassActions(ruleNumber);
+//	}
+//	
+//	/**
+//	 * Get the failAction for a particular rule.  This returns the failAction set in the rules document and that evaluated to "true" at runtime.
+//	 * @return the fail actions for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getFailActions(Integer ruleNumber) throws Exception {
+//		if(!runtimeFails.contains(ruleNumber)) return null;
+//		return ruleDefinition.getFailActions(ruleNumber);
+//	}
+//
+//	/**
+//	 * Gets the compositePassKeys for a particular rule.  This returns a list of passKeys for the composite rule (set in the rules document)    
+//	 * that evaluated to "true" at runtime.
+//	 * @return the composite pass keys for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getCompositePassKeys(Integer ruleNumber) throws Exception {
+//
+//		ArrayList<String> keys = new ArrayList<String>();
+//
+//		Rule rule = getRule(ruleNumber);
+//		if( rule instanceof CompositeRule) {
+//			CompositeRule cr = (CompositeRule) rule;
+//			ArrayList<Integer> list = cr.getCompositePassKeys();
+//			if(list == null) return keys;
+//
+//			for (int i = 0; i < list.size(); i++) {
+//				ArrayList<String> passKeys = getPassKeys(list.get(i));
+//				if(passKeys == null) continue;
+//				for(int j = 0; j < passKeys.size(); j++) keys.add(passKeys.get(j));
+//			}
+//		}
+//
+//		return keys;
+//
+//	}
+//
+//	/**
+//	 * Gets the compositeFailKeys for a particular rule.  This returns a list of failKeys for the composite rule (set in the rules document)    
+//	 * that evaluated to "false" at runtime.
+//	 * @return the composite fail keys for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getCompositeFailKeys(Integer ruleNumber) throws Exception {
+//
+//		ArrayList<String> keys = new ArrayList<String>();
+//
+//		Rule rule = getRule(ruleNumber);
+//		if( rule instanceof CompositeRule) {
+//			CompositeRule cr = (CompositeRule) rule;
+//			ArrayList<Integer> list = cr.getCompositeFailKeys();
+//			if(list == null) return keys;
+//
+//			for (int i = 0; i < list.size(); i++) {
+//				ArrayList<String> failKeys = getFailKeys(list.get(i));
+//				if(failKeys == null) continue;
+//				for(int j = 0; j < failKeys.size(); j++) keys.add(failKeys.get(j));
+//			}
+//		}
+//
+//		return keys;
+//
+//	}
+//
+//	/**
+//	 * Gets the compositePassScore for a particular rule.  This returns the sum of the passScores for the composite rule (set in the rules document)    
+//	 * that evaluated to "true" at runtime.
+//	 * @return the composite pass score for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public Double getCompositePassScore(Integer ruleNumber) throws Exception {
+//
+//		double calcScore = 0.00;
+//
+//		Rule rule = getRule(ruleNumber);
+//		if( rule instanceof CompositeRule) {
+//			CompositeRule cr = (CompositeRule) rule;
+//			ArrayList<Integer> list = cr.getCompositePassScore();			
+//			if(list == null) return null;
+//			for (int i = 0; i < list.size(); i++) {
+//				if(getPassScore(list.get(i)) == null) continue;
+//				double ruleScore = getPassScore(list.get(i)).doubleValue();
+//				calcScore = calcScore + ruleScore;
+//			}
+//		}
+//		
+//		return Double.valueOf(calcScore);
+//
+//	}
+//
+//	/**
+//	 * Gets the compositeFailScore for a particular rule.  This returns the sum of the failScores for the composite rule (set in the rules document)    
+//	 * that evaluated to "false" at runtime.
+//	 * @return the composite fail score for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public Double getCompositeFailScore(Integer ruleNumber) throws Exception {
+//
+//		double calcScore = 0.00;
+//
+//		Rule rule = getRule(ruleNumber);
+//		if( rule instanceof CompositeRule) {
+//			CompositeRule cr = (CompositeRule) rule;
+//			ArrayList<Integer> list = cr.getCompositeFailScore();
+//			if(list == null) return null;
+//			for (int i = 0; i < list.size(); i++) {
+//				if(getFailScore(list.get(i)) == null) continue;
+//				double ruleScore = getFailScore(list.get(i)).doubleValue();
+//				calcScore = calcScore + ruleScore;
+//			}
+//		}
+//
+//		return Double.valueOf(calcScore);
+//
+//	}
+//
+//	/**
+//	 * Gets the compositePassFlags for a particular rule.  This returns a list of passFlags for the composite rule (set in the rules document)    
+//	 * that evaluated to "true" at runtime.
+//	 * @return the composite pass flags for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getCompositePassFlags(Integer ruleNumber) throws Exception {
+//
+//		ArrayList<String> flags = new ArrayList<String>();
+//
+//		Rule rule = getRule(ruleNumber);
+//		if( rule instanceof CompositeRule) {
+//			CompositeRule cr = (CompositeRule) rule;
+//			ArrayList<Integer> list = cr.getCompositePassFlags();
+//			if(list == null) return flags;
+//			
+//			for (int i = 0; i < list.size(); i++) {
+//				ArrayList<String> passFlags = getPassFlags(list.get(i));
+//				if(passFlags == null) continue;
+//				for(int j = 0; j < passFlags.size(); j++) flags.add(passFlags.get(j));
+//			}
+//		}
+//
+//		return flags;
+//
+//	}
+//
+//	/**
+//	 * Gets the compositeFailFlags for a particular rule.  This returns a list of failFlags for the composite rule (set in the rules document)    
+//	 * that evaluated to "false" at runtime.
+//	 * @return the composite fail flags for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getCompositeFailFlags(Integer ruleNumber) throws Exception {
+//
+//		ArrayList<String> flags = new ArrayList<String>();
+//
+//		Rule rule = getRule(ruleNumber);
+//		if( rule instanceof CompositeRule) {
+//			CompositeRule cr = (CompositeRule) rule;
+//			ArrayList<Integer> list = cr.getCompositeFailFlags();
+//			if(list == null) return flags;
+//			
+//			for (int i = 0; i < list.size(); i++) {
+//				ArrayList<String> failFlags = getFailFlags(list.get(i));
+//				if(failFlags == null) continue;
+//				for(int j = 0; j < failFlags.size(); j++) flags.add(failFlags.get(j));
+//			}
+//		}
+//
+//		return flags;
+//
+//	}
+//
+//	/**
+//	 * Gets the compositePassReasons for a particular rule.  This returns a list of passReasons for the composite rule (set in the rules document)    
+//	 * that evaluated to "true" at runtime.
+//	 * @return the composite pass reasons for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getCompositePassReasons(Integer ruleNumber) throws Exception {
+//
+//		ArrayList<String> reasons = new ArrayList<String>();
+//
+//		Rule rule = getRule(ruleNumber);
+//		if( rule instanceof CompositeRule) {
+//			CompositeRule cr = (CompositeRule) rule;
+//			ArrayList<Integer> list = cr.getCompositePassReasons();
+//			if(list == null) return reasons;
+//			
+//			for (int i = 0; i < list.size(); i++) {
+//				ArrayList<String> passReasons = getPassReasons(list.get(i));
+//				if(passReasons == null) continue;
+//				for(int j = 0; j < passReasons.size(); j++) reasons.add(passReasons.get(j));
+//			}
+//		}
+//
+//		return reasons;
+//
+//	}
+//
+//	/**
+//	 * Gets the compositeFailReasons for a particular rule.  This returns a list of failReasons for the composite rule (set in the rules document)    
+//	 * that evaluated to "false" at runtime.
+//	 * @return the composite fail reasons for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getCompositeFailReasons(Integer ruleNumber) throws Exception {
+//
+//		ArrayList<String> reasons = new ArrayList<String>();
+//
+//		Rule rule = getRule(ruleNumber);
+//		if( rule instanceof CompositeRule) {
+//			CompositeRule cr = (CompositeRule) rule;
+//			ArrayList<Integer> list = cr.getCompositeFailReasons();
+//			if(list == null) return reasons;
+//			
+//			for (int i = 0; i < list.size(); i++) {
+//				ArrayList<String> failReasons = getFailReasons(list.get(i));
+//				if(failReasons == null) continue;
+//				for(int j = 0; j < failReasons.size(); j++) reasons.add(failReasons.get(j));
+//			}
+//		}
+//
+//		return reasons;
+//
+//	}
+//
+//	/**
+//	 * Gets the compositePassActions for a particular rule.  This returns a list of passActions for the composite rule (set in the rules document)    
+//	 * that evaluated to "true" at runtime.
+//	 * @return the composite pass actions for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getCompositePassActions(Integer ruleNumber) throws Exception {
+//
+//		ArrayList<String> actions = new ArrayList<String>();
+//
+//		Rule rule = getRule(ruleNumber);
+//		if( rule instanceof CompositeRule) {
+//			CompositeRule cr = (CompositeRule) rule;
+//			ArrayList<Integer> list = cr.getCompositePassActions();
+//			if(list == null) return actions;
+//			
+//			for (int i = 0; i < list.size(); i++) {
+//				ArrayList<String> passActions = getPassActions(list.get(i));
+//				if(passActions == null) continue;
+//				for(int j = 0; j < passActions.size(); j++) actions.add(passActions.get(j));
+//			}
+//		}
+//
+//		return actions;
+//
+//	}
+//
+//	/**
+//	 * Gets the compositeFailActions for a particular rule.  This returns a list of failActions for the composite rule (set in the rules document)    
+//	 * that evaluated to "false" at runtime.
+//	 * @return the composite fail actions for a rule
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber value for a given rule number
+//	 */
+//	public ArrayList<String> getCompositeFailActions(Integer ruleNumber) throws Exception {
+//
+//		ArrayList<String> actions = new ArrayList<String>();
+//
+//		Rule rule = getRule(ruleNumber);
+//		if( rule instanceof CompositeRule) {
+//			CompositeRule cr = (CompositeRule) rule;
+//			ArrayList<Integer> list = cr.getCompositeFailActions();
+//			if(list == null) return actions;
+//			
+//			for (int i = 0; i < list.size(); i++) {
+//				ArrayList<String> failActions = getFailActions(list.get(i));
+//				if(failActions == null) continue;
+//				for(int j = 0; j < failActions.size(); j++) actions.add(failActions.get(j));
+//			}
+//		}
+//
+//		return actions;
+//
+//	}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	
 	
-	private Double getPassOutcomeNumber(Integer ruleNumber, String key) throws Exception {
+//	private Double getPassOutcomeNumber(Integer ruleNumber, String key) throws Exception {
+//		
+//		if(runtimePasses.contains(ruleNumber)) {
+//			return getOutcomeNumberRoute(ruleNumber, key, "pass");
+//		}
+//
+//		return null;
+//		
+//	}
+//	
+//	private Double getFailOutcomeNumber(Integer ruleNumber, String key) throws Exception {
+//		
+//		if(runtimeFails.contains(ruleNumber)) {
+//			return getOutcomeNumberRoute(ruleNumber, key, "fail");
+//		}
+//		
+//		return null;
+//
+//	}
+//	
+//	private Double getOutcomeNumberRoute(Integer ruleNumber, String key, String which) throws Exception {
+//
+//		if(ruleDefinition.isCalcRule(ruleNumber)) return (getOutcomeNumber(ruleNumber, key, which));
+//		else return getCompositeNumbers(ruleNumber, key, which);
+//		
+//	}
+//	
+//
+//	private ArrayList<String> getPassOutcomeTags(Integer ruleNumber, String key) throws Exception {
+//		
+//		if(runtimePasses.contains(ruleNumber)) {
+//			return getOutcomeTagsRoute(ruleNumber, key, "pass");
+//		}
+//		
+//		return null;
+//		
+//	}
+//
+//	private ArrayList<String> getFailOutcomeTags(Integer ruleNumber, String key) throws Exception {
+//		
+//		if(runtimeFails.contains(ruleNumber)) {
+//			return getOutcomeTagsRoute(ruleNumber, key, "fail");
+//		}
+//		
+//		return null;
+//		
+//	}
+//
+//	private ArrayList<String> getOutcomeTagsRoute(Integer ruleNumber, String key, String which) throws Exception {
+//
+//		if(ruleDefinition.isCalcRule(ruleNumber)) return (getOutcomeTags(ruleNumber, key, which));
+//		else return getCompositeTags(ruleNumber, key, which);
+//		
+//	}
+//	
+//	private Double getOutcomeNumber(Integer ruleNumber, String numberKey, String which) throws Exception {
+//		
+//		ArrayList<Outcome> outcomes = ruleDefinition.getOutcomes(ruleNumber);
+//		if(outcomes == null) return null;
+//		
+//		Double number = null;
+//
+//		for(int i = 0; i < outcomes.size(); i++) {
+//			if( !outcomes.get(i).getType().equalsIgnoreCase("number")) continue;
+//			if( !outcomes.get(i).getKey().equalsIgnoreCase(numberKey)) continue;
+//			if( !outcomes.get(i).getResult().equalsIgnoreCase(which)) continue;
+//			if( outcomes.get(i).getExpression() == null ) continue;
+//			Double dbl = evaluateNumberExpression( outcomes.get(i).getExpression() );
+//			if(dbl == null) continue;
+//			
+//			if(number == null) number = Double.valueOf(dbl);
+//			else number = Double.sum(dbl, number);
+//		}
+//		
+//		return number;
+//		
+//	}
+//	
+//	private Double getCompositeNumbers(Integer ruleNumber, String tagKey, String which) throws Exception {
+//		
+//		return null;
+//		
+//	}
+//
+//	private ArrayList<String> getOutcomeTags(Integer ruleNumber, String tagKey, String which) throws Exception {
+//		
+//		ArrayList<Outcome> outcomes = ruleDefinition.getOutcomes(ruleNumber);
+//		if(outcomes == null) return null;
+//		
+//		ArrayList<String> tags = null;
+//
+//		for(int i = 0; i < outcomes.size(); i++) {
+//			if( !outcomes.get(i).getType().equalsIgnoreCase("tag")) continue;
+//			if( !outcomes.get(i).getKey().equalsIgnoreCase(tagKey)) continue;
+//			if( !outcomes.get(i).getResult().equalsIgnoreCase(which)) continue;
+//			if( outcomes.get(i).getExpression() == null ) continue;
+//			
+//			String tag = evaluateStringExpression( outcomes.get(i).getExpression() );
+//			if(tag == null) continue;
+//			
+//			if(tags == null) tags = new ArrayList<String>();
+//			tags.add(tag);
+//		}
+//		
+//		return tags;
+//		
+//	}
+//	
+//	private ArrayList<String> getCompositeTags(Integer ruleNumber, String tagKey, String which) throws Exception {
+//		
+//		ArrayList<CompositeOutcome> compositeOutcomes = ruleDefinition.getCompositeOutcomes(ruleNumber);
+//		if(compositeOutcomes == null || compositeOutcomes.size() == 0) return null;
+//		
+//		ArrayList<String> compositeTags = null;
+//		
+//		for(int i = 0; i < compositeOutcomes.size(); i++) {
+//			if( !compositeOutcomes.get(i).getType().equalsIgnoreCase("tag")) continue;
+//			if( !compositeOutcomes.get(i).getKey().equalsIgnoreCase(tagKey)) continue;
+//			if( !compositeOutcomes.get(i).getResult().equalsIgnoreCase(which)) continue;
+//			
+//			String tag = evaluateStringExpression( outcomes.get(i).getExpression() );
+//			if(tag == null) continue;
+//			
+//			if(tags == null) tags = new ArrayList<String>();
+//			tags.add(tag);
+//			
+//			
+//			
+//			
+//			if( compositeOutcomes.get(i).getCompositeRules() == null || compositeOutcomes.get(i).getCompositeRules().size() == 0 ) continue;
+//			
+//			
+//			
+//			ArrayList<Integer> ruleList = compositeOutcomes.get(i).getCompositeRules();
+//			
+//			if(compositeTags == null) compositeTags = new ArrayList<String>();
+//			
+//			for(int j = 0; j < ruleList.size(); j++) {
+//				
+//				compositeTags.addAll( getOutcomeTagsRoute(ruleNumber, compositeOutcomes.get(i).getKey(), which) );
+//				
+//			}
+//			
+//		}
+//
+//		return compositeTags;
+//	
+//	}
+	
+	
+	
+	private void setGlobalPassOutcomeNumbersToVars(Integer ruleNumber) throws Exception {
 		
-		if(runtimePasses.contains(ruleNumber)) {
-			return getOutcomeNumberRoute(ruleNumber, key, "pass");
+		Rule rule = getRule(ruleNumber);
+		ArrayList<BaseOutcome> outcomes = rule.getGlobalPassNumberOutcomes();
+		if(outcomes == null) return;
+
+		Iterator<BaseOutcome> iterator = outcomes.iterator();
+		while(iterator.hasNext()) {
+			
+			BaseOutcome outcome = (BaseOutcome) iterator.next();
+			Double d = getPassOutcomeNumber(outcome);
+
 		}
 
+	}
+	
+	private Double getPassOutcomeNumber(Outcome outcome) throws Exception {
+		
+		Double outcomeNumber = getNumberOutcome(outcome);
+		
+		ArrayList<Integer> compositeRulesList = outcome.getCompositeOutcomeRules();
+		if(compositeRulesList == null) return outcomeNumber;
+		
+		Iterator<Integer> iterator = compositeRulesList.iterator();
+		while(iterator.hasNext()) {
+			
+			BaseOutcome nextOutcome = (BaseOutcome) getRule(iterator.next()).getPassNumberOutcome(outcome.getKey());
+			if(nextOutcome == null) continue;
+			
+			outcomeNumber = Double.sum(outcomeNumber, getPassOutcomeNumber(nextOutcome));
+
+		}
+		
+		return outcomeNumber;
+		
+	}
+	
+	private Double getNumberOutcome(Outcome outcome) {
+		
+		return evaluateNumberExpression(outcome.getExpression());
+		
+	}
+	
+	private void setGlobalPassOutcomeTagsToVars(Integer ruleNumber) throws Exception {
+		
+		Rule rule = getRule(ruleNumber);
+		ArrayList<BaseOutcome> outcomes = rule.getGlobalPassTagOutcomes();
+		if(outcomes == null) return;
+
+		Iterator<BaseOutcome> iterator = outcomes.iterator();
+		while(iterator.hasNext()) {
+			
+			BaseOutcome outcome = (BaseOutcome) iterator.next();
+			ArrayList<String> tagList = getPassOutcomeTag(outcome);
+
+		}
+
+	}
+	
+	private ArrayList<String> getPassOutcomeTag(Outcome outcome) throws Exception {
+		
+		ArrayList<String> outcomeTags = new ArrayList<String>();
+		outcomeTags.add(getTagOutcome(outcome));
+		
+		ArrayList<Integer> compositeRulesList = outcome.getCompositeOutcomeRules();
+		if(compositeRulesList == null) return outcomeTags;
+		
+		Iterator<Integer> iterator = compositeRulesList.iterator();
+		while(iterator.hasNext()) {
+			
+			BaseOutcome nextOutcome = (BaseOutcome) getRule(iterator.next()).getPassTagOutcome(outcome.getKey());
+			if(nextOutcome == null) continue;
+			
+			outcomeTags.addAll(getPassOutcomeTag(nextOutcome));
+
+		}
+		
+		return outcomeTags;
+		
+	}
+	private String getTagOutcome(Outcome outcome) {
+		return evaluateStringExpression(outcome.getExpression());
+	}
+	
+	
+	private void setFailOutcomesNumbersToVars(Integer ruleNumber) throws Exception {
+		
+		Rule rule = getRule(ruleNumber);
+		ArrayList<BaseOutcome> outcomes = rule.getGlobalPassNumberOutcomes();
+	}
+	
+	private void setPassOutcomeTagsToVars(Integer ruleNumber) throws Exception {
+		
+		Rule rule = getRule(ruleNumber);
+		ArrayList<BaseOutcome> outcomes = rule.getGlobalPassTagOutcomes();
+
+	}
+	
+	private void setFailOutcomesTagsToVars(Integer ruleNumber) throws Exception {
+		
+		Rule rule = getRule(ruleNumber);
+		ArrayList<BaseOutcome> outcomes = rule.getGlobalFailTagOutcomes();
+
+	}
+	
+	private Double getOutcomeNumber(Outcome outcome) {
+		
+		double d = evaluateNumberExpression(outcome.getExpression());
+		
+		if(outcome.getCompositeOutcomeRules() != null ) {
+		
+			
+			
+		}
+		
 		return null;
 		
 	}
-	
-	private Double getFailOutcomeNumber(Integer ruleNumber, String key) throws Exception {
-		
-		if(runtimeFails.contains(ruleNumber)) {
-			return getOutcomeNumberRoute(ruleNumber, key, "fail");
-		}
-		
-		return null;
-
-	}
-	
-	private Double getOutcomeNumberRoute(Integer ruleNumber, String key, String which) throws Exception {
-
-		if(ruleDefinition.isCalcRule(ruleNumber)) return (getOutcomeNumber(ruleNumber, key, which));
-		else return getCompositeNumbers(ruleNumber, key, which);
-		
-	}
-	
-
-	private ArrayList<String> getPassOutcomeTags(Integer ruleNumber, String key) throws Exception {
-		
-		if(runtimePasses.contains(ruleNumber)) {
-			return getOutcomeTagsRoute(ruleNumber, key, "pass");
-		}
-		
-		return null;
-		
-	}
-
-	private ArrayList<String> getFailOutcomeTags(Integer ruleNumber, String key) throws Exception {
-		
-		if(runtimeFails.contains(ruleNumber)) {
-			return getOutcomeTagsRoute(ruleNumber, key, "fail");
-		}
-		
-		return null;
-		
-	}
-
-	private ArrayList<String> getOutcomeTagsRoute(Integer ruleNumber, String key, String which) throws Exception {
-
-		if(ruleDefinition.isCalcRule(ruleNumber)) return (getOutcomeTags(ruleNumber, key, which));
-		else return getCompositeTags(ruleNumber, key, which);
-		
-	}
-	
-	private Double getOutcomeNumber(Integer ruleNumber, String numberKey, String which) throws Exception {
-		
-		ArrayList<Outcome> outcomes = ruleDefinition.getOutcomes(ruleNumber);
-		if(outcomes == null) return null;
-		
-		Double number = null;
-
-		for(int i = 0; i < outcomes.size(); i++) {
-			if( !outcomes.get(i).getType().equalsIgnoreCase("number")) continue;
-			if( !outcomes.get(i).getKey().equalsIgnoreCase(numberKey)) continue;
-			if( !outcomes.get(i).getResult().equalsIgnoreCase(which)) continue;
-			if( outcomes.get(i).getExpression() == null ) continue;
-			Double dbl = evaluateNumberExpression( outcomes.get(i).getExpression() );
-			if(dbl == null) continue;
-			
-			if(number == null) number = Double.valueOf(dbl);
-			else number = Double.sum(dbl, number);
-		}
-		
-		return number;
-		
-	}
-	
-	private Double getCompositeNumbers(Integer ruleNumber, String tagKey, String which) throws Exception {
-		
-		return null;
-		
-	}
-
-	private ArrayList<String> getOutcomeTags(Integer ruleNumber, String tagKey, String which) throws Exception {
-		
-		ArrayList<Outcome> outcomes = ruleDefinition.getOutcomes(ruleNumber);
-		if(outcomes == null) return null;
-		
-		ArrayList<String> tags = null;
-
-		for(int i = 0; i < outcomes.size(); i++) {
-			if( !outcomes.get(i).getType().equalsIgnoreCase("tag")) continue;
-			if( !outcomes.get(i).getKey().equalsIgnoreCase(tagKey)) continue;
-			if( !outcomes.get(i).getResult().equalsIgnoreCase(which)) continue;
-			if( outcomes.get(i).getExpression() == null ) continue;
-			
-			String tag = evaluateStringExpression( outcomes.get(i).getExpression() );
-			if(tag == null) continue;
-			
-			if(tags == null) tags = new ArrayList<String>();
-			tags.add(tag);
-		}
-		
-		return tags;
-		
-	}
-	
-	private ArrayList<String> getCompositeTags(Integer ruleNumber, String tagKey, String which) throws Exception {
-		
-		ArrayList<CompositeOutcome> compositeOutcomes = ruleDefinition.getCompositeOutcomes(ruleNumber);
-		if(compositeOutcomes == null || compositeOutcomes.size() == 0) return null;
-		
-		ArrayList<String> compositeTags = null;
-		
-		for(int i = 0; i < compositeOutcomes.size(); i++) {
-			if( !compositeOutcomes.get(i).getType().equalsIgnoreCase("tag")) continue;
-			if( !compositeOutcomes.get(i).getKey().equalsIgnoreCase(tagKey)) continue;
-			if( !compositeOutcomes.get(i).getResult().equalsIgnoreCase(which)) continue;
-			
-			String tag = evaluateStringExpression( outcomes.get(i).getExpression() );
-			if(tag == null) continue;
-			
-			if(tags == null) tags = new ArrayList<String>();
-			tags.add(tag);
-			
-			
-			
-			
-			if( compositeOutcomes.get(i).getCompositeRules() == null || compositeOutcomes.get(i).getCompositeRules().size() == 0 ) continue;
-			
-			
-			
-			ArrayList<Integer> ruleList = compositeOutcomes.get(i).getCompositeRules();
-			
-			if(compositeTags == null) compositeTags = new ArrayList<String>();
-			
-			for(int j = 0; j < ruleList.size(); j++) {
-				
-				compositeTags.addAll( getOutcomeTagsRoute(ruleNumber, compositeOutcomes.get(i).getKey(), which) );
-				
-			}
-			
-		}
-
-		return compositeTags;
-	
-	}
-	
-	
-	
-	
 	
 	
 
@@ -1109,24 +1226,24 @@ public class RuleEvaluator implements Cloneable {
 	 */
 	private void addRulePassResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
 		
-		if(! runtimePasses.contains(ruleNumber)) return;
-		
-		String ruleNoStr = ruleNumber.toString();
-
-		ArrayList<String> passKeys = getPassKeys(ruleNumber); 
-		if(passKeys != null && passKeys.size() > 0) variables.put( (this.getDocumentId() + "_passKeys_" +ruleNoStr), passKeys);
-		
-		Double passScore = getPassScore(ruleNumber);
-		if(passScore != null) variables.put( (this.getDocumentId() + "_passScore_" +ruleNoStr), passScore);
-
-		ArrayList<String> passFlags = getPassFlags(ruleNumber); 
-		if(passFlags != null && passFlags.size() > 0) variables.put( (this.getDocumentId() + "_passFlags_" +ruleNoStr), passFlags);
-		
-		ArrayList<String> passReasons = getPassReasons(ruleNumber); 
-		if(passReasons != null && passReasons.size() > 0) variables.put( (this.getDocumentId() + "_passReasons_" +ruleNoStr), passReasons);
-
-		ArrayList<String> passActions = getPassActions(ruleNumber); 
-		if(passActions != null) variables.put( (this.getDocumentId() + "_passActions_" +ruleNoStr), passActions);
+//		if(! runtimePasses.contains(ruleNumber)) return;
+//		
+//		String ruleNoStr = ruleNumber.toString();
+//
+//		ArrayList<String> passKeys = getPassKeys(ruleNumber); 
+//		if(passKeys != null && passKeys.size() > 0) variables.put( (this.getDocumentId() + "_passKeys_" +ruleNoStr), passKeys);
+//		
+//		Double passScore = getPassScore(ruleNumber);
+//		if(passScore != null) variables.put( (this.getDocumentId() + "_passScore_" +ruleNoStr), passScore);
+//
+//		ArrayList<String> passFlags = getPassFlags(ruleNumber); 
+//		if(passFlags != null && passFlags.size() > 0) variables.put( (this.getDocumentId() + "_passFlags_" +ruleNoStr), passFlags);
+//		
+//		ArrayList<String> passReasons = getPassReasons(ruleNumber); 
+//		if(passReasons != null && passReasons.size() > 0) variables.put( (this.getDocumentId() + "_passReasons_" +ruleNoStr), passReasons);
+//
+//		ArrayList<String> passActions = getPassActions(ruleNumber); 
+//		if(passActions != null) variables.put( (this.getDocumentId() + "_passActions_" +ruleNoStr), passActions);
 		
 	}
 	
@@ -1139,24 +1256,24 @@ public class RuleEvaluator implements Cloneable {
 	 */
 	private void addRuleFailResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
 		
-		if(! runtimeFails.contains(ruleNumber)) return;
-		
-		String ruleNumberStr = ruleNumber.toString();
-
-		ArrayList<String> failKeys = getFailKeys(ruleNumber); 
-		if(failKeys != null && failKeys.size() > 0) variables.put( (this.getDocumentId() + "_failKeys_" + ruleNumberStr), failKeys);
-		
-		Double failScore = getFailScore(ruleNumber);
-		if(failScore != null) variables.put( (this.getDocumentId() + "_failScore_" + ruleNumberStr), failScore);
-		
-		ArrayList<String> failFlags = getFailFlags(ruleNumber); 
-		if(failFlags != null && failFlags.size() > 0) variables.put( (this.getDocumentId() + "_failFlags_" + ruleNumberStr), failFlags);
-		
-		ArrayList<String> failReasons = getFailReasons(ruleNumber); 
-		if(failReasons != null && failReasons.size() > 0) variables.put( (this.getDocumentId() + "_failReasons_" + ruleNumberStr), failReasons);
-		
-		ArrayList<String> failActions = getFailActions(ruleNumber); 
-		if(failActions != null && failActions.size() > 0) variables.put( (this.getDocumentId() + "_failActions_" + ruleNumberStr), failActions);
+//		if(! runtimeFails.contains(ruleNumber)) return;
+//		
+//		String ruleNumberStr = ruleNumber.toString();
+//
+//		ArrayList<String> failKeys = getFailKeys(ruleNumber); 
+//		if(failKeys != null && failKeys.size() > 0) variables.put( (this.getDocumentId() + "_failKeys_" + ruleNumberStr), failKeys);
+//		
+//		Double failScore = getFailScore(ruleNumber);
+//		if(failScore != null) variables.put( (this.getDocumentId() + "_failScore_" + ruleNumberStr), failScore);
+//		
+//		ArrayList<String> failFlags = getFailFlags(ruleNumber); 
+//		if(failFlags != null && failFlags.size() > 0) variables.put( (this.getDocumentId() + "_failFlags_" + ruleNumberStr), failFlags);
+//		
+//		ArrayList<String> failReasons = getFailReasons(ruleNumber); 
+//		if(failReasons != null && failReasons.size() > 0) variables.put( (this.getDocumentId() + "_failReasons_" + ruleNumberStr), failReasons);
+//		
+//		ArrayList<String> failActions = getFailActions(ruleNumber); 
+//		if(failActions != null && failActions.size() > 0) variables.put( (this.getDocumentId() + "_failActions_" + ruleNumberStr), failActions);
 		
 	}
 	
@@ -1169,26 +1286,26 @@ public class RuleEvaluator implements Cloneable {
 	 */
 	private void addCompositeRulePassResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
 
-		if(! runtimePasses.contains(ruleNumber)) return;
-		
-		addRulePassResultsToVariables(ruleNumber, variables);
-		
-		String ruleNumberStr = ruleNumber.toString();
-
-		ArrayList<String> passKeys = getCompositePassKeys(ruleNumber);
-		variables.put( (this.getDocumentId() + "_compositePassKeys_" + ruleNumberStr), passKeys);
-		
-		Double passScore = getCompositePassScore(ruleNumber);
-		variables.put( (this.getDocumentId() + "_compositePassScore_" + ruleNumberStr), passScore);
-		
-		ArrayList<String> passFlags = getCompositePassFlags(ruleNumber);
-		variables.put( (this.getDocumentId() + "_compositePassFlags_" + ruleNumberStr), passFlags);
-		
-		ArrayList<String> passReasons = getCompositePassReasons(ruleNumber);
-		variables.put( (this.getDocumentId() + "_compositePassReasons_" + ruleNumberStr), passReasons);
-		
-		ArrayList<String> passActions = getCompositePassActions(ruleNumber);
-		variables.put( (this.getDocumentId() + "_compositePassActions_" + ruleNumberStr), passActions);
+//		if(! runtimePasses.contains(ruleNumber)) return;
+//		
+//		addRulePassResultsToVariables(ruleNumber, variables);
+//		
+//		String ruleNumberStr = ruleNumber.toString();
+//
+//		ArrayList<String> passKeys = getCompositePassKeys(ruleNumber);
+//		variables.put( (this.getDocumentId() + "_compositePassKeys_" + ruleNumberStr), passKeys);
+//		
+//		Double passScore = getCompositePassScore(ruleNumber);
+//		variables.put( (this.getDocumentId() + "_compositePassScore_" + ruleNumberStr), passScore);
+//		
+//		ArrayList<String> passFlags = getCompositePassFlags(ruleNumber);
+//		variables.put( (this.getDocumentId() + "_compositePassFlags_" + ruleNumberStr), passFlags);
+//		
+//		ArrayList<String> passReasons = getCompositePassReasons(ruleNumber);
+//		variables.put( (this.getDocumentId() + "_compositePassReasons_" + ruleNumberStr), passReasons);
+//		
+//		ArrayList<String> passActions = getCompositePassActions(ruleNumber);
+//		variables.put( (this.getDocumentId() + "_compositePassActions_" + ruleNumberStr), passActions);
 
 	}
 
@@ -1201,26 +1318,26 @@ public class RuleEvaluator implements Cloneable {
 	 */
 	private void addCompositeRuleFailResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
 		
-		if(! runtimeFails.contains(ruleNumber)) return;
-		
-		addRuleFailResultsToVariables(ruleNumber, variables);
-		
-		String ruleNumberStr = ruleNumber.toString();
-
-		ArrayList<String> failKeys = getCompositeFailKeys(ruleNumber);
-		variables.put( (this.getDocumentId() + "_compositeFailKeys_" + ruleNumberStr), failKeys);
-		
-		Double failScore = getCompositeFailScore(ruleNumber);
-		variables.put( (this.getDocumentId() + "_compositeFailScore_" + ruleNumberStr), failScore);
-
-		ArrayList<String> failFlags = getCompositeFailFlags(ruleNumber);
-		variables.put( (this.getDocumentId() + "_compositeFailFlags_" + ruleNumberStr), failFlags);
-		
-		ArrayList<String> failReasons = getCompositeFailReasons(ruleNumber);
-		variables.put( (this.getDocumentId() + "_compositeFailReasons_" + ruleNumberStr), failReasons);
-		
-		ArrayList<String> failActions = getCompositeFailActions(ruleNumber);
-		variables.put( (this.getDocumentId() + "_compositeFailActions_" + ruleNumberStr), failActions);
+//		if(! runtimeFails.contains(ruleNumber)) return;
+//		
+//		addRuleFailResultsToVariables(ruleNumber, variables);
+//		
+//		String ruleNumberStr = ruleNumber.toString();
+//
+//		ArrayList<String> failKeys = getCompositeFailKeys(ruleNumber);
+//		variables.put( (this.getDocumentId() + "_compositeFailKeys_" + ruleNumberStr), failKeys);
+//		
+//		Double failScore = getCompositeFailScore(ruleNumber);
+//		variables.put( (this.getDocumentId() + "_compositeFailScore_" + ruleNumberStr), failScore);
+//
+//		ArrayList<String> failFlags = getCompositeFailFlags(ruleNumber);
+//		variables.put( (this.getDocumentId() + "_compositeFailFlags_" + ruleNumberStr), failFlags);
+//		
+//		ArrayList<String> failReasons = getCompositeFailReasons(ruleNumber);
+//		variables.put( (this.getDocumentId() + "_compositeFailReasons_" + ruleNumberStr), failReasons);
+//		
+//		ArrayList<String> failActions = getCompositeFailActions(ruleNumber);
+//		variables.put( (this.getDocumentId() + "_compositeFailActions_" + ruleNumberStr), failActions);
 
 	}
 	

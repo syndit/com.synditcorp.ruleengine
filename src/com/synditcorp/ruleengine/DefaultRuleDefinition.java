@@ -18,13 +18,12 @@ import java.util.TreeMap;
 import com.synditcorp.ruleengine.beans.AllRule;
 import com.synditcorp.ruleengine.beans.AndRule;
 import com.synditcorp.ruleengine.beans.BaseCalcRule;
+import com.synditcorp.ruleengine.beans.BaseOutcome;
 import com.synditcorp.ruleengine.beans.BaseRules;
 import com.synditcorp.ruleengine.beans.OrRule;
 import com.synditcorp.ruleengine.beans.ThreadRule;
 import com.synditcorp.ruleengine.interfaces.CalcRule;
-import com.synditcorp.ruleengine.interfaces.CompositeOutcome;
 import com.synditcorp.ruleengine.interfaces.CompositeRule;
-import com.synditcorp.ruleengine.interfaces.Outcome;
 import com.synditcorp.ruleengine.interfaces.Rule;
 import com.synditcorp.ruleengine.interfaces.RuleDefinition;
 import com.synditcorp.ruleengine.interfaces.RuleParser;
@@ -201,18 +200,18 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	/**
 	 * Returns the passScore for a particular rule as set in the rules document.
 	 */
-	@Override
-	public ArrayList<Outcome> getOutcomes(Integer ruleNumber) throws Exception {
-		return ((CalcRule) getRule(ruleNumber)).getOutcomes();
-	}
+//	@Override
+//	public ArrayList<BaseOutcome> getOutcomes(Integer ruleNumber) throws Exception {
+//		return ((CalcRule) getRule(ruleNumber)).getOutcomes();
+//	}
 	
-	/**
-	 * Returns the failScore for a particular rule as set in the rules document.
-	 */
-	@Override
-	public ArrayList<CompositeOutcome> getCompositeOutcomes(Integer ruleNumber)  throws Exception {
-		return ((CompositeRule) getRule(ruleNumber)).getCompositeOutcomes();
-	}
+//	/**
+//	 * Returns the failScore for a particular rule as set in the rules document.
+//	 */
+//	@Override
+//	public ArrayList<CompositeOutcome> getCompositeOutcomes(Integer ruleNumber)  throws Exception {
+//		return ((CompositeRule) getRule(ruleNumber)).getCompositeOutcomes();
+//	}
 
 
 	/**
@@ -237,6 +236,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		ArrayList<BaseCalcRule> ar = this.baseRules.getCalcRules();
 		for (Iterator<BaseCalcRule> iterator = ar.iterator(); iterator.hasNext();) {
 			BaseCalcRule calcRule = (BaseCalcRule) iterator.next();
+			calcRule.setOutcomesToCategories();
 			this.aggregateRules.put(calcRule.getRuleNumber(), calcRule);
 		}
 	}
@@ -245,6 +245,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		ArrayList<OrRule> ar = this.baseRules.getOrRules();
 		for (Iterator<OrRule> iterator = ar.iterator(); iterator.hasNext();) {
 			OrRule orRule = (OrRule) iterator.next();
+			orRule.setOutcomesToCategories();
 			this.aggregateRules.put(orRule.getRuleNumber(), orRule);
 		}
 	}
@@ -253,6 +254,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		ArrayList<AndRule> ar = this.baseRules.getAndRules();
 		for (Iterator<AndRule> iterator = ar.iterator(); iterator.hasNext();) {
 			AndRule andRule = (AndRule) iterator.next();
+			andRule.setOutcomesToCategories();
 			this.aggregateRules.put(andRule.getRuleNumber(), andRule);
 		}
 	}
@@ -261,6 +263,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		ArrayList<AllRule> ar = this.baseRules.getAllRules();
 		for (Iterator<AllRule> iterator = ar.iterator(); iterator.hasNext();) {
 			AllRule allRule = (AllRule) iterator.next();
+			allRule.setOutcomesToCategories();
 			this.aggregateRules.put(allRule.getRuleNumber(), allRule);
 		}
 	}
@@ -269,8 +272,15 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		ArrayList<ThreadRule> ar = this.baseRules.getThreadRules();
 		for (Iterator<ThreadRule> iterator = ar.iterator(); iterator.hasNext();) {
 			ThreadRule threadRule = (ThreadRule) iterator.next();
+			threadRule.setOutcomesToCategories();
 			this.aggregateRules.put(threadRule.getRuleNumber(), threadRule);
 		}
+	}
+
+	@Override
+	public ArrayList<BaseOutcome> getOutcomes(Integer ruleNumber) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

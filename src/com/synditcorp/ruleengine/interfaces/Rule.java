@@ -13,6 +13,9 @@ package com.synditcorp.ruleengine.interfaces;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
+
+import com.synditcorp.ruleengine.beans.BaseOutcome;
 
 public interface Rule {
 
@@ -30,5 +33,15 @@ public interface Rule {
 	public Date getEffectiveDate();
 	public void setExpirationDate(Date date);
 	public Date getExpirationDate();
-	
+	public void setOutcomes(ArrayList<BaseOutcome> outcomes);
+	public ArrayList<BaseOutcome> getOutcomes();
+	public Outcome getPassNumberOutcome(String key);
+	public Outcome getFailNumberOutcome(String key);
+	public Outcome getPassTagOutcome(String key);
+	public Outcome getFailTagOutcome(String key);
+	public ArrayList<BaseOutcome> getGlobalPassNumberOutcomes();
+	public ArrayList<BaseOutcome> getGlobalFailNumberOutcomes();
+	public ArrayList<BaseOutcome> getGlobalPassTagOutcomes();
+	public ArrayList<BaseOutcome> getGlobalFailTagOutcomes();
+
 }
