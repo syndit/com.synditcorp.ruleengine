@@ -26,9 +26,9 @@ public class VerifyRuleDefinition {
 		try {
 
 			String jsonFileName = (String) args[0];
-			String jsonCommonFileName = (String) args[1];
+			//String jsonCommonFileName = (String) args[1];
 			
-			verifyRules(jsonFileName, jsonCommonFileName);
+			verifyRules(jsonFileName);
 			
 		} catch (Exception e) {
 			System.out.println("RuleEngine exception: " + e );
@@ -36,7 +36,7 @@ public class VerifyRuleDefinition {
 
 	}
 
-	private static void verifyRules(String jsonFileName, String jsonCommonFileName) throws Exception {
+	private static void verifyRules(String jsonFileName) throws Exception {
 		
 		TreeMap<String, Object> variables = new TreeMap<String, Object>();
 		
@@ -63,56 +63,65 @@ public class VerifyRuleDefinition {
 		
 		RuleEvaluator eval = new RuleEvaluator(rules);
 		eval.setVariables(variables);
-		
-		//common Rule Engine instance
-		RuleJSONParser commonParser = new RuleJSONParser();
-		commonParser.loadRules(jsonCommonFileName);
-		
-		DefaultRuleDefinition commonRules = new DefaultRuleDefinition();
-		commonRules.loadRules(commonParser);
-		
-		RuleEvaluator common = new RuleEvaluator(commonRules);
-		
-		//set common rules to main rules TreeMap collection
-		eval.getVariables().put("commonRuleHandler", common);
-		
-		System.out.println("Document: ID " + eval.getDocumentId() + ", " + eval.getDescription() + ", version " + eval.getVersion() + ", tags: " + eval.getDocumentTags());
-		
-		System.out.println(TimeTrack.getElapsedTime(t1) + " milliseconds to load rules");
-		
-		Integer startRule = eval.getStartRule();
-		Integer[] testRules = {startRule};
-		
-		int loopCount = 3;
 
-		for (int j = 0; j < loopCount; j++) {
-			
-			//RulesEvaluator's MVEL expressions initialized in first loop
-			System.out.println("Loop " + j + "***************************************");
-			
-			TimeTrack t2 = new TimeTrack();
-			
-			for (int i = 0; i < testRules.length; i++) {
-				try {
-					Boolean result = eval.evaluateRule(testRules[i]);
-					String successMsg;
-					if(result) successMsg = "Verify rules definitions was successful!";
-					else successMsg = "Verify rules definitions failed.";
-					System.out.println(successMsg);
-				} catch (Exception e) {
-					System.out.println(e);
-				}
-			}
-			
-			System.out.println(TimeTrack.getElapsedTime(t2) + " milliseconds to process rules");
-			
-			for (Map.Entry<String, Object> entry : variables.entrySet()) {
-		        System.out.println(entry.getKey() +  " = " + entry.getValue());
-			}
-			
-			eval.reset();
-			eval.setVariables(variables);
-		}
+		eval.evaluateRule(12);
+		
+		System.out.println(eval.getPassNumberOutcome(12, "fee"));
+		System.out.println(eval.getPassTagOutcome(1, "i18n"));
+		System.out.println(eval.getPassTagOutcome(11, "i18n"));
+		
+		System.out.println(eval.getVariables());
+		
+		//		
+//		//common Rule Engine instance
+//		RuleJSONParser commonParser = new RuleJSONParser();
+//		commonParser.loadRules(jsonCommonFileName);
+//		
+//		DefaultRuleDefinition commonRules = new DefaultRuleDefinition();
+//		commonRules.loadRules(commonParser);
+//		
+//		RuleEvaluator common = new RuleEvaluator(commonRules);
+//		
+//		//set common rules to main rules TreeMap collection
+//		eval.getVariables().put("commonRuleHandler", common);
+//		
+//		System.out.println("Document: ID " + eval.getDocumentId() + ", " + eval.getDescription() + ", version " + eval.getVersion() + ", tags: " + eval.getDocumentTags());
+//		
+//		System.out.println(TimeTrack.getElapsedTime(t1) + " milliseconds to load rules");
+//		
+//		Integer startRule = eval.getStartRule();
+//		Integer[] testRules = {startRule};
+//		
+//		int loopCount = 3;
+//
+//		for (int j = 0; j < loopCount; j++) {
+//			
+//			//RulesEvaluator's MVEL expressions initialized in first loop
+//			System.out.println("Loop " + j + "***************************************");
+//			
+//			TimeTrack t2 = new TimeTrack();
+//			
+//			for (int i = 0; i < testRules.length; i++) {
+//				try {
+//					Boolean result = eval.evaluateRule(testRules[i]);
+//					String successMsg;
+//					if(result) successMsg = "Verify rules definitions was successful!";
+//					else successMsg = "Verify rules definitions failed.";
+//					System.out.println(successMsg);
+//				} catch (Exception e) {
+//					System.out.println(e);
+//				}
+//			}
+//			
+//			System.out.println(TimeTrack.getElapsedTime(t2) + " milliseconds to process rules");
+//			
+//			for (Map.Entry<String, Object> entry : variables.entrySet()) {
+//		        System.out.println(entry.getKey() +  " = " + entry.getValue());
+//			}
+//			
+//			eval.reset();
+//			eval.setVariables(variables);
+//		}
 		
 	}
 

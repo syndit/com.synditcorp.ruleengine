@@ -2,9 +2,9 @@ package com.synditcorp.ruleengine.beans;
 
 import com.synditcorp.ruleengine.interfaces.Outcome;
 
-public class OutcomeConverter extends BaseOutcome {
+public class OutcomeExtender extends BaseOutcome {
 	
-	public OutcomeConverter(Outcome outcome) {
+	public OutcomeExtender(Outcome outcome) {
 		
 		super.setType(outcome.getType());
 		super.setKey(outcome.getKey());

@@ -13,7 +13,7 @@ package com.synditcorp.ruleengine.interfaces;
 
 import java.util.ArrayList;
 
-import com.synditcorp.ruleengine.beans.BaseOutcome;
+import com.synditcorp.ruleengine.exceptions.NoRuleFoundException;
 
 public interface RuleDefinition {
 
@@ -25,6 +25,7 @@ public interface RuleDefinition {
 	public ArrayList<String> getRuleTags(Integer ruleNumber) throws Exception;
 	public void loadRules(RuleParser parser) throws Exception;
 	public void reloadRules(RuleParser parser) throws Exception;
+	public void isRule(Integer ruleNumber) throws NoRuleFoundException;
 	public Rule getRule(Integer ruleNumber) throws Exception;
 	public boolean isCalcRule(Integer ruleNumber) throws Exception;
 	public boolean isOrRule(Integer ruleNumber) throws Exception;
