@@ -33,8 +33,6 @@ public interface RuleDefinition {
 	public boolean isThreadRule(Integer ruleNumber) throws Exception;
 	public String getExpression(Integer ruleNumber) throws Exception;
 	public String getHandlerClass(Integer ruleNumber) throws Exception;
-	public ArrayList<BaseOutcome> getOutcomes(Integer ruleNumber) throws Exception;
-	//public ArrayList<CompositeOutcome> getCompositeOutcomes(Integer RuleNumber) throws Exception;
 	public ArrayList<Integer> getThreadRulesList(Integer ruleNumber) throws Exception;
 	public ArrayList<Integer> getCompositeRulesList(Integer ruleNumber) throws Exception;
 

@@ -167,43 +167,47 @@ abstract class BaseRule implements Rule {
 	}
 
 	@Override
-	public ArrayList<BaseOutcome> getGlobalPassNumberOutcomes() {
+	public ArrayList<BaseOutcome> getPassNumberOutcomes() {
 		if(passNumbers == null) return null;
-		ArrayList<BaseOutcome> globals = new ArrayList<BaseOutcome>();
+		ArrayList<BaseOutcome> list = new ArrayList<BaseOutcome>();
 		for(Map.Entry<String, BaseOutcome>entry:passNumbers.entrySet()) {
-			if(entry.getValue().getGlobal()) globals.add(entry.getValue());
+			//if(entry.getValue().getGlobal()) globals.add(entry.getValue());
+			list.add(entry.getValue());
 		}
-		return globals;
+		return list;
 	};
 
 	@Override
-	public ArrayList<BaseOutcome> getGlobalFailNumberOutcomes() {
+	public ArrayList<BaseOutcome> getFailNumberOutcomes() {
 		if(failNumbers == null) return null;
-		ArrayList<BaseOutcome> globals = new ArrayList<BaseOutcome>();
+		ArrayList<BaseOutcome> list = new ArrayList<BaseOutcome>();
 		for(Map.Entry<String, BaseOutcome>entry:failNumbers.entrySet()) {
-			if(entry.getValue().getGlobal()) globals.add(entry.getValue());
+			//if(entry.getValue().getGlobal()) globals.add(entry.getValue());
+			list.add(entry.getValue());
 		}
-		return globals;
+		return list;
 	};
 
 	@Override
-	public ArrayList<BaseOutcome> getGlobalPassTagOutcomes() {
+	public ArrayList<BaseOutcome> getPassTagOutcomes() {
 		if(passTags == null) return null;
-		ArrayList<BaseOutcome> globals = new ArrayList<BaseOutcome>();
+		ArrayList<BaseOutcome> list = new ArrayList<BaseOutcome>();
 		for(Map.Entry<String, BaseOutcome>entry:passTags.entrySet()) {
-			if(entry.getValue().getGlobal()) globals.add(entry.getValue());
+			//if(entry.getValue().getGlobal()) globals.add(entry.getValue());
+			list.add(entry.getValue());
 		}
-		return globals;
+		return list;
 	};
 
 	@Override
-	public ArrayList<BaseOutcome> getGlobalFailTagOutcomes() {
+	public ArrayList<BaseOutcome> getFailTagOutcomes() {
 		if(failTags == null) return null;
-		ArrayList<BaseOutcome> globals = new ArrayList<BaseOutcome>();
+		ArrayList<BaseOutcome> list = new ArrayList<BaseOutcome>();
 		for(Map.Entry<String, BaseOutcome>entry:failTags.entrySet()) {
-			if(entry.getValue().getGlobal()) globals.add(entry.getValue());
+			//if(entry.getValue().getGlobal()) globals.add(entry.getValue());
+			list.add(entry.getValue());
 		}
-		return globals;
+		return list;
 	};
 
 	public void setOutcomesToCategories() {
@@ -219,22 +223,22 @@ abstract class BaseRule implements Rule {
 			
 			if(outcome.getType().equalsIgnoreCase("tag") && outcome.getResult().equalsIgnoreCase("pass")) {
 				if(passTags == null) passTags = new TreeMap<String, BaseOutcome>();
-				passTags.put(outcome.getKey(), outcome);
+				passTags.put(outcome.getKey(), new PassTagOutcome(outcome));
 				continue;
 			}
 			if(outcome.getType().equalsIgnoreCase("tag") && outcome.getResult().equalsIgnoreCase("fail")) {
 				if(failTags == null) failTags = new TreeMap<String, BaseOutcome>();
-				failTags.put(outcome.getKey(), outcome);
+				failTags.put(outcome.getKey(), new FailTagOutcome(outcome));
 				continue;
 			}
 			if(outcome.getType().equalsIgnoreCase("number") && outcome.getResult().equalsIgnoreCase("pass")) {
 				if(passNumbers == null) passNumbers = new TreeMap<String, BaseOutcome>();
-				passNumbers.put(outcome.getKey(), outcome);
+				passNumbers.put(outcome.getKey(), new PassNumberOutcome(outcome));
 				continue;
 			}
 			if(outcome.getType().equalsIgnoreCase("number") && outcome.getResult().equalsIgnoreCase("fail")) {
 				if(failNumbers == null) failNumbers = new TreeMap<String, BaseOutcome>();
-				failNumbers.put(outcome.getKey(), outcome);
+				failNumbers.put(outcome.getKey(), new FailNumberOutcome(outcome));
 				continue;
 			}
 		}

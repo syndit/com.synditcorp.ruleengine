@@ -81,7 +81,7 @@ public class BaseOutcome implements Outcome {
 
 	@Override
 	public void setGlobal(String global) {
-
+		
 		if(global == null) return;
 		if(validTrue.contains(global.toLowerCase())) {
 			this.global = true;

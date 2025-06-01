@@ -39,9 +39,9 @@ public interface Rule {
 	public Outcome getFailNumberOutcome(String key);
 	public Outcome getPassTagOutcome(String key);
 	public Outcome getFailTagOutcome(String key);
-	public ArrayList<BaseOutcome> getGlobalPassNumberOutcomes();
-	public ArrayList<BaseOutcome> getGlobalFailNumberOutcomes();
-	public ArrayList<BaseOutcome> getGlobalPassTagOutcomes();
-	public ArrayList<BaseOutcome> getGlobalFailTagOutcomes();
+	public ArrayList<BaseOutcome> getPassNumberOutcomes();
+	public ArrayList<BaseOutcome> getFailNumberOutcomes();
+	public ArrayList<BaseOutcome> getPassTagOutcomes();
+	public ArrayList<BaseOutcome> getFailTagOutcomes();
 
 }

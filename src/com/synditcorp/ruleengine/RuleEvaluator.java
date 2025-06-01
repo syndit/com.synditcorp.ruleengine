@@ -1,5 +1,5 @@
 /*
-The MIT License (MIT)
+dThe MIT License (MIT)
 Copyright © 2021 Syndit Business Solutions, Inc. 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -19,7 +19,12 @@ import java.util.TreeMap;
 import java.util.concurrent.ForkJoinPool;
 
 import com.synditcorp.ruleengine.beans.BaseOutcome;
+import com.synditcorp.ruleengine.beans.FailNumberOutcome;
+import com.synditcorp.ruleengine.beans.FailTagOutcome;
+import com.synditcorp.ruleengine.beans.PassNumberOutcome;
+import com.synditcorp.ruleengine.beans.PassTagOutcome;
 import com.synditcorp.ruleengine.beans.ThreadResults;
+import com.synditcorp.ruleengine.exceptions.DuplicateKeyException;
 import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 import com.synditcorp.ruleengine.handlers.ExpressionHandler;
 import com.synditcorp.ruleengine.interfaces.Outcome;
@@ -161,6 +166,18 @@ public class RuleEvaluator implements Cloneable {
 		return this.variables;
 	}
 
+	/**
+	 * Used to prevent existing variables from being overwritten.  This includes runtime variables generated at runtime
+	 * @param variableName to be added to the collection and the variable's object
+	 */
+	private void putToVariables(String variableName, Object value) throws DuplicateKeyException {
+		
+		if(getVariables().containsKey(variableName)) throw new DuplicateKeyException(variableName);
+		
+		getVariables().put(variableName, value);
+		
+	}
+	
 	/**
 	 * Get the runtime rule processing results cache.
 	 * @return the TreeMap object containing the rule number and Boolean processing results
@@ -764,26 +781,143 @@ public class RuleEvaluator implements Cloneable {
 //	}
 	
 	
+	public Double getPassNumberOutcome(Integer ruleNumber, String key) throws Exception {
+
+		if(!runtimePasses.contains(ruleNumber)) throw new NoRuleEvaluatedException("rule number " + ruleNumber);
+
+		BaseOutcome outcome = (BaseOutcome) getRule(ruleNumber).getPassNumberOutcome(key);
+		if(outcome == null) return null;
+		return getNumberOutcome(outcome);
+		
+	}
 	
-	private void setGlobalPassOutcomeNumbersToVars(Integer ruleNumber) throws Exception {
+	public Double getFailNumberOutcome(Integer ruleNumber, String key) throws Exception {
+
+		if(!runtimeFails.contains(ruleNumber)) throw new NoRuleEvaluatedException("rule number " + ruleNumber);
+
+		BaseOutcome outcome = (BaseOutcome) getRule(ruleNumber).getFailNumberOutcome(key);
+		if(outcome == null) return null;
+		return getNumberOutcome(outcome);
+
+	}
+	
+	public ArrayList<String> getPassTagOutcome(Integer ruleNumber, String key) throws Exception {
+
+		if(!runtimePasses.contains(ruleNumber)) throw new NoRuleEvaluatedException("rule number " + ruleNumber);
+
+		BaseOutcome outcome = (BaseOutcome) getRule(ruleNumber).getPassTagOutcome(key);
+		if(outcome == null) return null;
+		return getTagOutcome(outcome);
+		
+	}
+	
+	public ArrayList<String> getFailTagOutcome(Integer ruleNumber, String key) throws Exception {
+
+		if(!runtimeFails.contains(ruleNumber)) throw new NoRuleEvaluatedException("rule number " + ruleNumber);
+
+		BaseOutcome outcome = (BaseOutcome) getRule(ruleNumber).getFailTagOutcome(key);
+		if(outcome == null) return null;
+		return getTagOutcome(outcome);
+		
+	}
+	
+
+	private void setGlobalPassOutcomes(Integer ruleNumber) throws Exception {
+		
+		setGlobalPassNumberOutcomesToVars(ruleNumber);
+		setGlobalPassTagOutcomesToVars(ruleNumber);
+		
+	}
+	
+	private void setGlobalFailOutcomes(Integer ruleNumber) throws Exception {
+		
+		setGlobalFailNumberOutcomesToVars(ruleNumber);
+		setGlobalFailTagOutcomesToVars(ruleNumber);
+		
+	}
+
+	private void setGlobalPassNumberOutcomesToVars(Integer ruleNumber) throws Exception {
 		
 		Rule rule = getRule(ruleNumber);
-		ArrayList<BaseOutcome> outcomes = rule.getGlobalPassNumberOutcomes();
+		ArrayList<BaseOutcome> outcomes = rule.getPassNumberOutcomes();
 		if(outcomes == null) return;
+
+		String varName = getDocumentId() + "_pn" + ruleNumber + "_"; 
+		setGlobalNumberOutcomes(outcomes, varName);
+
+	}
+	
+	private void setGlobalFailNumberOutcomesToVars(Integer ruleNumber) throws Exception {
+		
+		
+		Rule rule = getRule(ruleNumber);
+		ArrayList<BaseOutcome> outcomes = rule.getFailNumberOutcomes();
+		if(outcomes == null) return;
+
+		String varName = getDocumentId() + "_fn" + ruleNumber + "_"; 
+		setGlobalNumberOutcomes(outcomes, varName);
+
+	}
+	
+	private void setGlobalPassTagOutcomesToVars(Integer ruleNumber) throws Exception {
+		
+		Rule rule = getRule(ruleNumber);
+		ArrayList<BaseOutcome> outcomes = rule.getPassTagOutcomes();
+		if(outcomes == null) return;
+		String varName = getDocumentId() + "_pt" + ruleNumber + "_"; 
+		setGlobalTagOutcomes(outcomes, varName);
+
+	}
+	
+	private void setGlobalFailTagOutcomesToVars(Integer ruleNumber) throws Exception {
+		
+		
+		Rule rule = getRule(ruleNumber);
+		ArrayList<BaseOutcome> outcomes = rule.getFailTagOutcomes();
+		if(outcomes == null) return;
+
+		String varName = getDocumentId() + "_ft" + ruleNumber + "_"; 
+		setGlobalTagOutcomes(outcomes, varName);
+
+	}
+	
+	private void setGlobalNumberOutcomes(ArrayList<BaseOutcome> outcomes, String variableName) throws Exception {
 
 		Iterator<BaseOutcome> iterator = outcomes.iterator();
 		while(iterator.hasNext()) {
 			
 			BaseOutcome outcome = (BaseOutcome) iterator.next();
-			Double d = getPassOutcomeNumber(outcome);
+			if(outcome.getGlobal() == null || !outcome.getGlobal()) continue;
+			Double d = getNumberOutcome(outcome);
+			
+			if(d == null) continue;
+			
+			String outcomeVarName = variableName + outcome.getKey();
+			putToVariables(outcomeVarName, d);
 
 		}
 
 	}
 	
-	private Double getPassOutcomeNumber(Outcome outcome) throws Exception {
+	private void setGlobalTagOutcomes(ArrayList<BaseOutcome> outcomes, String variableName) throws Exception {
+
+		Iterator<BaseOutcome> iterator = outcomes.iterator();
+		while(iterator.hasNext()) {
+			
+			BaseOutcome outcome = (BaseOutcome) iterator.next();
+			if(outcome.getGlobal() == null || !outcome.getGlobal()) continue;
+			ArrayList<String> list = getTagOutcome(outcome);
+			if(list == null) continue;
+			String outcomeVarName = variableName + outcome.getKey();
+			putToVariables(outcomeVarName, list);
+
+		}
 		
-		Double outcomeNumber = getNumberOutcome(outcome);
+	}
+	
+	private Double getNumberOutcome(Outcome outcome) throws Exception {
+
+		Double outcomeNumber = calcNumberOutcome(outcome);
 		
 		ArrayList<Integer> compositeRulesList = outcome.getCompositeOutcomeRules();
 		if(compositeRulesList == null) return outcomeNumber;
@@ -791,43 +925,28 @@ public class RuleEvaluator implements Cloneable {
 		Iterator<Integer> iterator = compositeRulesList.iterator();
 		while(iterator.hasNext()) {
 			
-			BaseOutcome nextOutcome = (BaseOutcome) getRule(iterator.next()).getPassNumberOutcome(outcome.getKey());
+			BaseOutcome nextOutcome = null;
+			
+			if(outcome instanceof PassNumberOutcome) {
+				nextOutcome = (BaseOutcome) getRule(iterator.next()).getPassNumberOutcome(outcome.getKey());	
+			} else if(outcome instanceof FailNumberOutcome) {
+				nextOutcome = (BaseOutcome) getRule(iterator.next()).getFailNumberOutcome(outcome.getKey());	
+			}
+			
 			if(nextOutcome == null) continue;
 			
-			outcomeNumber = Double.sum(outcomeNumber, getPassOutcomeNumber(nextOutcome));
+			outcomeNumber = Double.sum(outcomeNumber, getNumberOutcome(nextOutcome));
 
 		}
 		
 		return outcomeNumber;
 		
 	}
-	
-	private Double getNumberOutcome(Outcome outcome) {
-		
-		return evaluateNumberExpression(outcome.getExpression());
-		
-	}
-	
-	private void setGlobalPassOutcomeTagsToVars(Integer ruleNumber) throws Exception {
-		
-		Rule rule = getRule(ruleNumber);
-		ArrayList<BaseOutcome> outcomes = rule.getGlobalPassTagOutcomes();
-		if(outcomes == null) return;
 
-		Iterator<BaseOutcome> iterator = outcomes.iterator();
-		while(iterator.hasNext()) {
-			
-			BaseOutcome outcome = (BaseOutcome) iterator.next();
-			ArrayList<String> tagList = getPassOutcomeTag(outcome);
-
-		}
-
-	}
-	
-	private ArrayList<String> getPassOutcomeTag(Outcome outcome) throws Exception {
+	private ArrayList<String> getTagOutcome(Outcome outcome) throws Exception {
 		
 		ArrayList<String> outcomeTags = new ArrayList<String>();
-		outcomeTags.add(getTagOutcome(outcome));
+		outcomeTags.add(calcTagOutcome(outcome));
 		
 		ArrayList<Integer> compositeRulesList = outcome.getCompositeOutcomeRules();
 		if(compositeRulesList == null) return outcomeTags;
@@ -835,58 +954,34 @@ public class RuleEvaluator implements Cloneable {
 		Iterator<Integer> iterator = compositeRulesList.iterator();
 		while(iterator.hasNext()) {
 			
-			BaseOutcome nextOutcome = (BaseOutcome) getRule(iterator.next()).getPassTagOutcome(outcome.getKey());
+			BaseOutcome nextOutcome = null;
+			
+			if(outcome instanceof PassTagOutcome) {
+				nextOutcome = (BaseOutcome) getRule(iterator.next()).getPassTagOutcome(outcome.getKey());	
+			} else if(outcome instanceof FailTagOutcome) {
+				nextOutcome = (BaseOutcome) getRule(iterator.next()).getFailTagOutcome(outcome.getKey());	
+			}
+			
 			if(nextOutcome == null) continue;
 			
-			outcomeTags.addAll(getPassOutcomeTag(nextOutcome));
+			outcomeTags.addAll(getTagOutcome(nextOutcome));
 
 		}
 		
 		return outcomeTags;
 		
 	}
-	private String getTagOutcome(Outcome outcome) {
+	
+	private Double calcNumberOutcome(Outcome outcome) {
+		
+		return evaluateNumberExpression(outcome.getExpression());
+		
+	}
+	
+	private String calcTagOutcome(Outcome outcome) {
 		return evaluateStringExpression(outcome.getExpression());
 	}
 	
-	
-	private void setFailOutcomesNumbersToVars(Integer ruleNumber) throws Exception {
-		
-		Rule rule = getRule(ruleNumber);
-		ArrayList<BaseOutcome> outcomes = rule.getGlobalPassNumberOutcomes();
-	}
-	
-	private void setPassOutcomeTagsToVars(Integer ruleNumber) throws Exception {
-		
-		Rule rule = getRule(ruleNumber);
-		ArrayList<BaseOutcome> outcomes = rule.getGlobalPassTagOutcomes();
-
-	}
-	
-	private void setFailOutcomesTagsToVars(Integer ruleNumber) throws Exception {
-		
-		Rule rule = getRule(ruleNumber);
-		ArrayList<BaseOutcome> outcomes = rule.getGlobalFailTagOutcomes();
-
-	}
-	
-	private Double getOutcomeNumber(Outcome outcome) {
-		
-		double d = evaluateNumberExpression(outcome.getExpression());
-		
-		if(outcome.getCompositeOutcomeRules() != null ) {
-		
-			
-			
-		}
-		
-		return null;
-		
-	}
-	
-	
-
-
 	private Boolean callRule(Integer ruleNumber) throws Exception {
 
 		if(ruleDefinition.isCalcRule(ruleNumber)) return (processCalcRule(ruleNumber));
@@ -964,18 +1059,20 @@ public class RuleEvaluator implements Cloneable {
 		}
 		
 		addToCache(ruleNumber, result);
-
+		
 		if(result.booleanValue()) {
 			addRuntimePass(ruleNumber);
-			addRulePassResultsToVariables(ruleNumber, variables);
+			setGlobalPassOutcomes(ruleNumber);
+			//addRulePassResultsToVariables(ruleNumber, variables);
 		}
 		else {
 			addRuntimeFail(ruleNumber);
-			addRuleFailResultsToVariables(ruleNumber, variables);
+			setGlobalFailOutcomes(ruleNumber);
+			//addRuleFailResultsToVariables(ruleNumber, variables);
 		}
 
 		LOGGER.debug("{} milleseconds to evaluate rule number {} expression: {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, expression, result);
-		
+
 		return ( result );
 
 	}
@@ -1001,11 +1098,13 @@ public class RuleEvaluator implements Cloneable {
 			noRulesProcessed = false;
 			if(result.booleanValue()) {
 				addRuntimePass(ruleNumber);
-				addCompositeRulePassResultsToVariables(ruleNumber, variables);
+				setGlobalPassOutcomes(ruleNumber);
+				//addCompositeRulePassResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 			} else {
 				addRuntimeFail(ruleNumber);
-				addCompositeRuleFailResultsToVariables(ruleNumber, variables);
+				setGlobalFailOutcomes(ruleNumber);
+				//addCompositeRuleFailResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
 			}
 
@@ -1071,14 +1170,16 @@ public class RuleEvaluator implements Cloneable {
 
 		if(atLeastOneRulePassed) {
 			addRuntimePass(ruleNumber);
-			addRulePassResultsToVariables(ruleNumber, variables);
+			setGlobalPassOutcomes(ruleNumber);
+			//addRulePassResultsToVariables(ruleNumber, variables);
 			if(isPassScore) {
 				variables.put( ( this.getDocumentId() + "_compositePassScore_" + ruleNumber) , passScore);
 			}
 		}
 
 		addRuntimeFail(ruleNumber);
-		addRuleFailResultsToVariables(ruleNumber, variables);
+		setGlobalFailOutcomes(ruleNumber);
+		//addRuleFailResultsToVariables(ruleNumber, variables);
 		
 		if(isFailScore) {
 			variables.put( ( this.getDocumentId() + "_compositeFailScore_" + ruleNumber) , failScore);
@@ -1148,7 +1249,8 @@ public class RuleEvaluator implements Cloneable {
 			noRulesProcessed = false;
 			if(result.booleanValue()) {
 				addRuntimePass(ruleNumber);
-				addCompositeRulePassResultsToVariables(ruleNumber, variables);
+				setGlobalPassOutcomes(ruleNumber);
+				//addCompositeRulePassResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 				return (true);
 			}
@@ -1157,7 +1259,8 @@ public class RuleEvaluator implements Cloneable {
 		if(noRulesProcessed) return null;
 		
 		addRuntimeFail(ruleNumber);
-		addCompositeRuleFailResultsToVariables(ruleNumber, variables);
+		setGlobalFailOutcomes(ruleNumber);
+		//addCompositeRuleFailResultsToVariables(ruleNumber, variables);
 		LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
 
 		return false;
@@ -1185,7 +1288,8 @@ public class RuleEvaluator implements Cloneable {
 			noRulesProcessed = false;
 			if(!result.booleanValue()) {
 				addRuntimeFail(ruleNumber);
-				addCompositeRuleFailResultsToVariables(ruleNumber, variables);
+				setGlobalFailOutcomes(ruleNumber);
+				//addCompositeRuleFailResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
 				return false;
 			}			
@@ -1195,7 +1299,8 @@ public class RuleEvaluator implements Cloneable {
 		if(noRulesProcessed) return null;
 		
 		addRuntimePass(ruleNumber);
-		addCompositeRulePassResultsToVariables(ruleNumber, variables);
+		setGlobalPassOutcomes(ruleNumber);
+		//addCompositeRulePassResultsToVariables(ruleNumber, variables);
 		LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 		
 		return true;
@@ -1217,15 +1322,15 @@ public class RuleEvaluator implements Cloneable {
 	
 	
 	
-	/**
-	 * This method sets a rule's passKey, passScore, passFlag, passReason, and passAction values to the engine's variables, which can be used by 
-	 * other rules' expressions.  The intent is to call this function when a rule passes at runtime in the rule engine evaluator.  Only rules that
-	 * evaluate to "true" are included (included in runtimePasses).  A rule must have been called prior to using its variables.
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber, variables
-	 */
-	private void addRulePassResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
-		
+//	/**
+//	 * This method sets a rule's passKey, passScore, passFlag, passReason, and passAction values to the engine's variables, which can be used by 
+//	 * other rules' expressions.  The intent is to call this function when a rule passes at runtime in the rule engine evaluator.  Only rules that
+//	 * evaluate to "true" are included (included in runtimePasses).  A rule must have been called prior to using its variables.
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber, variables
+//	 */
+//	private void addRulePassResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
+//		
 //		if(! runtimePasses.contains(ruleNumber)) return;
 //		
 //		String ruleNoStr = ruleNumber.toString();
@@ -1244,18 +1349,18 @@ public class RuleEvaluator implements Cloneable {
 //
 //		ArrayList<String> passActions = getPassActions(ruleNumber); 
 //		if(passActions != null) variables.put( (this.getDocumentId() + "_passActions_" +ruleNoStr), passActions);
-		
-	}
-	
-	/**
-	 * This method sets a rule's failKey, failScore, failFlag, failReason, and failAction values to the engine's variables, which can be used by 
-	 * other rules' expressions. The intent is to call this function when a rule fails at runtime in the rule engine evaluator.  Only rules that
-	 * evaluate to "false" are included (included in runtimeFails).  A rule must have been called prior to using its variables.
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber, variables
-	 */
-	private void addRuleFailResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
-		
+//		
+//	}
+//	
+//	/**
+//	 * This method sets a rule's failKey, failScore, failFlag, failReason, and failAction values to the engine's variables, which can be used by 
+//	 * other rules' expressions. The intent is to call this function when a rule fails at runtime in the rule engine evaluator.  Only rules that
+//	 * evaluate to "false" are included (included in runtimeFails).  A rule must have been called prior to using its variables.
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber, variables
+//	 */
+//	private void addRuleFailResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
+//		
 //		if(! runtimeFails.contains(ruleNumber)) return;
 //		
 //		String ruleNumberStr = ruleNumber.toString();
@@ -1274,18 +1379,18 @@ public class RuleEvaluator implements Cloneable {
 //		
 //		ArrayList<String> failActions = getFailActions(ruleNumber); 
 //		if(failActions != null && failActions.size() > 0) variables.put( (this.getDocumentId() + "_failActions_" + ruleNumberStr), failActions);
-		
-	}
-	
-	/**
-	 * This method sets a "calc" or composite rule's passKey, passScore, passFlag, passReason, and passAction values as well as the corresponding composite pass values 
-	 * to the engine's variables, which can be used by other rules' expressions.  The intent is to call this function when a composite rule passes at runtime in the rule
-	 * engine evaluator.  Only composite rules that evaluate to "true" are included (included in runtimePasses).  A rule must have been called prior to using its variables.
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber, variables
-	 */
-	private void addCompositeRulePassResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
-
+//		
+//	}
+//	
+//	/**
+//	 * This method sets a "calc" or composite rule's passKey, passScore, passFlag, passReason, and passAction values as well as the corresponding composite pass values 
+//	 * to the engine's variables, which can be used by other rules' expressions.  The intent is to call this function when a composite rule passes at runtime in the rule
+//	 * engine evaluator.  Only composite rules that evaluate to "true" are included (included in runtimePasses).  A rule must have been called prior to using its variables.
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber, variables
+//	 */
+//	private void addCompositeRulePassResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
+//
 //		if(! runtimePasses.contains(ruleNumber)) return;
 //		
 //		addRulePassResultsToVariables(ruleNumber, variables);
@@ -1306,18 +1411,18 @@ public class RuleEvaluator implements Cloneable {
 //		
 //		ArrayList<String> passActions = getCompositePassActions(ruleNumber);
 //		variables.put( (this.getDocumentId() + "_compositePassActions_" + ruleNumberStr), passActions);
-
-	}
-
-	/**
-	 * This method sets a "calc" or composite rule's failKey, failScore, failFlag, failReason, and failAction values as well as the corresponding composite fail values 
-	 * to the engine's variables, which can be used by other rules' expressions.  The intent is to call this function when a composite rule fails at runtime in the rule
-	 * engine evaluator.  Only composite rules that evaluate to "false" are included (included in runtimeFails).  A rule must have been called prior to using its variables.
-	 * @throws Exception when any exception occurs
-	 * @param ruleNumber, variables
-	 */
-	private void addCompositeRuleFailResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
-		
+//
+//	}
+//
+//	/**
+//	 * This method sets a "calc" or composite rule's failKey, failScore, failFlag, failReason, and failAction values as well as the corresponding composite fail values 
+//	 * to the engine's variables, which can be used by other rules' expressions.  The intent is to call this function when a composite rule fails at runtime in the rule
+//	 * engine evaluator.  Only composite rules that evaluate to "false" are included (included in runtimeFails).  A rule must have been called prior to using its variables.
+//	 * @throws Exception when any exception occurs
+//	 * @param ruleNumber, variables
+//	 */
+//	private void addCompositeRuleFailResultsToVariables(Integer ruleNumber, TreeMap<String, Object> variables) throws Exception {
+//		
 //		if(! runtimeFails.contains(ruleNumber)) return;
 //		
 //		addRuleFailResultsToVariables(ruleNumber, variables);
@@ -1338,8 +1443,8 @@ public class RuleEvaluator implements Cloneable {
 //		
 //		ArrayList<String> failActions = getCompositeFailActions(ruleNumber);
 //		variables.put( (this.getDocumentId() + "_compositeFailActions_" + ruleNumberStr), failActions);
-
-	}
+//
+//	}
 	
 
 	private ArrayList<Integer> getCompositeRulesList(Integer ruleNumber) throws Exception {
