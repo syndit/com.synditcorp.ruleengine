@@ -13,7 +13,6 @@ package com.synditcorp.ruleengine.interfaces;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map;
 
 import com.synditcorp.ruleengine.beans.BaseOutcome;
 

@@ -38,6 +38,7 @@ abstract class BaseRule implements Rule {
 	private TreeMap<String, BaseOutcome> failTags;
 	
 	private static List<String> validRuleTypes = List.of("calc", "and", "or", "all", "thread");
+	private static List<String> canHaveOutcomes = List.of("calc", "and", "or");
 	private static List<String> validTrue = List.of("true", "t", "1");
 	private static List<String> validFalse = List.of("false", "f", "0");
 
@@ -47,8 +48,9 @@ abstract class BaseRule implements Rule {
 	
 	@Override
 	public void setRuleType(String ruleType) throws IllegalArgumentException {
-		if(!validRuleTypes.contains(ruleType)) throw new IllegalArgumentException("Rule type not valid.  Must be one of these: " + validRuleTypes);
-		this.ruleType = ruleType;
+		String lowerCaseRuleType = ruleType.toLowerCase();
+		if(!validRuleTypes.contains(lowerCaseRuleType)) throw new IllegalArgumentException("Rule type not valid.  Must be one of these: " + validRuleTypes);
+		this.ruleType = lowerCaseRuleType;
 	}
 
 
@@ -128,7 +130,8 @@ abstract class BaseRule implements Rule {
 	}
 	
 	@Override
-	public void setOutcomes(ArrayList<BaseOutcome> outcomes) {
+	public void setOutcomes(ArrayList<BaseOutcome> outcomes) throws IllegalArgumentException {
+		if(this.ruleType.equalsIgnoreCase("all") && outcomes != null) throw new IllegalArgumentException("'All' rules cannot have outcomes");
 		if(this.outcomes == null) this.outcomes = new ArrayList<BaseOutcome>();
 		this.outcomes =  outcomes;
 	}
@@ -209,16 +212,18 @@ abstract class BaseRule implements Rule {
 		}
 		return list;
 	};
-
+	
 	public void setOutcomesToCategories() {
+		
+		if(outcomes == null) return;
 		
 		Iterator<BaseOutcome> iterator = outcomes.iterator();
 		while(iterator.hasNext()) {
 			
 			BaseOutcome outcome = (BaseOutcome) iterator.next();
 			
-			if( ruleType.equalsIgnoreCase("calc") && outcome.getCompositeOutcomeRules() != null) {
-				throw new IllegalArgumentException("Calc rule types cannot have compositeOutcomeRules.");
+			if(!canHaveOutcomes.contains(ruleType) && outcome.getCompositeOutcomeRules() != null) {
+				throw new IllegalArgumentException(ruleType + " rule types cannot have compositeOutcomeRules.");
 			}
 			
 			if(outcome.getType().equalsIgnoreCase("tag") && outcome.getResult().equalsIgnoreCase("pass")) {

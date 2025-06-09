@@ -1138,12 +1138,12 @@ public class RuleEvaluator implements Cloneable {
 			noRulesProcessed = false;
 			if(result.booleanValue()) {
 				addRuntimePass(ruleNumber);
-				//setGlobalPassOutcomes(ruleNumber);
+				setGlobalPassOutcomes(ruleNumber);
 				//addCompositeRulePassResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, true);
 			} else {
 				addRuntimeFail(ruleNumber);
-				//setGlobalFailOutcomes(ruleNumber);
+				setGlobalFailOutcomes(ruleNumber);
 				//addCompositeRuleFailResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t), ruleNumber, false);
 			}
@@ -1152,7 +1152,7 @@ public class RuleEvaluator implements Cloneable {
 		
 		if(noRulesProcessed) return null;
 		
-		setGlobalPassOutcomes(ruleNumber);
+		//setGlobalPassOutcomes(ruleNumber);
 
 		return true;
 		

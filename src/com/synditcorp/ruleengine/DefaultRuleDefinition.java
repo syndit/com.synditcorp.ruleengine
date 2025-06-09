@@ -18,11 +18,10 @@ import java.util.TreeMap;
 import com.synditcorp.ruleengine.beans.AllRule;
 import com.synditcorp.ruleengine.beans.AndRule;
 import com.synditcorp.ruleengine.beans.BaseCalcRule;
-import com.synditcorp.ruleengine.beans.BaseOutcome;
 import com.synditcorp.ruleengine.beans.BaseRules;
 import com.synditcorp.ruleengine.beans.OrRule;
 import com.synditcorp.ruleengine.beans.ThreadRule;
-import com.synditcorp.ruleengine.interfaces.CalcRule;
+import com.synditcorp.ruleengine.exceptions.NoRuleFoundException;
 import com.synditcorp.ruleengine.interfaces.CompositeRule;
 import com.synditcorp.ruleengine.interfaces.Rule;
 import com.synditcorp.ruleengine.interfaces.RuleDefinition;
@@ -127,8 +126,16 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 * Returns "true" if the rule is a "base" rule
 	 */
 	@Override
+	public void isRule(Integer ruleNumber) throws NoRuleFoundException {
+		if(!aggregateRules.containsKey(ruleNumber)) throw new NoRuleFoundException(ruleNumber.toString());
+	}
+	
+	/**
+	 * Returns "true" if the rule is a "base" rule
+	 */
+	@Override
 	public boolean isCalcRule(Integer ruleNumber) throws Exception {
-		return aggregateRules.get(ruleNumber).getClass().toString().equalsIgnoreCase("calcRule");
+		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("BaseCalcRule");
 	}
 	
 	/**
@@ -136,7 +143,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 */
 	@Override
 	public boolean isOrRule(Integer ruleNumber) throws Exception {
-		return aggregateRules.get(ruleNumber).getClass().toString().equalsIgnoreCase("orRule");
+		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("OrRule");
 	}
 	
 	/**
@@ -144,7 +151,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 */
 	@Override
 	public boolean isAndRule(Integer ruleNumber) throws Exception {
-		return aggregateRules.get(ruleNumber).getClass().toString().equalsIgnoreCase("andRule");
+		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("AndRule");
 	}
 
 	/**
@@ -152,7 +159,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 */
 	@Override
 	public boolean isAllRule(Integer ruleNumber) throws Exception {
-		return aggregateRules.get(ruleNumber).getClass().toString().equalsIgnoreCase("allRule");
+		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("AllRule");
 	}
 
 	/**
@@ -160,7 +167,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 */
 	@Override
 	public boolean isThreadRule(Integer ruleNumber) throws Exception {
-		return aggregateRules.get(ruleNumber).getClass().toString().equalsIgnoreCase("threadRule");
+		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("ThreadRule");
 	}
 
 	/**
@@ -196,24 +203,6 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		return ((CompositeRule) getRule(ruleNumber)).getCompositeRules();
 	}
 
-
-	/**
-	 * Returns the passScore for a particular rule as set in the rules document.
-	 */
-//	@Override
-//	public ArrayList<BaseOutcome> getOutcomes(Integer ruleNumber) throws Exception {
-//		return ((CalcRule) getRule(ruleNumber)).getOutcomes();
-//	}
-	
-//	/**
-//	 * Returns the failScore for a particular rule as set in the rules document.
-//	 */
-//	@Override
-//	public ArrayList<CompositeOutcome> getCompositeOutcomes(Integer ruleNumber)  throws Exception {
-//		return ((CompositeRule) getRule(ruleNumber)).getCompositeOutcomes();
-//	}
-
-
 	/**
 	 * Returns a Rule object for a particular rule number	
 	 */
@@ -224,63 +213,64 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		
 	}
 
-	private void setToAggregateRules() {
-		setBaseRules();
+	private void setToAggregateRules() throws Exception {
+		setCalcRules();
 		setOrRules();
 		setAndRules();
 		setAllRules();
 		setThreadRules();
+		
 	}
 	
-	private void setBaseRules() {
+	private void setCalcRules() throws Exception  {
 		ArrayList<BaseCalcRule> ar = this.baseRules.getCalcRules();
 		for (Iterator<BaseCalcRule> iterator = ar.iterator(); iterator.hasNext();) {
 			BaseCalcRule calcRule = (BaseCalcRule) iterator.next();
+			if(!calcRule.getRuleType().equalsIgnoreCase("calc")) throw new IllegalArgumentException("calc rules list can't have '" + calcRule.getRuleType() + "' rules");
 			calcRule.setOutcomesToCategories();
 			this.aggregateRules.put(calcRule.getRuleNumber(), calcRule);
 		}
 	}
 
-	private void setOrRules() {
+	private void setOrRules() throws Exception  {
 		ArrayList<OrRule> ar = this.baseRules.getOrRules();
 		for (Iterator<OrRule> iterator = ar.iterator(); iterator.hasNext();) {
 			OrRule orRule = (OrRule) iterator.next();
+			if(!orRule.getRuleType().equalsIgnoreCase("or")) throw new IllegalArgumentException("'Or' rules list can't have '" + orRule.getRuleType() + "' rules");
 			orRule.setOutcomesToCategories();
 			this.aggregateRules.put(orRule.getRuleNumber(), orRule);
 		}
 	}
 	
-	private void setAndRules() {
+	private void setAndRules() throws Exception  {
 		ArrayList<AndRule> ar = this.baseRules.getAndRules();
 		for (Iterator<AndRule> iterator = ar.iterator(); iterator.hasNext();) {
 			AndRule andRule = (AndRule) iterator.next();
+			if(!andRule.getRuleType().equalsIgnoreCase("and")) throw new IllegalArgumentException("'And' rules list can't have '" + andRule.getRuleType() + "' rules");
 			andRule.setOutcomesToCategories();
 			this.aggregateRules.put(andRule.getRuleNumber(), andRule);
 		}
 	}
 	
-	private void setAllRules() {
+	private void setAllRules() throws Exception {
 		ArrayList<AllRule> ar = this.baseRules.getAllRules();
 		for (Iterator<AllRule> iterator = ar.iterator(); iterator.hasNext();) {
 			AllRule allRule = (AllRule) iterator.next();
-			allRule.setOutcomesToCategories();
+			if(!allRule.getRuleType().equalsIgnoreCase("all")) throw new IllegalArgumentException("'All' rules list can't have '" + allRule.getRuleType() + "' rules");
+			//if(allRule.getOutcomes() != null) throw new InvalidDefinitionException("All rules cannot have outcomes");
+			//allRule.setOutcomesToCategories();
 			this.aggregateRules.put(allRule.getRuleNumber(), allRule);
 		}
 	}
 
-	private void setThreadRules() {
+	private void setThreadRules() throws Exception  {
 		ArrayList<ThreadRule> ar = this.baseRules.getThreadRules();
 		for (Iterator<ThreadRule> iterator = ar.iterator(); iterator.hasNext();) {
 			ThreadRule threadRule = (ThreadRule) iterator.next();
-			threadRule.setOutcomesToCategories();
+			if(!threadRule.getRuleType().equalsIgnoreCase("thread")) throw new IllegalArgumentException("'Thread' rules list can't have '" + threadRule.getRuleType() + "' rules");
+			//threadRule.setOutcomesToCategories();
 			this.aggregateRules.put(threadRule.getRuleNumber(), threadRule);
 		}
-	}
-
-	@Override
-	public ArrayList<BaseOutcome> getOutcomes(Integer ruleNumber) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }
