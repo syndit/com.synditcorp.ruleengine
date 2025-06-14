@@ -131,7 +131,7 @@ abstract class BaseRule implements Rule {
 	
 	@Override
 	public void setOutcomes(ArrayList<BaseOutcome> outcomes) throws IllegalArgumentException {
-		if(this.ruleType.equalsIgnoreCase("all") && outcomes != null) throw new IllegalArgumentException("'All' rules cannot have outcomes");
+		if(!canHaveOutcomes.contains(this.ruleType) && outcomes != null) throw new IllegalArgumentException("'" + this.ruleType + "' rule types cannot have outcomes");
 		if(this.outcomes == null) this.outcomes = new ArrayList<BaseOutcome>();
 		this.outcomes =  outcomes;
 	}
@@ -222,28 +222,28 @@ abstract class BaseRule implements Rule {
 			
 			BaseOutcome outcome = (BaseOutcome) iterator.next();
 			
-			if(!canHaveOutcomes.contains(ruleType) && outcome.getCompositeOutcomeRules() != null) {
-				throw new IllegalArgumentException(ruleType + " rule types cannot have compositeOutcomeRules.");
+			if(this.ruleType.equalsIgnoreCase("calc") && outcome.getCompositeOutcomeRules() != null) {
+				throw new IllegalArgumentException(this.ruleType + " rule types cannot have composite outcome rules.");
 			}
 			
 			if(outcome.getType().equalsIgnoreCase("tag") && outcome.getResult().equalsIgnoreCase("pass")) {
-				if(passTags == null) passTags = new TreeMap<String, BaseOutcome>();
-				passTags.put(outcome.getKey(), new PassTagOutcome(outcome));
+				if(this.passTags == null) passTags = new TreeMap<String, BaseOutcome>();
+				this.passTags.put(outcome.getKey(), new PassTagOutcome(outcome));
 				continue;
 			}
 			if(outcome.getType().equalsIgnoreCase("tag") && outcome.getResult().equalsIgnoreCase("fail")) {
-				if(failTags == null) failTags = new TreeMap<String, BaseOutcome>();
-				failTags.put(outcome.getKey(), new FailTagOutcome(outcome));
+				if(this.failTags == null) failTags = new TreeMap<String, BaseOutcome>();
+				this.failTags.put(outcome.getKey(), new FailTagOutcome(outcome));
 				continue;
 			}
 			if(outcome.getType().equalsIgnoreCase("number") && outcome.getResult().equalsIgnoreCase("pass")) {
-				if(passNumbers == null) passNumbers = new TreeMap<String, BaseOutcome>();
-				passNumbers.put(outcome.getKey(), new PassNumberOutcome(outcome));
+				if(this.passNumbers == null) passNumbers = new TreeMap<String, BaseOutcome>();
+				this.passNumbers.put(outcome.getKey(), new PassNumberOutcome(outcome));
 				continue;
 			}
 			if(outcome.getType().equalsIgnoreCase("number") && outcome.getResult().equalsIgnoreCase("fail")) {
-				if(failNumbers == null) failNumbers = new TreeMap<String, BaseOutcome>();
-				failNumbers.put(outcome.getKey(), new FailNumberOutcome(outcome));
+				if(this.failNumbers == null) failNumbers = new TreeMap<String, BaseOutcome>();
+				this.failNumbers.put(outcome.getKey(), new FailNumberOutcome(outcome));
 				continue;
 			}
 		}
