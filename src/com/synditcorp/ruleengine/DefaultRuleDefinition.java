@@ -13,16 +13,23 @@ package com.synditcorp.ruleengine;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeMap;
 
 import com.synditcorp.ruleengine.beans.AllRule;
 import com.synditcorp.ruleengine.beans.AndRule;
 import com.synditcorp.ruleengine.beans.BaseCalcRule;
 import com.synditcorp.ruleengine.beans.BaseRules;
+import com.synditcorp.ruleengine.beans.FailNumberOutcome;
+import com.synditcorp.ruleengine.beans.FailTagOutcome;
 import com.synditcorp.ruleengine.beans.OrRule;
+import com.synditcorp.ruleengine.beans.PassNumberOutcome;
+import com.synditcorp.ruleengine.beans.PassTagOutcome;
 import com.synditcorp.ruleengine.beans.ThreadRule;
 import com.synditcorp.ruleengine.exceptions.NoRuleFoundException;
+import com.synditcorp.ruleengine.exceptions.OutcomeKeyException;
 import com.synditcorp.ruleengine.interfaces.CompositeRule;
+import com.synditcorp.ruleengine.interfaces.Outcome;
 import com.synditcorp.ruleengine.interfaces.Rule;
 import com.synditcorp.ruleengine.interfaces.RuleDefinition;
 import com.synditcorp.ruleengine.interfaces.RuleParser;
@@ -213,12 +220,18 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		
 	}
 
+	/*
+	 * For runtime performance, configure as much as possible when loading rules where elapsed time is not as critical 
+	 * as it is when evaluating rules at runtime.  Rule definitions are intended to be loaded ahead of time (e.g. server startup)
+	 * and cached for reuse by RuleEvaluator instances.
+	 */
 	private void setToAggregateRules() throws Exception {
 		setCalcRules();
 		setOrRules();
 		setAndRules();
 		setAllRules();
 		setThreadRules();
+		validateOutcomeKeys();
 		
 	}
 	
@@ -227,7 +240,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		for (Iterator<BaseCalcRule> iterator = ar.iterator(); iterator.hasNext();) {
 			BaseCalcRule calcRule = (BaseCalcRule) iterator.next();
 			if(!calcRule.getRuleType().equalsIgnoreCase("calc")) throw new IllegalArgumentException("calc rules list can't have '" + calcRule.getRuleType() + "' rules");
-			calcRule.setOutcomesToCategories();
+			calcRule.setOutcomesToCategories( this.getDocumentId() );
 			this.aggregateRules.put(calcRule.getRuleNumber(), calcRule);
 		}
 	}
@@ -237,7 +250,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		for (Iterator<OrRule> iterator = ar.iterator(); iterator.hasNext();) {
 			OrRule orRule = (OrRule) iterator.next();
 			if(!orRule.getRuleType().equalsIgnoreCase("or")) throw new IllegalArgumentException("'Or' rules list can't have '" + orRule.getRuleType() + "' rules");
-			orRule.setOutcomesToCategories();
+			orRule.setOutcomesToCategories( this.getDocumentId() );
 			this.aggregateRules.put(orRule.getRuleNumber(), orRule);
 		}
 	}
@@ -247,7 +260,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		for (Iterator<AndRule> iterator = ar.iterator(); iterator.hasNext();) {
 			AndRule andRule = (AndRule) iterator.next();
 			if(!andRule.getRuleType().equalsIgnoreCase("and")) throw new IllegalArgumentException("'And' rules list can't have '" + andRule.getRuleType() + "' rules");
-			andRule.setOutcomesToCategories();
+			andRule.setOutcomesToCategories( this.getDocumentId() );
 			this.aggregateRules.put(andRule.getRuleNumber(), andRule);
 		}
 	}
@@ -271,6 +284,37 @@ public class DefaultRuleDefinition implements RuleDefinition {
 			//threadRule.setOutcomesToCategories();
 			this.aggregateRules.put(threadRule.getRuleNumber(), threadRule);
 		}
+	}
+	
+	private void validateOutcomeKeys() throws Exception {
+		
+		ArrayList<Outcome> outcomes = new ArrayList<Outcome>();
+		ArrayList<String> numberOutcomes = new ArrayList<String>();
+		ArrayList<String> tagOutcomes = new ArrayList<String>();
+
+		for(Map.Entry<Integer, Rule> entry:aggregateRules.entrySet()) {
+			if(entry.getValue().getOutcomes() == null) continue;
+			outcomes.addAll(entry.getValue().getOutcomes());
+		}
+
+		for(Iterator<Outcome> iterator = outcomes.iterator(); iterator.hasNext();) {
+			Outcome outcome = iterator.next();
+			if(outcome.getType().equalsIgnoreCase("number") ) {
+				if(tagOutcomes.contains(outcome.getKey())) {
+					throw new OutcomeKeyException("Outcome key '" + outcome.getKey() + "' cannot be used for different outcome types.");
+				} else {
+					if(!numberOutcomes.contains(outcome.getKey())) numberOutcomes.add(outcome.getKey());
+				}
+			} else if(outcome.getType().equalsIgnoreCase("tag")) {
+				if(numberOutcomes.contains(outcome.getKey())) {
+					throw new OutcomeKeyException("Outcome key '" + outcome.getKey() + "' cannot be used for different outcome types.");
+				} else {
+					if(!tagOutcomes.contains(outcome.getKey())) tagOutcomes.add(outcome.getKey());
+				}
+				
+			}
+		}
+		
 	}
 
 }

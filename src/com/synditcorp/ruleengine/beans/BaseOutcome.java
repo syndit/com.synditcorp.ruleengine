@@ -26,6 +26,7 @@ public class BaseOutcome implements Outcome {
 	private String type;
 	private String expression;
 	private Boolean global;
+	private String variableName;
 	private ArrayList<Integer> compositeOutcomeRules;
 	private static final Set<String> validTypes = Set.of("number", "tag");
 	private static final List<String> validResult = List.of("pass", "fail");
@@ -101,6 +102,25 @@ public class BaseOutcome implements Outcome {
 	}
 
 	@Override
+	public void setVariableName(String variableName) {
+		this.variableName = variableName;
+	}
+
+	/*
+	 * Variable name uses document ID, so must be set when Rules are being configured in the definition where the document ID is available
+	 */
+	public void setVariableName(String documentId, Integer ruleNumber) {
+		String varName = documentId + "_" + ruleNumber + "_" + this.key;
+		this.variableName = varName;
+	}
+	
+
+	@Override
+	public String getVariableName() {
+		return this.variableName;
+	}
+
+	@Override
 	public void setCompositeOutcomeRules(ArrayList<Integer> compositeOutcomeRules) {
 		this.compositeOutcomeRules = compositeOutcomeRules;
 	}
@@ -109,6 +129,7 @@ public class BaseOutcome implements Outcome {
 	public ArrayList<Integer> getCompositeOutcomeRules() {
 		return this.compositeOutcomeRules;
 	}
+
 	
 	
 }

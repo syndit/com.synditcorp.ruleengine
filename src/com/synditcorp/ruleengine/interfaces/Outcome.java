@@ -23,6 +23,8 @@ public interface Outcome {
 	public String getType();
 	public void setGlobal(String global);
 	public Boolean getGlobal();
+	public void setVariableName(String variableName);
+	public String getVariableName();
 	public void setExpression(String expression);
 	public String getExpression();
 	public void setCompositeOutcomeRules(ArrayList<Integer> compositeOutcomeRules);

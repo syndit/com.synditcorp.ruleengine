@@ -72,6 +72,7 @@ abstract class BaseRule implements Rule {
 
 	@Override
 	public void setRuleNumber(Integer ruleNumber) throws IllegalArgumentException {
+		if( ruleNumber.intValue() < 0 ) throw new IllegalArgumentException("Rule number must be a positive number");
 		this.ruleNumber = ruleNumber;
 	}
 
@@ -174,7 +175,6 @@ abstract class BaseRule implements Rule {
 		if(passNumbers == null) return null;
 		ArrayList<BaseOutcome> list = new ArrayList<BaseOutcome>();
 		for(Map.Entry<String, BaseOutcome>entry:passNumbers.entrySet()) {
-			//if(entry.getValue().getGlobal()) globals.add(entry.getValue());
 			list.add(entry.getValue());
 		}
 		return list;
@@ -185,7 +185,6 @@ abstract class BaseRule implements Rule {
 		if(failNumbers == null) return null;
 		ArrayList<BaseOutcome> list = new ArrayList<BaseOutcome>();
 		for(Map.Entry<String, BaseOutcome>entry:failNumbers.entrySet()) {
-			//if(entry.getValue().getGlobal()) globals.add(entry.getValue());
 			list.add(entry.getValue());
 		}
 		return list;
@@ -196,7 +195,6 @@ abstract class BaseRule implements Rule {
 		if(passTags == null) return null;
 		ArrayList<BaseOutcome> list = new ArrayList<BaseOutcome>();
 		for(Map.Entry<String, BaseOutcome>entry:passTags.entrySet()) {
-			//if(entry.getValue().getGlobal()) globals.add(entry.getValue());
 			list.add(entry.getValue());
 		}
 		return list;
@@ -207,13 +205,15 @@ abstract class BaseRule implements Rule {
 		if(failTags == null) return null;
 		ArrayList<BaseOutcome> list = new ArrayList<BaseOutcome>();
 		for(Map.Entry<String, BaseOutcome>entry:failTags.entrySet()) {
-			//if(entry.getValue().getGlobal()) globals.add(entry.getValue());
 			list.add(entry.getValue());
 		}
 		return list;
 	};
 	
-	public void setOutcomesToCategories() {
+	/*
+	 * For runtime performance, put outcome types into separate Maps when loading definitions
+	 */
+	public void setOutcomesToCategories(String documentId) {
 		
 		if(outcomes == null) return;
 		
@@ -221,6 +221,7 @@ abstract class BaseRule implements Rule {
 		while(iterator.hasNext()) {
 			
 			BaseOutcome outcome = (BaseOutcome) iterator.next();
+			outcome.setVariableName(documentId, this.ruleNumber);
 			
 			if(this.ruleType.equalsIgnoreCase("calc") && outcome.getCompositeOutcomeRules() != null) {
 				throw new IllegalArgumentException(this.ruleType + " rule types cannot have composite outcome rules.");

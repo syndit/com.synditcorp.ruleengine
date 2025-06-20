@@ -15,6 +15,7 @@ public class OutcomeExtender extends BaseOutcome {
 		} else {
 			super.setGlobal(outcome.getGlobal().toString());
 		}
+		super.setVariableName(outcome.getVariableName());
 		super.setCompositeOutcomeRules(outcome.getCompositeOutcomeRules());
 
 	}
