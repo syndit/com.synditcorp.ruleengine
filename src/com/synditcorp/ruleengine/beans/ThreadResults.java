@@ -12,43 +12,57 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.beans;
 
+import java.util.ArrayList;
+import java.util.TreeMap;
+
 public class ThreadResults {
 
-	private Integer ruleNumber = null;
-	private Boolean result = null;
-	private Double passScore = null;
-	private Double failScore = null;
+	private TreeMap<String, ArrayList<String>> tagOutcomes;
+	private TreeMap<String, Double> numberOutcomes;
 
-	public Integer getRuleNumber() {
-		return ruleNumber;
+	public TreeMap<String, ArrayList<String>> getTagOutcomes() {
+		return tagOutcomes;
 	}
 
-	public void setRuleNumber(Integer ruleNumber) {
-		this.ruleNumber = ruleNumber;
-	}
-
-	public Boolean getResult() {
-		return result;
-	}
-
-	public void setResult(Boolean result) {
-		this.result = result;
-	}
-
-	public Double getPassScore() {
-		return passScore;
-	}
-
-	public void setPassScore(Double passScore) {
-		this.passScore = passScore;
-	}
-
-	public Double getFailScore() {
-		return failScore;
-	}
-
-	public void setFailScore(Double failScore) {
-		this.failScore = failScore;
+	public TreeMap<String, Double> getNumberOutcomes() {
+		return numberOutcomes;
 	}
 	
+	public void setNumberOutcome(String key, Double value) {
+
+		if(value == null) return;
+
+		if(this.numberOutcomes == null) {
+			this.numberOutcomes = new TreeMap<String, Double>();
+			this.numberOutcomes.put(key, value);
+			return;
+		}
+
+		if(this.numberOutcomes.containsKey(key)) {
+			Double sumOf = Double.sum(this.numberOutcomes.get(key), value);
+			this.numberOutcomes.put(key, sumOf);
+		} else {
+			this.numberOutcomes.put(key, value);
+		}
+		
+	}
+	
+	public void setTagOutcome(String key, ArrayList<String> values) {
+		
+		if(values == null) return;
+
+		if(this.tagOutcomes == null) {
+			this.tagOutcomes = new TreeMap<String, ArrayList<String>>();
+			this.tagOutcomes.put(key, values);
+			return;
+		}
+		
+		if(this.tagOutcomes.containsKey(key)) {
+			this.tagOutcomes.get(key).addAll(values);
+		} else {
+			this.tagOutcomes.put(key, values);
+		}
+		
+	}
+
 }

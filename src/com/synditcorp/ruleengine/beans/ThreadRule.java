@@ -16,6 +16,8 @@ import java.util.ArrayList;
 public class ThreadRule extends BaseRule {
 
 	private ArrayList<Integer> threadRules;
+	private ArrayList<String> numberKeys;
+	private ArrayList<String> tagKeys;
 	
 	public ThreadRule() {
 		
@@ -28,5 +30,22 @@ public class ThreadRule extends BaseRule {
 	public void setThreadRules(ArrayList<Integer> threadRules) {
 		this.threadRules = threadRules;
 	}
+
+	public ArrayList<String> getNumberKeys() {
+		return numberKeys;
+	}
+
+	public void setNumberKeys(ArrayList<String> numberKeys) {
+		this.numberKeys = numberKeys;
+	}
+
+	public ArrayList<String> getTagKeys() {
+		return tagKeys;
+	}
+
+	public void setTagKeys(ArrayList<String> tagKeys) {
+		this.tagKeys = tagKeys;
+	}
+	
 	
 }

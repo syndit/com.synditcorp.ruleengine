@@ -16,6 +16,7 @@ import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ForkJoinPool;
 
@@ -24,10 +25,14 @@ import com.synditcorp.ruleengine.beans.FailNumberOutcome;
 import com.synditcorp.ruleengine.beans.FailTagOutcome;
 import com.synditcorp.ruleengine.beans.PassNumberOutcome;
 import com.synditcorp.ruleengine.beans.PassTagOutcome;
+import com.synditcorp.ruleengine.beans.ThreadProcObjects;
 import com.synditcorp.ruleengine.beans.ThreadResults;
+import com.synditcorp.ruleengine.beans.ThreadRule;
 import com.synditcorp.ruleengine.exceptions.DuplicateKeyException;
 import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 import com.synditcorp.ruleengine.handlers.ExpressionHandler;
+import com.synditcorp.ruleengine.interfaces.CalcRule;
+import com.synditcorp.ruleengine.interfaces.CompositeRule;
 import com.synditcorp.ruleengine.interfaces.Outcome;
 import com.synditcorp.ruleengine.interfaces.Rule;
 import com.synditcorp.ruleengine.interfaces.RuleDefinition;
@@ -123,7 +128,7 @@ public class RuleEvaluator implements Cloneable {
 	public ArrayList<String> getRuleTags(Integer ruleNumber) throws Exception {
 		return ruleDefinition.getRuleTags(ruleNumber);
 	}
-
+	
 	/**
 	 * Evaluate the rule referenced by rule number. The rule number must be one of
 	 * the rules referenced in the document parsed by the engine's parser.
@@ -688,9 +693,12 @@ public class RuleEvaluator implements Cloneable {
 		}
 
 		// if(!isRuleApplicable(ruleNumber)) return null;
+		
+		String ruleHandler = ((CalcRule)getRule(ruleNumber)).getHandlerClass();
+		String expression = ((CalcRule)getRule(ruleNumber)).getExpression();
 
-		String ruleHandler = ruleDefinition.getHandlerClass(ruleNumber);
-		String expression = ruleDefinition.getExpression(ruleNumber);
+		//String ruleHandler = ruleDefinition.getHandlerClass(ruleNumber);
+		//String expression = ruleDefinition.getExpression(ruleNumber);
 
 		Boolean result = null;
 		try {
@@ -782,74 +790,54 @@ public class RuleEvaluator implements Cloneable {
 	 * performs optimally in your environment. Variables set in the threads do not
 	 * persist when evaluation is complete.
 	 * 
-	 * @return null if no rules are processed, otherwise if at least one rule
-	 *         passed, returns true, else returns false
+	 * @return returns true
 	 * @throws Exception when any exception occurs
 	 * @param ruleNumber value for a given rule number
 	 */
 	private Boolean processThreadRules(Integer ruleNumber) throws Exception {
 
 		ArrayList<ThreadResults> threadResults = getThreadResults(ruleNumber);
-
-		boolean noRulesProcessed = true;
-		Boolean atLeastOneRulePassed = false;
-		boolean isPassScore = false;
-		boolean isFailScore = false;
-		double passScore = 0;
-		double failScore = 0;
+		String variableName = ruleDefinition.getDocumentId() + "_" + ruleNumber + "_";
 
 		// loop through all the rule results processed in the threads
 		for (int i = 0; i < threadResults.size(); i++) {
 
-			if (threadResults.get(i).getResult() == null) {
-				throw new NoRuleEvaluatedException();
+			if(threadResults.get(i).getNumberOutcomes() != null) {
+				TreeMap<String, Double> numberOutcomes = threadResults.get(i).getNumberOutcomes();
+				for(Map.Entry<String, Double> entry:numberOutcomes.entrySet()) {
+					
+					String threadVariable = variableName + entry.getKey();
+					if(this.variables.containsKey(threadVariable)) {
+						
+						Double sumOf = Double.sum( (Double) this.variables.get(threadVariable), entry.getValue());
+						this.variables.put(threadVariable, sumOf);
+						
+					} else {
+						this.variables.put(threadVariable, entry.getValue());
+					}
+
+				}
+
 			}
+			
+			if(threadResults.get(i).getTagOutcomes() != null) {
+				TreeMap<String, ArrayList<String>> tagOutcomes = threadResults.get(i).getTagOutcomes();
+				for(Map.Entry<String, ArrayList<String>> entry:tagOutcomes.entrySet()) {
+					
+					String threadVariable = variableName + entry.getKey();
+					if(this.variables.containsKey(threadVariable)) {
+						((ArrayList<String>) this.variables.get(threadVariable)).addAll(entry.getValue());
+					} else {
+						this.variables.put(threadVariable, entry.getValue());
+					}
 
-			noRulesProcessed = false;
+				}
 
-			boolean thisRulePassed = false;
-
-			if (threadResults.get(i).getResult()) {
-				atLeastOneRulePassed = true;
-				thisRulePassed = true;
-				// addRuntimePass(threadResults.get(i).getRuleNumber());
-			} else {
-				// addRuntimeFail(threadResults.get(i).getRuleNumber());
 			}
-
-			if (thisRulePassed && threadResults.get(i).getPassScore() != null) {
-				isPassScore = true;
-				passScore += threadResults.get(i).getPassScore().doubleValue();
-			}
-
-			if (!thisRulePassed && threadResults.get(i).getFailScore() != null) {
-				isFailScore = true;
-				failScore += threadResults.get(i).getFailScore().doubleValue();
-			}
-
+			
 		}
 
-		if (noRulesProcessed)
-			return null;
-
-		if (atLeastOneRulePassed) {
-			addRuntimePass(ruleNumber);
-			setGlobalPassOutcomes(ruleNumber);
-			// addRulePassResultsToVariables(ruleNumber, variables);
-			if (isPassScore) {
-				variables.put((this.getDocumentId() + "_compositePassScore_" + ruleNumber), passScore);
-			}
-		}
-
-		addRuntimeFail(ruleNumber);
-		setGlobalFailOutcomes(ruleNumber);
-		// addRuleFailResultsToVariables(ruleNumber, variables);
-
-		if (isFailScore) {
-			variables.put((this.getDocumentId() + "_compositeFailScore_" + ruleNumber), failScore);
-		}
-
-		return atLeastOneRulePassed;
+		return true;
 
 	}
 
@@ -864,9 +852,14 @@ public class RuleEvaluator implements Cloneable {
 	private ArrayList<ThreadResults> getThreadResults(Integer ruleNumber) throws Exception {
 
 		if (pool == null) pool = new ForkJoinPool();
+		
+		ThreadRule threadRule =  ((ThreadRule) getRule(ruleNumber));
 
-		ArrayList<Integer> threadRulesList = getThreadRulesList(ruleNumber);
+		ArrayList<String> numberKeys = threadRule.getNumberKeys();
+		ArrayList<String> tagKeys = threadRule.getTagKeys();
+		ArrayList<Integer> threadRulesList = threadRule.getThreadRules();
 		ArrayList<Integer> block = new ArrayList<Integer>();
+		
 		ArrayList<ThreadRuleProcessor> tasks = new ArrayList<ThreadRuleProcessor>();
 		int listSize = threadRulesList.size();
 		int ctr = 0;
@@ -876,7 +869,15 @@ public class RuleEvaluator implements Cloneable {
 			if (ctr == threadBlockSize || (i + 1) == listSize) {
 				ArrayList<Integer> passBlock = new ArrayList<Integer>();
 				passBlock.addAll(block);
-				ThreadRuleProcessor threadRuleProcessor = new ThreadRuleProcessor(passBlock, (RuleEvaluator) this.clone());
+
+				ThreadProcObjects objects = new ThreadProcObjects();
+				objects.setThreadRuleNumber(ruleNumber);
+				objects.setNumberKeys(numberKeys);
+				objects.setTagKeys(tagKeys);
+				objects.setBlock(passBlock);
+				objects.setRuleEvaluator((RuleEvaluator) this.clone());
+				
+				ThreadRuleProcessor threadRuleProcessor = new ThreadRuleProcessor(objects);
 				tasks.add(threadRuleProcessor);
 				pool.execute(threadRuleProcessor);
 				block.clear();
@@ -887,7 +888,7 @@ public class RuleEvaluator implements Cloneable {
 		ArrayList<ThreadResults> threadResults = new ArrayList<ThreadResults>();
 
 		for (int i = 0; i < tasks.size(); i++) {
-			threadResults.addAll(tasks.get(i).get());
+			threadResults.add(tasks.get(i).get());
 		}
 
 		return threadResults;
@@ -1001,11 +1002,13 @@ public class RuleEvaluator implements Cloneable {
 	}
 
 	private ArrayList<Integer> getCompositeRulesList(Integer ruleNumber) throws Exception {
-		return ruleDefinition.getCompositeRulesList(ruleNumber);
+		//return ruleDefinition.getCompositeRulesList(ruleNumber);
+		return ((CompositeRule) getRule(ruleNumber)).getCompositeRules();
 	}
 
 	private ArrayList<Integer> getThreadRulesList(Integer ruleNumber) throws Exception {
-		return ruleDefinition.getThreadRulesList(ruleNumber);
+		//return ruleDefinition.getThreadRulesList(ruleNumber);
+		return ((ThreadRule) getRule(ruleNumber)).getThreadRules();
 	}
 
 	private Double evaluateNumberExpression(String expression) {

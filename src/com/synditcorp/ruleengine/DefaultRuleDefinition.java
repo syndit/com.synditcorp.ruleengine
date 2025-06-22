@@ -177,38 +177,48 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("ThreadRule");
 	}
 
-	/**
-	 * Returns a "base" rule's expression as is set in the rules document.
-	 */
-	@Override
-	public String getExpression(Integer ruleNumber) throws Exception {
-		return ((BaseCalcRule) getRule(ruleNumber)).getExpression();
-	}
+//	/**
+//	 * Returns a "base" rule's expression as is set in the rules document.
+//	 */
+//	@Override
+//	public String getExpression(Integer ruleNumber) throws Exception {
+//		return ((BaseCalcRule) getRule(ruleNumber)).getExpression();
+//	}
 	
-	/**
-	 * Returns a "base" rule's Java handler class as is set in the rules document.
-	 */
-	@Override
-	public String getHandlerClass(Integer ruleNumber) throws Exception {
-		return ((BaseCalcRule) getRule(ruleNumber)).getHandlerClass();
-	}
+//	/**
+//	 * Returns a "base" rule's Java handler class as is set in the rules document.
+//	 */
+//	@Override
+//	public String getHandlerClass(Integer ruleNumber) throws Exception {
+//		return ((BaseCalcRule) getRule(ruleNumber)).getHandlerClass();
+//	}
 	
 
-	/**
-	 * Gets the list of thread rule numbers for a particular thread rule's list that is set in the rules document.
-	 */
-	@Override
-	public ArrayList<Integer> getThreadRulesList(Integer ruleNumber) throws Exception {
-		return ((ThreadRule) getRule(ruleNumber)).getThreadRules();
-	}
+//	/**
+//	 * Gets the list of thread rule numbers for a particular thread rule's list that is set in the rules document.
+//	 */
+//	@Override
+//	public ArrayList<Integer> getThreadRulesList(Integer ruleNumber) throws Exception {
+//		return ((ThreadRule) getRule(ruleNumber)).getThreadRules();
+//	}		
 	
-	/**
-	 * Gets the list of composite rule numbers for a particular composite rule's list that is set in the rules document.
-	 */
-	@Override
-	public ArrayList<Integer> getCompositeRulesList(Integer ruleNumber) throws Exception {
-		return ((CompositeRule) getRule(ruleNumber)).getCompositeRules();
-	}
+//	@Override
+//	public ArrayList<String> getThreadNumberKeys(Integer ruleNumber) throws Exception {
+//		return ((ThreadRule) getRule(ruleNumber)).getNumberKeys();
+//	}
+//
+//	@Override
+//	public ArrayList<String> getThreadTagKeys(Integer ruleNumber) throws Exception {
+//		return ((ThreadRule) getRule(ruleNumber)).getTagKeys();
+//	}
+
+//	/**
+//	 * Gets the list of composite rule numbers for a particular composite rule's list that is set in the rules document.
+//	 */
+//	@Override
+//	public ArrayList<Integer> getCompositeRulesList(Integer ruleNumber) throws Exception {
+//		return ((CompositeRule) getRule(ruleNumber)).getCompositeRules();
+//	}
 
 	/**
 	 * Returns a Rule object for a particular rule number	
@@ -281,7 +291,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		for (Iterator<ThreadRule> iterator = ar.iterator(); iterator.hasNext();) {
 			ThreadRule threadRule = (ThreadRule) iterator.next();
 			if(!threadRule.getRuleType().equalsIgnoreCase("thread")) throw new IllegalArgumentException("'Thread' rules list can't have '" + threadRule.getRuleType() + "' rules");
-			//threadRule.setOutcomesToCategories();
+			threadRule.setOutcomesToCategories( this.getDocumentId() );
 			this.aggregateRules.put(threadRule.getRuleNumber(), threadRule);
 		}
 	}
@@ -293,6 +303,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		ArrayList<String> tagOutcomes = new ArrayList<String>();
 
 		for(Map.Entry<Integer, Rule> entry:aggregateRules.entrySet()) {
+			if(entry.getValue().getRuleType().equalsIgnoreCase("thread")) continue;
 			if(entry.getValue().getOutcomes() == null) continue;
 			outcomes.addAll(entry.getValue().getOutcomes());
 		}
@@ -316,5 +327,6 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		}
 		
 	}
+
 
 }

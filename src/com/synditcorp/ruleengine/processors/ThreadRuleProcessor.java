@@ -14,52 +14,68 @@ package com.synditcorp.ruleengine.processors;
 import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.concurrent.RecursiveTask;
 
 import com.synditcorp.ruleengine.RuleEvaluator;
+import com.synditcorp.ruleengine.beans.ThreadProcObjects;
 import com.synditcorp.ruleengine.beans.ThreadResults;
 import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 
-public class ThreadRuleProcessor extends RecursiveTask<ArrayList<ThreadResults>> {
+public class ThreadRuleProcessor extends RecursiveTask<ThreadResults> {
 
 	private static final long serialVersionUID = 1L;
+	private Integer threadRuleNumber;
 	private ArrayList<Integer> block;
+	private ArrayList<String> numberKeys;
+	private ArrayList<String> tagKeys;
 	private RuleEvaluator ruleEvaluator;
 	
-	public ThreadRuleProcessor(ArrayList<Integer> block, RuleEvaluator ruleEvaluator) {
-		this.block = block;
-		this.ruleEvaluator = ruleEvaluator;
+	
+//	public ThreadRuleProcessor(ArrayList<Integer> block, RuleEvaluator ruleEvaluator) {
+	public ThreadRuleProcessor(ThreadProcObjects objects) {
+		this.threadRuleNumber = objects.getThreadRuleNumber();
+		this.block = objects.getBlock();
+		this.numberKeys = objects.getNumberKeys();
+		this.tagKeys = objects.getTagKeys();
+		this.ruleEvaluator = objects.getRuleEvaluator();
 	}
 
 	@Override
-	protected ArrayList<ThreadResults> compute() {
+	protected ThreadResults compute() {
 
-		ArrayList<ThreadResults> threadResults = new ArrayList<ThreadResults>();
+		ThreadResults threadResults = new ThreadResults();
 
 		for (int i = 0; i < block.size(); i++) {
 			Integer ruleNumber = block.get(i);
-			try {
-				ThreadResults results = new ThreadResults();
-				results.setRuleNumber(ruleNumber);
-				threadResults.add(results);
 
-				Boolean result = null;
+			try {
+
 				try {
-					result  = ruleEvaluator.evaluateRule(ruleNumber);
-					results.setResult(result);
-				} catch (NullPointerException e) {
-					LOGGER.info("Null pointer exception when evaluating " +  ruleNumber + " in Thread rule.");
+					ruleEvaluator.evaluateRule(ruleNumber);
+				} catch (NoRuleEvaluatedException e) {
+					LOGGER.info("No rule evaluated exception in thread rule " +  threadRuleNumber + " for rule number " + ruleNumber + ".");
 					continue;
 				}
-
-				if(result) {
-					results.setPassScore( (Double) ruleEvaluator.getVariables().get( ( ruleEvaluator.getDocumentId() + "_compositePassScore_" + ruleNumber) ) );
-				} 	else {
-					results.setFailScore( (Double) ruleEvaluator.getVariables().get( (  ruleEvaluator.getDocumentId() +"_compositeFailScore_" + ruleNumber) ) );
+				
+				Iterator<String> numberIterator = numberKeys.iterator();
+				while (numberIterator.hasNext()) {
+					String key = numberIterator.next();
+					Double value = ruleEvaluator.getNumberOutcome(ruleNumber, key);
+					if(value == null) continue;
+					threadResults.setNumberOutcome(key, value);
 				}
-
-			} catch (NoRuleEvaluatedException e) {
-				LOGGER.info("Rule number " + ruleNumber + " not evaluated in Thread rule.");				
+				Iterator<String> tagIterator = tagKeys.iterator();
+				while (tagIterator.hasNext()) {
+					String key = tagIterator.next();
+					ArrayList<String> value = ruleEvaluator.getTagOutcome(ruleNumber, key);
+					if(value == null) continue;
+					threadResults.setTagOutcome(key, value);
+				}
+				
+			} catch (NullPointerException e) {
+				LOGGER.info("Null pointer exception when evaluating " +  ruleNumber + " in Thread rule.");
+				continue;
 			} catch (Exception e) {
 				LOGGER.info("Exception in thread when evaluating rule number " + ruleNumber + ": " + e);
 			}
@@ -68,5 +84,44 @@ public class ThreadRuleProcessor extends RecursiveTask<ArrayList<ThreadResults>>
 		return threadResults;
 
 	}
+
+//	@Override
+//	protected ArrayList<ThreadResults> compute() {
+//
+//		ArrayList<ThreadResults> threadResults = new ArrayList<ThreadResults>();
+//
+//		for (int i = 0; i < block.size(); i++) {
+//			Integer ruleNumber = block.get(i);
+//			try {
+//				ThreadResults results = new ThreadResults();
+//				results.setRuleNumber(ruleNumber);
+//				threadResults.add(results);
+//
+//				Boolean result = null;
+//				try {
+//					result  = ruleEvaluator.evaluateRule(ruleNumber);
+//					results.setResult(result);
+//				} catch (NullPointerException e) {
+//					LOGGER.info("Null pointer exception when evaluating " +  ruleNumber + " in Thread rule.");
+//					continue;
+//				}
+//
+//				if(result) {
+//					results.setPassScore( (Double) ruleEvaluator.getVariables().get( ( ruleEvaluator.getDocumentId() + "_compositePassScore_" + ruleNumber) ) );
+//				} 	else {
+//					results.setFailScore( (Double) ruleEvaluator.getVariables().get( (  ruleEvaluator.getDocumentId() +"_compositeFailScore_" + ruleNumber) ) );
+//				}
+//
+//			} catch (NoRuleEvaluatedException e) {
+//				LOGGER.info("Rule number " + ruleNumber + " not evaluated in Thread rule.");				
+//			} catch (Exception e) {
+//				LOGGER.info("Exception in thread when evaluating rule number " + ruleNumber + ": " + e);
+//			}
+//		}
+//
+//		return threadResults;
+//
+//	}
+	
 	
 }

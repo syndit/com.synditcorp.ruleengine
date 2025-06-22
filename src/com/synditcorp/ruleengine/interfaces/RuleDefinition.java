@@ -32,9 +32,12 @@ public interface RuleDefinition {
 	public boolean isAndRule(Integer ruleNumber) throws Exception;
 	public boolean isAllRule(Integer ruleNumber) throws Exception;
 	public boolean isThreadRule(Integer ruleNumber) throws Exception;
-	public String getExpression(Integer ruleNumber) throws Exception;
-	public String getHandlerClass(Integer ruleNumber) throws Exception;
-	public ArrayList<Integer> getThreadRulesList(Integer ruleNumber) throws Exception;
-	public ArrayList<Integer> getCompositeRulesList(Integer ruleNumber) throws Exception;
+
+//	public String getExpression(Integer ruleNumber) throws Exception;
+//	public String getHandlerClass(Integer ruleNumber) throws Exception;
+//	public ArrayList<Integer> getThreadRulesList(Integer ruleNumber) throws Exception;
+//	public ArrayList<String> getThreadNumberKeys(Integer ruleNumber) throws Exception;
+//	public ArrayList<String> getThreadTagKeys(Integer ruleNumber) throws Exception;
+//	public ArrayList<Integer> getCompositeRulesList(Integer ruleNumber) throws Exception;
 
 }
