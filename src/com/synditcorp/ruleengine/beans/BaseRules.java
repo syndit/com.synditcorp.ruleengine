@@ -20,6 +20,7 @@ public class BaseRules implements Rules {
 	private String documentId;
 	private String description;
 	private String version;
+	private Boolean active;
 	private Integer startRule;
 	private ArrayList<String> documentTags;
 	private ArrayList<BaseCalcRule> calcRules;
@@ -34,8 +35,8 @@ public class BaseRules implements Rules {
 
 	@Override
 	public ArrayList<BaseCalcRule> getCalcRules() {
-		if(calcRules == null) calcRules = new ArrayList<BaseCalcRule>();
-		return calcRules;
+		if(this.calcRules == null) this.calcRules = new ArrayList<BaseCalcRule>();
+		return this.calcRules;
 	}
 
 	@Override
@@ -46,8 +47,8 @@ public class BaseRules implements Rules {
 
 	@Override
 	public ArrayList<AndRule> getAndRules() {
-		if(andRules == null) andRules = new ArrayList<AndRule>();
-		return andRules;
+		if(this.andRules == null) this.andRules = new ArrayList<AndRule>();
+		return this.andRules;
 	}
 
 
@@ -59,8 +60,8 @@ public class BaseRules implements Rules {
 
 	@Override
 	public ArrayList<OrRule> getOrRules() {
-		if(orRules == null) orRules = new ArrayList<OrRule>();
-		return orRules;
+		if(this.orRules == null) this.orRules = new ArrayList<OrRule>();
+		return this.orRules;
 	}
 
 
@@ -71,8 +72,8 @@ public class BaseRules implements Rules {
 	
 	@Override
 	public ArrayList<AllRule> getAllRules() {
-		if(allRules == null) allRules = new ArrayList<AllRule>();
-		return allRules;
+		if(this.allRules == null) this.allRules = new ArrayList<AllRule>();
+		return this.allRules;
 	}
 
 	@Override
@@ -82,8 +83,8 @@ public class BaseRules implements Rules {
 
 	@Override
 	public ArrayList<ThreadRule> getThreadRules() {
-		if(threadRules == null) threadRules = new ArrayList<ThreadRule>();
-		return threadRules;
+		if(this.threadRules == null) this.threadRules = new ArrayList<ThreadRule>();
+		return this.threadRules;
 	}
 
 	@Override
@@ -103,7 +104,7 @@ public class BaseRules implements Rules {
 
 	@Override
 	public String getDescription() {
-		return description;
+		return this.description;
 	}
 
 	@Override
@@ -113,12 +114,22 @@ public class BaseRules implements Rules {
 
 	@Override
 	public String getVersion() {
-		return version;
+		return this.version;
 	}
 
 	@Override
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	@Override
+	public Boolean getActive() {
+		return this.active;
+	}
+
+	@Override
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 
 	@Override
@@ -132,12 +143,13 @@ public class BaseRules implements Rules {
 	}
 
 	public ArrayList<String> getDocumentTags() {
-		return documentTags;
+		return this.documentTags;
 	}
 
 	public void setDocumentTags(ArrayList<String> documentTags) {
 		this.documentTags = documentTags;
 	}
+
 
 
 }

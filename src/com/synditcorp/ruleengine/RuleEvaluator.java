@@ -29,8 +29,8 @@ import com.synditcorp.ruleengine.beans.ThreadProcObjects;
 import com.synditcorp.ruleengine.beans.ThreadResults;
 import com.synditcorp.ruleengine.beans.ThreadRule;
 import com.synditcorp.ruleengine.exceptions.DuplicateKeyException;
+import com.synditcorp.ruleengine.exceptions.EngineSafeguardException;
 import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
-import com.synditcorp.ruleengine.exceptions.VariablesExistException;
 import com.synditcorp.ruleengine.handlers.ExpressionHandler;
 import com.synditcorp.ruleengine.interfaces.CalcRule;
 import com.synditcorp.ruleengine.interfaces.CompositeRule;
@@ -189,9 +189,11 @@ public class RuleEvaluator implements Cloneable {
 	 * @throws VariablesExistException when variables exist in the internal map collection
 	 * @param variables for the Engine's expressions
 	 */
-	public void setVariables(TreeMap<String, Object> variables) {
+	public void setVariables(TreeMap<String, Object> variables) throws EngineSafeguardException {
+		
+		if(!this.variables.isEmpty()) throw new EngineSafeguardException("Variables collection already populated.  Use 'reset' to clear variables.");
 
-			this.variables.putAll(variables);
+		this.variables.putAll(variables);
 
 	}
 
@@ -242,8 +244,9 @@ public class RuleEvaluator implements Cloneable {
 //		return copyOf;
 //	}
 
-	public void setCache(TreeMap<Integer, Boolean> cache) {
-		this.cache = cache;
+	public void setCache(TreeMap<Integer, Boolean> cache) throws EngineSafeguardException {
+		if(!this.cache.isEmpty()) throw new EngineSafeguardException("Cache contains evaulation results.  Use 'reset' to clear results.");
+		this.cache.putAll(cache);
 	}
 	
 	/**
@@ -905,7 +908,7 @@ public class RuleEvaluator implements Cloneable {
 		for (int i = 0; i < listSize; i++) {
 			block.add(threadRulesList.get(i));
 			ctr++;
-			if (ctr == threadBlockSize || (i + 1) == listSize) {
+			if (ctr == this.threadBlockSize || (i + 1) == listSize) {
 				ArrayList<Integer> passBlock = new ArrayList<Integer>();
 				passBlock.addAll(block);
 
@@ -1059,9 +1062,20 @@ public class RuleEvaluator implements Cloneable {
 	}
 
 	public Object clone() {
+
 		RuleEvaluator newRuleEvaluator = new RuleEvaluator(this.ruleDefinition);
-		newRuleEvaluator.setVariables(this.variables);
-		newRuleEvaluator.setCache(this.cache);
+		
+		for (int i = 0; i < 2; i++) {
+			try {
+				newRuleEvaluator.setVariables(this.variables);
+				newRuleEvaluator.setCache(this.cache);
+			} catch (EngineSafeguardException e) {
+				newRuleEvaluator.clearCache();
+				continue;
+			}
+			break;
+		}
+
 		return newRuleEvaluator;
 
 	}

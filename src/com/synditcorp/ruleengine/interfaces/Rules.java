@@ -37,6 +37,8 @@ public interface Rules {
 	public void setDescription(String description);
 	public String getVersion();
 	public void setVersion(String version);
+	public Boolean getActive();
+	public void setActive(Boolean active);
 	public ArrayList<String> getDocumentTags();
 	public void setDocumentTags(ArrayList<String> documentTags);
 	public Integer getStartRule();

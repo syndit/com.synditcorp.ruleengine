@@ -24,17 +24,17 @@ public class TimeTrack {
 		return start;
 	}
 
-	public static Long getStartTime(TimeTrack start) {
+	public static synchronized Long getStartTime(TimeTrack start) {
 		return start.getStart();
 	}
 	
-	public static Long getElapsedTime(TimeTrack start, TimeTrack end) throws Exception {
+	public static synchronized Long getElapsedTime(TimeTrack start, TimeTrack end) throws Exception {
 		if(start == null || start.getStart() == null) throw new Exception("Start time not set.");
 		if(end == null || end.getStart() == null) throw new Exception("End time not set.");
 		return elapsed(start.getStart(), end.getStart());
 	}
 
-	public static Long getElapsedTime(TimeTrack start) throws Exception {
+	public static synchronized Long getElapsedTime(TimeTrack start) throws Exception {
 		if(start == null || start.getStart() == null) throw new Exception("Start time not set.");
 		//Long end = System.currentTimeMillis();
 		Long end = System.nanoTime();

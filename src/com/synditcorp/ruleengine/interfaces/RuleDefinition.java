@@ -20,6 +20,7 @@ public interface RuleDefinition {
 	public String getDocumentId();
 	public String getDescription();
 	public String getVersion();
+	public Boolean getActive();
 	public Integer getStartRule();
 	public ArrayList<String> getDocumentTags();
 	public ArrayList<String> getRuleTags(Integer ruleNumber) throws Exception;

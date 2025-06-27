@@ -71,6 +71,16 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	public String getVersion() {
 		return baseRules.getVersion();
 	}
+
+	
+	/**
+	 * Returns the version of the rules definition.  Version is not used at runtime to evaluate rules.
+	 */
+	@Override
+	public Boolean getActive() {
+		return baseRules.getActive();
+	}
+
 	
 	/**
 	 * Optional document tags are used to further define a document.  Document tags are not used at runtime
@@ -327,6 +337,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		}
 		
 	}
+
 
 
 }
