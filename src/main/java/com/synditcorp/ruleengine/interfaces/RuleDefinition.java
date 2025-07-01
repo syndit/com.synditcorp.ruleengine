@@ -24,11 +24,12 @@ public interface RuleDefinition {
 	public Integer getStartRule();
 	public ArrayList<String> getDocumentTags();
 	public ArrayList<String> getRuleTags(Integer ruleNumber) throws Exception;
-	public void loadRules(RuleParser parser) throws Exception;
-	public void reloadRules(RuleParser parser) throws Exception;
+//	public void loadRules(RuleParser parser) throws Exception;
+//	public void reloadRules(RuleParser parser) throws Exception;
 	public void isRule(Integer ruleNumber) throws NoRuleFoundException;
 	public Rule getRule(Integer ruleNumber) throws Exception;
 	public boolean isCalcRule(Integer ruleNumber) throws Exception;
+	public boolean isExecRule(Integer ruleNumber) throws Exception;
 	public boolean isOrRule(Integer ruleNumber) throws Exception;
 	public boolean isAndRule(Integer ruleNumber) throws Exception;
 	public boolean isAllRule(Integer ruleNumber) throws Exception;

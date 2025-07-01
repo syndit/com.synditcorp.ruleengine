@@ -24,6 +24,7 @@ public class BaseRules implements Rules {
 	private Integer startRule;
 	private ArrayList<String> documentTags;
 	private ArrayList<BaseCalcRule> calcRules;
+	private ArrayList<BaseExecRule> execRules;
 	private ArrayList<AndRule> andRules;
 	private ArrayList<OrRule> orRules;
 	private ArrayList<AllRule> allRules;
@@ -45,6 +46,17 @@ public class BaseRules implements Rules {
 	}
 
 
+	@Override
+	public ArrayList<BaseExecRule> getExecRules() {
+		if(this.execRules == null) this.execRules = new ArrayList<BaseExecRule>();
+		return this.execRules;
+	}
+
+	@Override
+	public void setExecRules(ArrayList<BaseExecRule> execRules) {
+		this.execRules = execRules;
+		
+	}
 	@Override
 	public ArrayList<AndRule> getAndRules() {
 		if(this.andRules == null) this.andRules = new ArrayList<AndRule>();
@@ -149,6 +161,7 @@ public class BaseRules implements Rules {
 	public void setDocumentTags(ArrayList<String> documentTags) {
 		this.documentTags = documentTags;
 	}
+
 
 
 

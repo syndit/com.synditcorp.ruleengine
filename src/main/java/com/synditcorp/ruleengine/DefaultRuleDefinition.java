@@ -19,16 +19,12 @@ import java.util.TreeMap;
 import com.synditcorp.ruleengine.beans.AllRule;
 import com.synditcorp.ruleengine.beans.AndRule;
 import com.synditcorp.ruleengine.beans.BaseCalcRule;
+import com.synditcorp.ruleengine.beans.BaseExecRule;
 import com.synditcorp.ruleengine.beans.BaseRules;
-import com.synditcorp.ruleengine.beans.FailNumberOutcome;
-import com.synditcorp.ruleengine.beans.FailTagOutcome;
 import com.synditcorp.ruleengine.beans.OrRule;
-import com.synditcorp.ruleengine.beans.PassNumberOutcome;
-import com.synditcorp.ruleengine.beans.PassTagOutcome;
 import com.synditcorp.ruleengine.beans.ThreadRule;
 import com.synditcorp.ruleengine.exceptions.NoRuleFoundException;
 import com.synditcorp.ruleengine.exceptions.OutcomeKeyException;
-import com.synditcorp.ruleengine.interfaces.CompositeRule;
 import com.synditcorp.ruleengine.interfaces.Outcome;
 import com.synditcorp.ruleengine.interfaces.Rule;
 import com.synditcorp.ruleengine.interfaces.RuleDefinition;
@@ -41,11 +37,12 @@ import com.synditcorp.ruleengine.interfaces.RuleParser;
  */
 public class DefaultRuleDefinition implements RuleDefinition {
 
-	private BaseRules baseRules;
-	private TreeMap<Integer, Rule> aggregateRules = new TreeMap<Integer, Rule>();
+	private final BaseRules baseRules;
+	private final TreeMap<Integer, Rule> aggregateRules = new TreeMap<Integer, Rule>();
 	
-	public DefaultRuleDefinition() {
-		
+	public DefaultRuleDefinition(RuleParser parser) throws Exception {
+		this.baseRules = parser.getRules();
+		setToAggregateRules();
 	}
 
 	/**
@@ -114,30 +111,30 @@ public class DefaultRuleDefinition implements RuleDefinition {
 		return getRule(ruleNumber).getRuleTags();
 	}
 
-	/**
-	 * Load the rules engine rules objects using a parser that implements com.synditcorp.ruleengine.interfaces.RulesParser
-	 */
-	@Override
-	public void loadRules(RuleParser parser) throws Exception {
-		
-		this.baseRules = parser.getRules();
-		setToAggregateRules();
-		
-	}
+//	/**
+//	 * Load the rules engine rules objects using a parser that implements com.synditcorp.ruleengine.interfaces.RulesParser
+//	 */
+//	@Override
+//	public void loadRules(RuleParser parser) throws Exception {
+//		
+//		this.baseRules = parser.getRules();
+//		setToAggregateRules();
+//		
+//	}
 	
-	/**
-	 * Reload the rules engine rules objects using a parser that implements com.synditcorp.ruleengine.interfaces.RulesParser.  Previous
-	 * rule definitions are discarded.
-	 */
-	@Override
-	public void reloadRules(RuleParser parser) throws Exception {
-
-		if(this.baseRules != null) {
-			this.baseRules = null;
-		}
-		loadRules(parser);
-		
-	}
+//	/**
+//	 * Reload the rules engine rules objects using a parser that implements com.synditcorp.ruleengine.interfaces.RulesParser.  Previous
+//	 * rule definitions are discarded.
+//	 */
+//	@Override
+//	public void reloadRules(RuleParser parser) throws Exception {
+//
+//		if(this.baseRules != null) {
+//			this.baseRules = null;
+//		}
+//		loadRules(parser);
+//		
+//	}
 
 	/**
 	 * Returns "true" if the rule is a "base" rule
@@ -148,11 +145,19 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	}
 	
 	/**
-	 * Returns "true" if the rule is a "base" rule
+	 * Returns "true" if the rule is a "calc" rule
 	 */
 	@Override
 	public boolean isCalcRule(Integer ruleNumber) throws Exception {
 		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("BaseCalcRule");
+	}
+	
+	/**
+	 * Returns "true" if the rule is a "exec" rule
+	 */
+	@Override
+	public boolean isExecRule(Integer ruleNumber) throws Exception {
+		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("BaseExecRule");
 	}
 	
 	/**
@@ -247,6 +252,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 */
 	private void setToAggregateRules() throws Exception {
 		setCalcRules();
+		setExecRules();
 		setOrRules();
 		setAndRules();
 		setAllRules();
@@ -262,6 +268,16 @@ public class DefaultRuleDefinition implements RuleDefinition {
 			if(!calcRule.getRuleType().equalsIgnoreCase("calc")) throw new IllegalArgumentException("calc rules list can't have '" + calcRule.getRuleType() + "' rules");
 			calcRule.setOutcomesToCategories( this.getDocumentId() );
 			this.aggregateRules.put(calcRule.getRuleNumber(), calcRule);
+		}
+	}
+
+	private void setExecRules() throws Exception  {
+		ArrayList<BaseExecRule> ar = this.baseRules.getExecRules();
+		for (Iterator<BaseExecRule> iterator = ar.iterator(); iterator.hasNext();) {
+			BaseExecRule execRule = (BaseExecRule) iterator.next();
+			if(!execRule.getRuleType().equalsIgnoreCase("exec")) throw new IllegalArgumentException("exec rules list can't have '" + execRule.getRuleType() + "' rules");
+			execRule.setOutcomesToCategories( this.getDocumentId() );
+			this.aggregateRules.put(execRule.getRuleNumber(), execRule);
 		}
 	}
 

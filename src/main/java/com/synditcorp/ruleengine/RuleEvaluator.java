@@ -34,11 +34,13 @@ import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 import com.synditcorp.ruleengine.handlers.ExpressionHandler;
 import com.synditcorp.ruleengine.interfaces.CalcRule;
 import com.synditcorp.ruleengine.interfaces.CompositeRule;
+import com.synditcorp.ruleengine.interfaces.ExecRule;
 import com.synditcorp.ruleengine.interfaces.Outcome;
 import com.synditcorp.ruleengine.interfaces.Rule;
 import com.synditcorp.ruleengine.interfaces.RuleDefinition;
 import com.synditcorp.ruleengine.logging.TimeTrack;
 import com.synditcorp.ruleengine.processors.CalcRuleProcessor;
+import com.synditcorp.ruleengine.processors.ExecRuleProcessor;
 import com.synditcorp.ruleengine.processors.ThreadRuleProcessor;
 
 /**
@@ -51,8 +53,8 @@ import com.synditcorp.ruleengine.processors.ThreadRuleProcessor;
 public class RuleEvaluator implements Cloneable {
 
 	private RuleDefinition ruleDefinition;
-	private TreeMap<Integer, Boolean> cache = new TreeMap<Integer, Boolean>();
-	private TreeMap<String, Object> variables = new TreeMap<String, Object>();
+	protected TreeMap<Integer, Boolean> cache = new TreeMap<Integer, Boolean>();
+	protected TreeMap<String, Object> variables = new TreeMap<String, Object>();
 //	private ArrayList<Integer> runtimePasses = new ArrayList<Integer>(1000);
 //	private ArrayList<Integer> runtimeFails = new ArrayList<Integer>(1000);
 	private ArrayList<Integer> runtineExpressionFails = new ArrayList<Integer>(1000);
@@ -244,7 +246,7 @@ public class RuleEvaluator implements Cloneable {
 //		return copyOf;
 //	}
 
-	public void setCache(TreeMap<Integer, Boolean> cache) throws EngineSafeguardException {
+	protected void setCache(TreeMap<Integer, Boolean> cache) throws EngineSafeguardException {
 		if(!this.cache.isEmpty()) throw new EngineSafeguardException("Cache contains evaulation results.  Use 'reset' to clear results.");
 		this.cache.putAll(cache);
 	}
@@ -654,6 +656,9 @@ public class RuleEvaluator implements Cloneable {
 		if (ruleDefinition.isCalcRule(ruleNumber))
 			return (processCalcRule(ruleNumber));
 
+		if (ruleDefinition.isExecRule(ruleNumber))
+			return (processExecRule(ruleNumber));
+
 		if (ruleDefinition.isOrRule(ruleNumber))
 			return (processOrRules(ruleNumber));
 
@@ -688,8 +693,6 @@ public class RuleEvaluator implements Cloneable {
 		long l = TimeTrack.getElapsedTime(t);
 
 		LOGGER.debug("Time check if rule number " + ruleNumber + " is applicable: " + isApplicable);
-
-		System.out.println("ruleNumber " + ruleNumber + " isApplicable: " + isApplicable + " elapsed time " + l);
 
 		return isApplicable;
 
@@ -768,6 +771,54 @@ public class RuleEvaluator implements Cloneable {
 
 		LOGGER.debug("{} milleseconds to evaluate rule number {} expression: {}, which evaluates to {}",
 				TimeTrack.getElapsedTime(t), ruleNumber, expression, result);
+
+		return (result);
+
+	}
+
+	private Boolean processExecRule(Integer ruleNumber) throws Exception {
+
+		TimeTrack t = new TimeTrack();
+
+//		Boolean cachedResult = cache.get(ruleNumber);
+//
+//		if (cachedResult != null) {
+//			return cachedResult;
+//		}
+
+		// if(!isRuleApplicable(ruleNumber)) return null;
+		
+		String ruleHandler = ((ExecRule)getRule(ruleNumber)).getHandlerClass();
+
+		//String ruleHandler = ruleDefinition.getHandlerClass(ruleNumber);
+		//String expression = ruleDefinition.getExpression(ruleNumber);
+
+		Boolean result = null;
+		try {
+			result = ExecRuleProcessor.processExecRule(ruleHandler, variables);
+		} catch (NoRuleEvaluatedException e) {
+			LOGGER.info("Unable to process rule: \"" + ruleNumber + "\", reason: " + e);
+			throw e;
+		} catch (Exception e) {
+			LOGGER.info("Unable to process rule: \"" + ruleNumber + "\", reason: " + e);
+			addExpressionFail(ruleNumber);
+			result = false;
+		}
+
+		addToCache(ruleNumber, result);
+
+		if (result.booleanValue()) {
+			addRuntimePass(ruleNumber);
+			setGlobalPassOutcomes(ruleNumber);
+			// addRulePassResultsToVariables(ruleNumber, variables);
+		} else {
+			addRuntimeFail(ruleNumber);
+			setGlobalFailOutcomes(ruleNumber);
+			// addRuleFailResultsToVariables(ruleNumber, variables);
+		}
+
+		LOGGER.debug("{} milleseconds to evaluate rule number {} expression: {}, which evaluates to {}",
+				TimeTrack.getElapsedTime(t), ruleNumber, result);
 
 		return (result);
 
