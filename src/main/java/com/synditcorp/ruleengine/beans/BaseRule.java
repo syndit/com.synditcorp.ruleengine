@@ -173,11 +173,14 @@ abstract class BaseRule implements Rule {
 	@Override
 	public ArrayList<BaseOutcome> getPassNumberOutcomes() {
 		if(passNumbers == null) return null;
-		ArrayList<BaseOutcome> list = new ArrayList<BaseOutcome>();
-		for(Map.Entry<String, BaseOutcome>entry:passNumbers.entrySet()) {
-			list.add(entry.getValue());
-		}
-		return list;
+		
+		return new ArrayList<BaseOutcome>(passNumbers.values());
+		
+//		ArrayList<BaseOutcome> list = new ArrayList<BaseOutcome>();
+//		for(Map.Entry<String, BaseOutcome>entry:passNumbers.entrySet()) {
+//			list.add(entry.getValue());
+//		}
+//		return list;
 	};
 
 	@Override
@@ -213,7 +216,7 @@ abstract class BaseRule implements Rule {
 	/*
 	 * For runtime performance, put outcome types into separate Maps when loading definitions
 	 */
-	public void setOutcomesToCategories(String documentId) {
+	public void setOutcomesToCategories(String documentId) throws Exception {
 		
 		if(outcomes == null) return;
 		

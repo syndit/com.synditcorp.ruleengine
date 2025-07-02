@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.synditcorp.ruleengine.exceptions.EngineSafeguardException;
 import com.synditcorp.ruleengine.interfaces.Outcome;
 
 public class BaseOutcome implements Outcome {
@@ -108,8 +109,10 @@ public class BaseOutcome implements Outcome {
 
 	/*
 	 * Variable name uses document ID, so must be set when Rules are being configured in the definition where the document ID is available
+	 * Need to safeguard this variable as it can't be FINAL.
 	 */
-	public void setVariableName(String documentId, Integer ruleNumber) {
+	public void setVariableName(String documentId, Integer ruleNumber) throws EngineSafeguardException {
+		if(this.variableName != null && this.variableName.length() > 0) throw new EngineSafeguardException("Variable name already populated.");
 		String varName = documentId + "_" + ruleNumber + "_" + this.key;
 		this.variableName = varName;
 	}

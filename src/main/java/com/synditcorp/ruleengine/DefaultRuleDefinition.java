@@ -18,8 +18,8 @@ import java.util.TreeMap;
 
 import com.synditcorp.ruleengine.beans.AllRule;
 import com.synditcorp.ruleengine.beans.AndRule;
-import com.synditcorp.ruleengine.beans.BaseCalcRule;
-import com.synditcorp.ruleengine.beans.BaseExecRule;
+import com.synditcorp.ruleengine.beans.CalcRule;
+import com.synditcorp.ruleengine.beans.ExecRule;
 import com.synditcorp.ruleengine.beans.BaseRules;
 import com.synditcorp.ruleengine.beans.OrRule;
 import com.synditcorp.ruleengine.beans.ThreadRule;
@@ -149,7 +149,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 */
 	@Override
 	public boolean isCalcRule(Integer ruleNumber) throws Exception {
-		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("BaseCalcRule");
+		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("CalcRule");
 	}
 	
 	/**
@@ -157,7 +157,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 */
 	@Override
 	public boolean isExecRule(Integer ruleNumber) throws Exception {
-		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("BaseExecRule");
+		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("ExecRule");
 	}
 	
 	/**
@@ -262,9 +262,10 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	}
 	
 	private void setCalcRules() throws Exception  {
-		ArrayList<BaseCalcRule> ar = this.baseRules.getCalcRules();
-		for (Iterator<BaseCalcRule> iterator = ar.iterator(); iterator.hasNext();) {
-			BaseCalcRule calcRule = (BaseCalcRule) iterator.next();
+		if(this.baseRules.getCalcRules() == null) return;
+		ArrayList<CalcRule> ar = this.baseRules.getCalcRules();
+		for (Iterator<CalcRule> iterator = ar.iterator(); iterator.hasNext();) {
+			CalcRule calcRule = (CalcRule) iterator.next();
 			if(!calcRule.getRuleType().equalsIgnoreCase("calc")) throw new IllegalArgumentException("calc rules list can't have '" + calcRule.getRuleType() + "' rules");
 			calcRule.setOutcomesToCategories( this.getDocumentId() );
 			this.aggregateRules.put(calcRule.getRuleNumber(), calcRule);
@@ -272,9 +273,10 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	}
 
 	private void setExecRules() throws Exception  {
-		ArrayList<BaseExecRule> ar = this.baseRules.getExecRules();
-		for (Iterator<BaseExecRule> iterator = ar.iterator(); iterator.hasNext();) {
-			BaseExecRule execRule = (BaseExecRule) iterator.next();
+		if(this.baseRules.getExecRules() == null) return;
+		ArrayList<ExecRule> ar = this.baseRules.getExecRules();
+		for (Iterator<ExecRule> iterator = ar.iterator(); iterator.hasNext();) {
+			ExecRule execRule = (ExecRule) iterator.next();
 			if(!execRule.getRuleType().equalsIgnoreCase("exec")) throw new IllegalArgumentException("exec rules list can't have '" + execRule.getRuleType() + "' rules");
 			execRule.setOutcomesToCategories( this.getDocumentId() );
 			this.aggregateRules.put(execRule.getRuleNumber(), execRule);
@@ -282,6 +284,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	}
 
 	private void setOrRules() throws Exception  {
+		if(this.baseRules.getOrRules() == null) return;
 		ArrayList<OrRule> ar = this.baseRules.getOrRules();
 		for (Iterator<OrRule> iterator = ar.iterator(); iterator.hasNext();) {
 			OrRule orRule = (OrRule) iterator.next();
@@ -292,6 +295,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	}
 	
 	private void setAndRules() throws Exception  {
+		if(this.baseRules.getAndRules() == null) return;
 		ArrayList<AndRule> ar = this.baseRules.getAndRules();
 		for (Iterator<AndRule> iterator = ar.iterator(); iterator.hasNext();) {
 			AndRule andRule = (AndRule) iterator.next();
@@ -302,6 +306,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	}
 	
 	private void setAllRules() throws Exception {
+		if(this.baseRules.getAllRules() == null) return;
 		ArrayList<AllRule> ar = this.baseRules.getAllRules();
 		for (Iterator<AllRule> iterator = ar.iterator(); iterator.hasNext();) {
 			AllRule allRule = (AllRule) iterator.next();
@@ -313,6 +318,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	}
 
 	private void setThreadRules() throws Exception  {
+		if(this.baseRules.getThreadRules() == null) return;
 		ArrayList<ThreadRule> ar = this.baseRules.getThreadRules();
 		for (Iterator<ThreadRule> iterator = ar.iterator(); iterator.hasNext();) {
 			ThreadRule threadRule = (ThreadRule) iterator.next();

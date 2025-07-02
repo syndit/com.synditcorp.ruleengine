@@ -9,15 +9,23 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+package com.synditcorp.ruleengine.beans;
 
-package com.synditcorp.ruleengine.interfaces;
+public class ExecRule extends BaseRule {
 
-public interface CalcRule extends Rule {
+	private String handlerClass = null;
 
-	public String getExpression();
-	public void setExpression(String expression) throws IllegalArgumentException;
-	public String getHandlerClass();
-	public void setHandlerClass(String handlerClass) throws IllegalArgumentException;
+	public ExecRule() {
+		
+	}
 
-	
+	public String getHandlerClass() {
+		return this.handlerClass;
+	}
+
+	public void setHandlerClass(String handlerClass) throws IllegalArgumentException  {
+		if(handlerClass == null) throw new IllegalArgumentException("HandlerClass must be specified for ExecRule");
+		this.handlerClass = handlerClass;
+	}
+
 }

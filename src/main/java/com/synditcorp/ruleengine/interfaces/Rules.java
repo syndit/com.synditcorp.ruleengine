@@ -15,17 +15,17 @@ import java.util.ArrayList;
 
 import com.synditcorp.ruleengine.beans.AllRule;
 import com.synditcorp.ruleengine.beans.AndRule;
-import com.synditcorp.ruleengine.beans.BaseCalcRule;
-import com.synditcorp.ruleengine.beans.BaseExecRule;
+import com.synditcorp.ruleengine.beans.CalcRule;
+import com.synditcorp.ruleengine.beans.ExecRule;
 import com.synditcorp.ruleengine.beans.OrRule;
 import com.synditcorp.ruleengine.beans.ThreadRule;
 
 public interface Rules {
 	
-	public ArrayList<BaseCalcRule> getCalcRules();
-	public void setCalcRules(ArrayList<BaseCalcRule> calcRules);
-	public ArrayList<BaseExecRule> getExecRules();
-	public void setExecRules(ArrayList<BaseExecRule> calcRules);
+	public ArrayList<CalcRule> getCalcRules();
+	public void setCalcRules(ArrayList<CalcRule> calcRules);
+	public ArrayList<ExecRule> getExecRules();
+	public void setExecRules(ArrayList<ExecRule> calcRules);
 	public ArrayList<AndRule> getAndRules();
 	public void setAndRules(ArrayList<AndRule> andRules);
 	public ArrayList<OrRule> getOrRules();

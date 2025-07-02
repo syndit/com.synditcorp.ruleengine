@@ -23,8 +23,8 @@ public class BaseRules implements Rules {
 	private Boolean active;
 	private Integer startRule;
 	private ArrayList<String> documentTags;
-	private ArrayList<BaseCalcRule> calcRules;
-	private ArrayList<BaseExecRule> execRules;
+	private ArrayList<CalcRule> calcRules;
+	private ArrayList<ExecRule> execRules;
 	private ArrayList<AndRule> andRules;
 	private ArrayList<OrRule> orRules;
 	private ArrayList<AllRule> allRules;
@@ -35,31 +35,31 @@ public class BaseRules implements Rules {
 	}
 
 	@Override
-	public ArrayList<BaseCalcRule> getCalcRules() {
-		if(this.calcRules == null) this.calcRules = new ArrayList<BaseCalcRule>();
+	public ArrayList<CalcRule> getCalcRules() {
+		//if(this.calcRules == null) this.calcRules = new ArrayList<CalcRule>();
 		return this.calcRules;
 	}
 
 	@Override
-	public void setCalcRules(ArrayList<BaseCalcRule> calcRules) {
+	public void setCalcRules(ArrayList<CalcRule> calcRules) {
 		this.calcRules = calcRules;
 	}
 
 
 	@Override
-	public ArrayList<BaseExecRule> getExecRules() {
-		if(this.execRules == null) this.execRules = new ArrayList<BaseExecRule>();
+	public ArrayList<ExecRule> getExecRules() {
+		//if(this.execRules == null) this.execRules = new ArrayList<ExecRule>();
 		return this.execRules;
 	}
 
 	@Override
-	public void setExecRules(ArrayList<BaseExecRule> execRules) {
+	public void setExecRules(ArrayList<ExecRule> execRules) {
 		this.execRules = execRules;
 		
 	}
 	@Override
 	public ArrayList<AndRule> getAndRules() {
-		if(this.andRules == null) this.andRules = new ArrayList<AndRule>();
+		//if(this.andRules == null) this.andRules = new ArrayList<AndRule>();
 		return this.andRules;
 	}
 
@@ -72,7 +72,7 @@ public class BaseRules implements Rules {
 
 	@Override
 	public ArrayList<OrRule> getOrRules() {
-		if(this.orRules == null) this.orRules = new ArrayList<OrRule>();
+		//if(this.orRules == null) this.orRules = new ArrayList<OrRule>();
 		return this.orRules;
 	}
 
@@ -84,7 +84,7 @@ public class BaseRules implements Rules {
 	
 	@Override
 	public ArrayList<AllRule> getAllRules() {
-		if(this.allRules == null) this.allRules = new ArrayList<AllRule>();
+		//if(this.allRules == null) this.allRules = new ArrayList<AllRule>();
 		return this.allRules;
 	}
 
@@ -95,7 +95,7 @@ public class BaseRules implements Rules {
 
 	@Override
 	public ArrayList<ThreadRule> getThreadRules() {
-		if(this.threadRules == null) this.threadRules = new ArrayList<ThreadRule>();
+		//if(this.threadRules == null) this.threadRules = new ArrayList<ThreadRule>();
 		return this.threadRules;
 	}
 
@@ -110,7 +110,8 @@ public class BaseRules implements Rules {
 	}
 
 	@Override
-	public void setDocumentId(String documentId) {
+	public void setDocumentId(String documentId) throws IllegalArgumentException {
+		if(documentId == null || documentId.length() == 0)  throw new IllegalArgumentException("Document ID must be provided");
 		this.documentId = documentId;
 	}
 

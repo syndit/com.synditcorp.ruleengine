@@ -11,33 +11,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.beans;
 
-import com.synditcorp.ruleengine.interfaces.CalcRule;
+import java.util.ArrayList;
 
-public class BaseCalcRule extends BaseRule implements CalcRule {
+public class CompositeRule extends BaseRule {
 
-	private String expression = null;
-	private String handlerClass = null;
-
-	public BaseCalcRule() {
+	private ArrayList<Integer> compositeRules;
+	
+	public CompositeRule() {
 		
 	}
 
-	public String getExpression() {
-		return expression;
+	public ArrayList<Integer> getCompositeRules() {
+		return compositeRules;
 	}
 
-	public void setExpression(String expression) throws IllegalArgumentException {
-		if(expression == null) throw new IllegalArgumentException("Expression must be specified for CalcRule");
-		this.expression = expression;
-	}
-
-	public String getHandlerClass() {
-		return this.handlerClass;
-	}
-
-	public void setHandlerClass(String handlerClass) throws IllegalArgumentException  {
-		if(handlerClass == null) throw new IllegalArgumentException("HandlerClass must be specified for CalcRule");
-		this.handlerClass = handlerClass;
+	public void setCompositeRules(ArrayList<Integer> compositeRules) {
+		this.compositeRules = compositeRules;
 	}
 
 }
