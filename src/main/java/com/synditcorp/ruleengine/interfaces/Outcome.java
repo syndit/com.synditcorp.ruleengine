@@ -13,21 +13,23 @@ package com.synditcorp.ruleengine.interfaces;
 
 import java.util.ArrayList;
 
+import com.synditcorp.ruleengine.exceptions.EngineSafeguardException;
+
 public interface Outcome {
 	
-	public void setKey(String key) throws IllegalArgumentException;
+//	public void setKey(String key) throws IllegalArgumentException;
 	public String getKey();
-	public void setResult(String result) throws IllegalArgumentException;
+//	public void setResult(String result) throws IllegalArgumentException;
 	public String getResult();
-	public void setType(String type) throws IllegalArgumentException;
+//	public void setType(String type) throws IllegalArgumentException;
 	public String getType();
-	public void setGlobal(String global);
+//	public void setGlobal(String global);
 	public Boolean getGlobal();
 	public void setVariableName(String variableName);
 	public String getVariableName();
-	public void setExpression(String expression);
+//	public void setExpression(String expression);
 	public String getExpression();
-	public void setCompositeOutcomeRules(ArrayList<Integer> compositeOutcomeRules);
+//	public void setCompositeOutcomeRules(ArrayList<Integer> compositeOutcomeRules);
 	public ArrayList<Integer> getCompositeOutcomeRules();
 
 }

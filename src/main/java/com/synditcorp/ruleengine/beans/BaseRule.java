@@ -18,41 +18,69 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synditcorp.ruleengine.interfaces.Outcome;
 import com.synditcorp.ruleengine.interfaces.Rule;
 
 abstract class BaseRule implements Rule {
 
-	private Integer ruleNumber;
-	private String ruleType;
-	private ArrayList<String> ruleTags;
-	private String description;
-	private Boolean active;
-	private Date expirationDate;
-	private Date effectiveDate;
-	private ArrayList<BaseOutcome> outcomes;
+	private final Integer ruleNumber;
+	private final String ruleType;
+	private final ArrayList<String> ruleTags;
+	private final String description;
+	private final Boolean active;
+	private final Date expirationDate;
+	private final Date effectiveDate;
+	private final ArrayList<BaseOutcome> outcomes;
 
 	private TreeMap<String, BaseOutcome> passNumbers;
 	private TreeMap<String, BaseOutcome> failNumbers;
 	private TreeMap<String, BaseOutcome> passTags;
 	private TreeMap<String, BaseOutcome> failTags;
 	
-	private static List<String> validRuleTypes = List.of("calc", "and", "or", "all", "thread");
-	private static List<String> canHaveOutcomes = List.of("calc", "and", "or");
-	private static List<String> validTrue = List.of("true", "t", "1");
-	private static List<String> validFalse = List.of("false", "f", "0");
+	private static List<String> validRuleTypes = List.of("calc", "exec", "and", "or", "all", "thread");
+	private static List<String> canHaveOutcomes = List.of("calc", "exec", "and", "or");
+//	private static List<String> validTrue = List.of("true", "t", "1");
+//	private static List<String> validFalse = List.of("false", "f", "0");
 
-	public BaseRule() {
+	@JsonCreator
+	public BaseRule(
+			@JsonProperty("ruleNumber") Integer ruleNumber,
+			@JsonProperty("ruleType") String ruleType,
+			@JsonProperty("ruleTags") ArrayList<String> ruleTags,
+			@JsonProperty("description") String description,
+			@JsonProperty("active") Boolean active,
+			@JsonProperty("expirationDate") Date expirationDate,
+			@JsonProperty("effecitveDate") Date effectiveDate,
+			@JsonProperty("outcomes") ArrayList<BaseOutcome> outcomes
+		) {
+	
+		this.ruleNumber = validateRuleNumber(ruleNumber);
+		this.ruleType = validateRuleType(ruleType);
+		this.ruleTags = ruleTags;
+		this.description = description;
+		this.active = active;
+		this.expirationDate = expirationDate;
+		this.effectiveDate = effectiveDate;
+		canHaveOutcomes(ruleType, outcomes);
+		this.outcomes = outcomes;
+		//this.outcomes = validateOutcomes(outcomes);
 		
 	}
 	
-	@Override
-	public void setRuleType(String ruleType) throws IllegalArgumentException {
+//	@Override
+//	public void setRuleType(String ruleType) throws IllegalArgumentException {
+//		String lowerCaseRuleType = ruleType.toLowerCase();
+//		if(!validRuleTypes.contains(lowerCaseRuleType)) throw new IllegalArgumentException("Rule type not valid.  Must be one of these: " + validRuleTypes);
+//		this.ruleType = lowerCaseRuleType;
+//	}
+
+	private String validateRuleType(String ruleType) throws IllegalArgumentException {
 		String lowerCaseRuleType = ruleType.toLowerCase();
 		if(!validRuleTypes.contains(lowerCaseRuleType)) throw new IllegalArgumentException("Rule type not valid.  Must be one of these: " + validRuleTypes);
-		this.ruleType = lowerCaseRuleType;
+		return lowerCaseRuleType;
 	}
-
 
 	@Override
 	public String getRuleType() {
@@ -64,77 +92,93 @@ abstract class BaseRule implements Rule {
 		return this.ruleTags;
 	}
 
-	@Override
-	public void setRuleTags(ArrayList<String> ruleTags) {
-		if(this.ruleTags == null) this.ruleTags = new ArrayList<String>();
-		this.ruleTags = ruleTags;
-	}
+//	@Override
+//	public void setRuleTags(ArrayList<String> ruleTags) {
+//		if(this.ruleTags == null) this.ruleTags = new ArrayList<String>();
+//		this.ruleTags = ruleTags;
+//	}
 
-	@Override
-	public void setRuleNumber(Integer ruleNumber) throws IllegalArgumentException {
+//	@Override
+//	public void setRuleNumber(Integer ruleNumber) throws IllegalArgumentException {
+//		if( ruleNumber.intValue() < 0 ) throw new IllegalArgumentException("Rule number must be a positive number");
+//		this.ruleNumber = ruleNumber;
+//	}
+	
+	private Integer validateRuleNumber(Integer ruleNumber) throws IllegalArgumentException {
 		if( ruleNumber.intValue() < 0 ) throw new IllegalArgumentException("Rule number must be a positive number");
-		this.ruleNumber = ruleNumber;
+		return ruleNumber;
 	}
+	
 
 	@Override
 	public Integer getRuleNumber() {
 		return this.ruleNumber;
 	}
 
-	@Override
-	public void setDescription(String description) {
-		this.description = description;
-	}
+//	@Override
+//	public void setDescription(String description) {
+//		this.description = description;
+//	}
 
 	@Override
 	public String getDescription() {
 		return this.description;
 	}
 
-	@Override
-	public void setActive(String active) throws IllegalArgumentException {
-		if(active == null) return;
-		if(validTrue.contains(active)) {
-			this.active = true;
-			return;
-		}
-		if(validFalse.contains(active)) {
-			this.active = false;
-			return;
-		}
-		throw new IllegalArgumentException("Active field must be true, false, or null");
-	}
+//	@Override
+//	public void setActive(String active) throws IllegalArgumentException {
+//		if(active == null) return;
+//		if(validTrue.contains(active)) {
+//			this.active = true;
+//			return;
+//		}
+//		if(validFalse.contains(active)) {
+//			this.active = false;
+//			return;
+//		}
+//		throw new IllegalArgumentException("Active field must be true, false, or null");
+//	}
 
 	@Override
 	public Boolean getActive() {
 		return this.active;
 	}
 
-	@Override
-	public void setEffectiveDate(Date effectiveDate) {
-		this.effectiveDate = effectiveDate;
-	}
+//	@Override
+//	public void setEffectiveDate(Date effectiveDate) {
+//		this.effectiveDate = effectiveDate;
+//	}
 
 	@Override
 	public Date getEffectiveDate() {
 		return this.effectiveDate;
 	}
 
-	@Override
-	public void setExpirationDate(Date expirationDate) {
-		this.expirationDate = expirationDate;
-	}
+//	@Override
+//	public void setExpirationDate(Date expirationDate) {
+//		this.expirationDate = expirationDate;
+//	}
 
 	@Override
 	public Date getExpirationDate() {
 		return this.expirationDate;
 	}
 	
-	@Override
-	public void setOutcomes(ArrayList<BaseOutcome> outcomes) throws IllegalArgumentException {
+//	@Override
+//	public void setOutcomes(ArrayList<BaseOutcome> outcomes) throws IllegalArgumentException {
+//		if(!canHaveOutcomes.contains(this.ruleType) && outcomes != null) throw new IllegalArgumentException("'" + this.ruleType + "' rule types cannot have outcomes");
+//		if(this.outcomes == null) this.outcomes = new ArrayList<BaseOutcome>();
+//		this.outcomes =  outcomes;
+//	}
+
+	private ArrayList<BaseOutcome> validateOutcomes(ArrayList<BaseOutcome> outcomes) throws IllegalArgumentException {
 		if(!canHaveOutcomes.contains(this.ruleType) && outcomes != null) throw new IllegalArgumentException("'" + this.ruleType + "' rule types cannot have outcomes");
-		if(this.outcomes == null) this.outcomes = new ArrayList<BaseOutcome>();
-		this.outcomes =  outcomes;
+		if(this.outcomes == null) return new ArrayList<BaseOutcome>();
+		return outcomes;
+	}
+
+	private void canHaveOutcomes(String ruleType, ArrayList<BaseOutcome> outcomes) throws IllegalArgumentException {
+		if(!canHaveOutcomes.contains(ruleType) && outcomes != null) throw new IllegalArgumentException("'" + this.ruleType + "' rule types cannot have outcomes");
 	}
 
 	@Override
@@ -254,4 +298,5 @@ abstract class BaseRule implements Rule {
 	
 	}
 	
+
 }

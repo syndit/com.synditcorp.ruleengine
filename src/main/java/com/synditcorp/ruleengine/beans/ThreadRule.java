@@ -12,14 +12,37 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 package com.synditcorp.ruleengine.beans;
 
 import java.util.ArrayList;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ThreadRule extends BaseRule {
 
-	private ArrayList<Integer> threadRules;
-	private ArrayList<String> numberKeys;
-	private ArrayList<String> tagKeys;
+	private final ArrayList<Integer> threadRules;
+	private final ArrayList<String> numberKeys;
+	private final ArrayList<String> tagKeys;
 	
-	public ThreadRule() {
+	@JsonCreator
+	public ThreadRule(
+			@JsonProperty("ruleNumber") Integer ruleNumber,
+			@JsonProperty("ruleType") String ruleType,
+			@JsonProperty("ruleTags") ArrayList<String> ruleTags,
+			@JsonProperty("description") String description,
+			@JsonProperty("active") Boolean active,
+			@JsonProperty("expirationDate") Date expirationDate,
+			@JsonProperty("effecitveDate") Date effectiveDate,
+			@JsonProperty("outcomes") ArrayList<BaseOutcome> outcomes,
+			@JsonProperty("threadRules") ArrayList<Integer> threadRules,
+			@JsonProperty("numberKeys") ArrayList<String> numberKeys,
+			@JsonProperty("tagKeys") ArrayList<String> tagKeys
+		) {
+		
+		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes);
+
+		this.threadRules = threadRules;
+		this.numberKeys = numberKeys;
+		this.tagKeys = tagKeys;
 		
 	}
 
@@ -27,25 +50,25 @@ public class ThreadRule extends BaseRule {
 		return threadRules;
 	}
 
-	public void setThreadRules(ArrayList<Integer> threadRules) {
-		this.threadRules = threadRules;
-	}
+//	public void setThreadRules(ArrayList<Integer> threadRules) {
+//		this.threadRules = threadRules;
+//	}
 
 	public ArrayList<String> getNumberKeys() {
 		return numberKeys;
 	}
 
-	public void setNumberKeys(ArrayList<String> numberKeys) {
-		this.numberKeys = numberKeys;
-	}
+//	public void setNumberKeys(ArrayList<String> numberKeys) {
+//		this.numberKeys = numberKeys;
+//	}
 
 	public ArrayList<String> getTagKeys() {
 		return tagKeys;
 	}
 
-	public void setTagKeys(ArrayList<String> tagKeys) {
-		this.tagKeys = tagKeys;
-	}
+//	public void setTagKeys(ArrayList<String> tagKeys) {
+//		this.tagKeys = tagKeys;
+//	}
 	
 	
 }

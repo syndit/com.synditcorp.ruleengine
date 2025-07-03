@@ -16,30 +16,72 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synditcorp.ruleengine.exceptions.EngineSafeguardException;
 import com.synditcorp.ruleengine.interfaces.Outcome;
 
 public class BaseOutcome implements Outcome {
 	
 
-	private String key;
-	private String result;
-	private String type;
-	private String expression;
-	private Boolean global;
+	private final String key;
+	private final String result;
+	private final String type;
+	private final String expression;
+	private final Boolean global;
+	private final ArrayList<Integer> compositeOutcomeRules;
 	private String variableName;
-	private ArrayList<Integer> compositeOutcomeRules;
 	private static final Set<String> validTypes = Set.of("number", "tag");
 	private static final List<String> validResult = List.of("pass", "fail");
-	private static final List<String> validTrue = List.of("true", "t", "1");
-	private static final List<String> validFalse = List.of("false", "f", "0");
+//	private static final List<String> validTrue = List.of("true", "t", "1");
+//	private static final List<String> validFalse = List.of("false", "f", "0");
+	
+	@JsonCreator
+	public BaseOutcome(
+			@JsonProperty("key") String key,
+			@JsonProperty("result") String result,
+			@JsonProperty("type") String type,
+			@JsonProperty("expression") String expression,
+			@JsonProperty("global") Boolean global,
+			@JsonProperty("compositeOutcomeRules") ArrayList<Integer> compositeOutcomeRules
+		) {
+		
+		this.key = validateKey(key);
+		this.result = validateResult(result);
+		this.type = validateType(type);
+		this.expression = expression;
+		this.global = global;
+//		if(global == null) {
+//			this.global = null;
+//		} else {
+//			this.global = Boolean.valueOf(global);
+//		}
+		this.compositeOutcomeRules = compositeOutcomeRules;
+		
+	}
+	
+	public BaseOutcome(Outcome outcome) {
+		this.key = validateKey(outcome.getKey());
+		this.result = validateResult(outcome.getResult());
+		this.type = validateType(outcome.getType());
+		this.expression = outcome.getExpression();
+		this.global = outcome.getGlobal();
+		this.compositeOutcomeRules = outcome.getCompositeOutcomeRules();
+		this.variableName = outcome.getVariableName();
+	}
 
 
-	@Override
-	public void setResult(String result) throws IllegalArgumentException {
+//	@Override
+//	public void setResult(String result) throws IllegalArgumentException {
+//		if(result == null)  throw new IllegalArgumentException("Outcome result must be specified");
+//		if(!validResult.contains(result.toLowerCase())) throw new IllegalArgumentException("Outcome result must be one of these: " + validResult);
+//		this.result = result.toLowerCase();
+//	}
+
+	private String validateResult(String result) throws IllegalArgumentException {
 		if(result == null)  throw new IllegalArgumentException("Outcome result must be specified");
 		if(!validResult.contains(result.toLowerCase())) throw new IllegalArgumentException("Outcome result must be one of these: " + validResult);
-		this.result = result.toLowerCase();
+		return result.toLowerCase();
 	}
 
 	@Override
@@ -47,11 +89,17 @@ public class BaseOutcome implements Outcome {
 		return this.result;
 	}
 
-	@Override
-	public void setType(String type) throws IllegalArgumentException {
+//	@Override
+//	public void setType(String type) throws IllegalArgumentException {
+//		if(type == null)  throw new IllegalArgumentException("Outcome type must be specified");
+//		if(!validTypes.contains(type.toLowerCase())) throw new IllegalArgumentException("Rule outcome type must be one of these: " + validTypes);
+//		this.type = type.toLowerCase();
+//	}
+
+	private String validateType(String type) throws IllegalArgumentException {
 		if(type == null)  throw new IllegalArgumentException("Outcome type must be specified");
 		if(!validTypes.contains(type.toLowerCase())) throw new IllegalArgumentException("Rule outcome type must be one of these: " + validTypes);
-		this.type = type.toLowerCase();
+		return type.toLowerCase();
 	}
 
 	@Override
@@ -59,11 +107,16 @@ public class BaseOutcome implements Outcome {
 		return this.type;
 	}
 
-	@Override
-	public void setKey(String key) throws IllegalArgumentException {
+//	@Override
+//	public void setKey(String key) throws IllegalArgumentException {
+//		if(key == null)  throw new IllegalArgumentException("Outcome key must be specified");
+//		this.key = key;
+//		
+//	}
+
+	private String validateKey(String key) throws IllegalArgumentException {
 		if(key == null)  throw new IllegalArgumentException("Outcome key must be specified");
-		this.key = key;
-		
+		return key;
 	}
 
 	@Override
@@ -71,31 +124,28 @@ public class BaseOutcome implements Outcome {
 		return this.key;
 	}
 
-	@Override
-	public void setExpression(String expression) {
-		this.expression = expression;
-	}
+//	@Override
+//	public void setExpression(String expression) {
+//		this.expression = expression;
+//	}
 
 	@Override
 	public String getExpression() {
 		return this.expression;
 	}
 
-	@Override
-	public void setGlobal(String global) {
-		
-		if(global == null) return;
-		if(validTrue.contains(global.toLowerCase())) {
-			this.global = true;
-			return;
-		}
-		if(validFalse.contains(global.toLowerCase())) {
-			this.global = false;
-			return;
-		}
-		throw new IllegalArgumentException("Global field must be true, false, or null");
-
-	}
+//	private static Boolean getGlobal(String global) {
+//		
+//		if(global == null) return null;
+//		if(validTrue.contains(global.toLowerCase())) {
+//			return true;
+//		}
+//		if(validFalse.contains(global.toLowerCase())) {
+//			return false;
+//		}
+//		throw new IllegalArgumentException("Global field must be true, false, or null");
+//
+//	}
 
 	@Override
 	public Boolean getGlobal() {
@@ -123,10 +173,10 @@ public class BaseOutcome implements Outcome {
 		return this.variableName;
 	}
 
-	@Override
-	public void setCompositeOutcomeRules(ArrayList<Integer> compositeOutcomeRules) {
-		this.compositeOutcomeRules = compositeOutcomeRules;
-	}
+//	@Override
+//	public void setCompositeOutcomeRules(ArrayList<Integer> compositeOutcomeRules) {
+//		this.compositeOutcomeRules = compositeOutcomeRules;
+//	}
 
 	@Override
 	public ArrayList<Integer> getCompositeOutcomeRules() {

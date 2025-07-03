@@ -11,9 +11,28 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.beans;
 
+import java.util.ArrayList;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class AndRule extends CompositeRule {
 
-	public AndRule() {
+	@JsonCreator
+	public AndRule(
+			@JsonProperty("ruleNumber") Integer ruleNumber,
+			@JsonProperty("ruleType") String ruleType,
+			@JsonProperty("ruleTags") ArrayList<String> ruleTags,
+			@JsonProperty("description") String description,
+			@JsonProperty("active") Boolean active,
+			@JsonProperty("expirationDate") Date expirationDate,
+			@JsonProperty("effecitveDate") Date effectiveDate,
+			@JsonProperty("outcomes") ArrayList<BaseOutcome> outcomes,
+			@JsonProperty("compositeRules") ArrayList<Integer> compositeRules
+		) {
+		
+		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes, compositeRules);
 		
 	}
 	

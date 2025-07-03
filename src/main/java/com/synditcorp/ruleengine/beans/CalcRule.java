@@ -11,31 +11,56 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.beans;
 
+import java.util.ArrayList;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CalcRule extends BaseRule {
 
-	private String expression = null;
-	private String handlerClass = null;
+	private final String expression;
+	private final String handlerClass;
 
-	public CalcRule() {
+
+	@JsonCreator
+	public CalcRule(
+			@JsonProperty("ruleNumber") Integer ruleNumber,
+			@JsonProperty("ruleType") String ruleType,
+			@JsonProperty("ruleTags") ArrayList<String> ruleTags,
+			@JsonProperty("description") String description,
+			@JsonProperty("active") Boolean active,
+			@JsonProperty("expirationDate") Date expirationDate,
+			@JsonProperty("effecitveDate") Date effectiveDate,
+			@JsonProperty("outcomes") ArrayList<BaseOutcome> outcomes,
+			@JsonProperty("expression") String expression,
+			@JsonProperty("handlerClass") String handlerClass
+		) {
 		
+
+		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes);
+
+		this.expression = expression;
+		this.handlerClass = handlerClass;
+
 	}
 
 	public String getExpression() {
 		return expression;
 	}
 
-	public void setExpression(String expression) throws IllegalArgumentException {
-		if(expression == null) throw new IllegalArgumentException("Expression must be specified for CalcRule");
-		this.expression = expression;
-	}
+//	public void setExpression(String expression) throws IllegalArgumentException {
+//		if(expression == null) throw new IllegalArgumentException("Expression must be specified for CalcRule");
+//		this.expression = expression;
+//	}
 
 	public String getHandlerClass() {
 		return this.handlerClass;
 	}
 
-	public void setHandlerClass(String handlerClass) throws IllegalArgumentException  {
-		if(handlerClass == null) throw new IllegalArgumentException("HandlerClass must be specified for CalcRule");
-		this.handlerClass = handlerClass;
-	}
+//	public void setHandlerClass(String handlerClass) throws IllegalArgumentException  {
+//		if(handlerClass == null) throw new IllegalArgumentException("HandlerClass must be specified for CalcRule");
+//		this.handlerClass = handlerClass;
+//	}
 
 }

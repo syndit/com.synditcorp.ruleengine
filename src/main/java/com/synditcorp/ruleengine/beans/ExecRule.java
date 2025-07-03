@@ -11,21 +11,42 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.beans;
 
+import java.util.ArrayList;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ExecRule extends BaseRule {
 
-	private String handlerClass = null;
+	private final String handlerClass;
 
-	public ExecRule() {
+	@JsonCreator	
+	public ExecRule(
+		@JsonProperty("ruleNumber") Integer ruleNumber,
+		@JsonProperty("ruleType") String ruleType,
+		@JsonProperty("ruleTags") ArrayList<String> ruleTags,
+		@JsonProperty("description") String description,
+		@JsonProperty("active") Boolean active,
+		@JsonProperty("expirationDate") Date expirationDate,
+		@JsonProperty("effecitveDate") Date effectiveDate,
+		@JsonProperty("outcomes") ArrayList<BaseOutcome> outcomes,
+		@JsonProperty("handlerClass") String handlerClass
+	) {
+
+		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes);
 		
+		this.handlerClass = handlerClass;
+	
 	}
 
 	public String getHandlerClass() {
 		return this.handlerClass;
 	}
 
-	public void setHandlerClass(String handlerClass) throws IllegalArgumentException  {
-		if(handlerClass == null) throw new IllegalArgumentException("HandlerClass must be specified for ExecRule");
-		this.handlerClass = handlerClass;
-	}
+//	public void setHandlerClass(String handlerClass) throws IllegalArgumentException  {
+//		if(handlerClass == null) throw new IllegalArgumentException("HandlerClass must be specified for ExecRule");
+//		this.handlerClass = handlerClass;
+//	}
 
 }
