@@ -16,12 +16,11 @@ import java.util.TreeMap;
 import com.synditcorp.ruleengine.interfaces.RuleClassHandler;
 
 public class ExpressionRuleHandler implements RuleClassHandler {
-	
-	public Boolean processCalcRule(String ruleExpression, TreeMap<String,Object> variables) throws Exception {
-		
-			return ExpressionHandler.evaluateBooleanExpression(ruleExpression, variables);
-		
-	}
 
+	public Boolean processCalcRule(String ruleExpression, TreeMap<String, Object> variables) throws Exception {
+
+		return ExpressionHandler.evaluateBooleanExpression(ruleExpression, variables);
+
+	}
 
 }

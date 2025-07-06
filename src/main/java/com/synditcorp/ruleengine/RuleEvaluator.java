@@ -19,15 +19,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synditcorp.ruleengine.beans.BaseOutcome;
 import com.synditcorp.ruleengine.beans.CalcRule;
 import com.synditcorp.ruleengine.beans.CompositeRule;
-import com.synditcorp.ruleengine.beans.ExecRule;
-import com.synditcorp.ruleengine.beans.FailNumberOutcome;
-import com.synditcorp.ruleengine.beans.FailTagOutcome;
-import com.synditcorp.ruleengine.beans.PassNumberOutcome;
-import com.synditcorp.ruleengine.beans.PassTagOutcome;
 import com.synditcorp.ruleengine.beans.ThreadProcObjects;
 import com.synditcorp.ruleengine.beans.ThreadResults;
 import com.synditcorp.ruleengine.beans.ThreadRule;
@@ -40,12 +37,11 @@ import com.synditcorp.ruleengine.interfaces.Rule;
 import com.synditcorp.ruleengine.interfaces.RuleDefinition;
 import com.synditcorp.ruleengine.logging.TimeTrack;
 import com.synditcorp.ruleengine.processors.CalcRuleProcessor;
-import com.synditcorp.ruleengine.processors.ExecRuleProcessor;
 import com.synditcorp.ruleengine.processors.ThreadRuleProcessor;
 
 /**
- * This class provides the runtime methods for the rule engine. Injected is a
- * RuleDefinitions object that implements the RuleDefinitions interface. This
+ * This class provides the runtime methods for the rule engine. Passed in the constructor
+ * is a RuleDefinitions object that implements the RuleDefinitions interface. This
  * class is the primary class used to interact with the rule engine.
  * RuleDefinitions, the RuleParser, or other rule engine classes need not be
  * accessed directly.
@@ -55,12 +51,9 @@ public class RuleEvaluator implements Cloneable {
 	private RuleDefinition ruleDefinition;
 	protected TreeMap<Integer, Boolean> cache = new TreeMap<Integer, Boolean>();
 	protected TreeMap<String, Object> variables = new TreeMap<String, Object>();
-//	private ArrayList<Integer> runtimePasses = new ArrayList<Integer>(1000);
-//	private ArrayList<Integer> runtimeFails = new ArrayList<Integer>(1000);
 	private ArrayList<Integer> runtineExpressionFails = new ArrayList<Integer>(1000);
 	private int threadBlockSize = 100;
 	private ForkJoinPool pool = null;
-	//private Date todayDate = new Date();
 
 	public RuleEvaluator(RuleDefinition rulesDefinition) {
 		this.ruleDefinition = rulesDefinition;
@@ -131,7 +124,7 @@ public class RuleEvaluator implements Cloneable {
 	public ArrayList<String> getRuleTags(Integer ruleNumber) throws Exception {
 		return ruleDefinition.getRuleTags(ruleNumber);
 	}
-	
+
 	/**
 	 * Evaluate the rule referenced by rule number. The rule number must be one of
 	 * the rules referenced in the document parsed by the engine's parser.
@@ -158,18 +151,13 @@ public class RuleEvaluator implements Cloneable {
 	}
 
 	/**
-	 * This clears three collections. First, the rule "passes" (those that evaluate
-	 * to true) are cleared. Next, the rule "fails" (those that evaluate to false)
-	 * are cleared. Third, variables passed into the engine, as well as those
-	 * accumulated by the engine (e.g. scores, actions, etc.) at runtime, are
-	 * cleared. WARNING: variables must be set using setVariables() before the
-	 * engine can be run again if the expressions to be evaluated need the
-	 * variables.
+	 * This clears two collections: the rule cache and the variables passed into the engine.  The 
+	 * global outcomes accumulated by the engine at runtime, are also cleared. WARNING: variables 
+	 * must be set using setVariables() before the engine can be run again if the expressions to be evaluated 
+	 * need the variables.
 	 */
 	public void reset() {
 		clearCache();
-//		clearRuntimePasses();
-//		clearRuntimeFails();
 		clearVariables();
 	}
 
@@ -185,15 +173,18 @@ public class RuleEvaluator implements Cloneable {
 	/**
 	 * Set the variables the rules engine will use in expressions, or passed to
 	 * custom rule handlers. To protect the integrity of the engine, the passed map
-	 * collection entries are added to the internal map collection.  Also to protect the integrity of
-	 * the Engine, if variables exist, a VariablesExistException is thrown.
+	 * collection entries are added to the internal map collection. Also to protect
+	 * the integrity of the Engine, if variables exist, a VariablesExistException is
+	 * thrown.
 	 * 
 	 * @throws VariablesExistException when variables exist in the internal map collection
 	 * @param variables for the Engine's expressions
 	 */
 	public void setVariables(TreeMap<String, Object> variables) throws EngineSafeguardException {
-		
-		if(!this.variables.isEmpty()) throw new EngineSafeguardException("Variables collection already populated.  Use 'reset' to clear variables.");
+
+		if (!this.variables.isEmpty())
+			throw new EngineSafeguardException(
+					"Variables collection already populated.  Use 'reset' to clear variables.");
 
 		this.variables.putAll(variables);
 
@@ -203,7 +194,7 @@ public class RuleEvaluator implements Cloneable {
 	 * Get the variables used by the rules engine. This includes global runtime
 	 * variables generated at runtime. To protect the integrity of the engine's
 	 * results, a copy of the variables is returned rather than the object instance
-	 * used by the engine.
+	 * used by the engine.  
 	 * 
 	 * @return the TreeMap object containing the variables passed to and generated
 	 *         by the Engine
@@ -216,43 +207,15 @@ public class RuleEvaluator implements Cloneable {
 		return copyOf;
 	}
 
-//	/**
-//	 * Get the runtime rule processing results cache.
-//	 * @return the TreeMap object containing the rule number and Boolean processing results
-//	 */
-//	public TreeMap<Integer, Boolean> getCache() {
-//		return this.cache;
-//	}
-
-//	/**
-//	 * Get the list of rules that passed at runtime.
-//	 * 
-//	 * @return an ArrayList of rule numbers that passed
-//	 */
-//	public ArrayList<Integer> getRuntimePasses() {
-//		ArrayList<Integer> copyOf = new ArrayList<Integer>();
-//		copyOf.addAll(this.runtimePasses);
-//		return copyOf;
-//	}
-
-//	/**
-//	 * Get the list of rules that failed at runtime.
-//	 * 
-//	 * @return an ArrayList of rule numbers that failed
-//	 */
-//	public ArrayList<Integer> getRuntimeFails() {
-//		ArrayList<Integer> copyOf = new ArrayList<Integer>();
-//		copyOf.addAll(this.runtimeFails);
-//		return copyOf;
-//	}
-
 	protected void setCache(TreeMap<Integer, Boolean> cache) throws EngineSafeguardException {
-		if(!this.cache.isEmpty()) throw new EngineSafeguardException("Cache contains evaulation results.  Use 'reset' to clear results.");
+		if (!this.cache.isEmpty())
+			throw new EngineSafeguardException("Cache contains evaulation results.  Use 'reset' to clear results.");
 		this.cache.putAll(cache);
 	}
-	
+
 	/**
-	 * Get the list of rules whose expressions failed at runtime.
+	 * Get the list of rules whose expressions failed at runtime.  This is used for troubleshooting 
+	 * runtime expression evaluation.
 	 * 
 	 * @return an ArrayList of rule number expression that failed
 	 */
@@ -262,82 +225,11 @@ public class RuleEvaluator implements Cloneable {
 		return copyOf;
 	}
 
-//	/**
-//	 * Get the pass number outcome for a particular rule's outcome key.  This returns the number number results of an expression.  If composite
-//	 * rules are specified, the number returned is the sum of each composite rule key's expressions.  
-//	 * Values are only returned if the rule evaluated to "true" at runtime.
-//	 * @return a rule's pass number outcome for the given key.
-//	 * @throws Exception when any exception occurs.
-//	 * @param ruleNumber value for a given rule number and the rule's outcome key.
-//	 */
-//	public Double getPassNumberOutcome(Integer ruleNumber, String key) throws Exception {
-//
-//		if(!runtimePasses.contains(ruleNumber)) throw new NoRuleEvaluatedException("rule number " + ruleNumber);
-//
-//		BaseOutcome outcome = (BaseOutcome) getRule(ruleNumber).getPassNumberOutcome(key);
-//		if(outcome == null) return null;
-//		return getNumberOutcome(outcome);
-//		
-//	}
-//	
-//	/**
-//	 * Get the fail number outcome for a particular rule's outcome key.  This returns the number results of an expression.  If composite
-//	 * rules are specified, the number returned is the sum of each composite rule key's expressions.  
-//	 * Values are only returned if the rule evaluated to "false" at runtime.
-//	 * @return a rule's fail number outcome for the given key.
-//	 * @throws Exception when any exception occurs.
-//	 * @param ruleNumber value for a given rule number and the rule's outcome key.
-//	 */
-//	public Double getFailNumberOutcome(Integer ruleNumber, String key) throws Exception {
-//
-//		if(!runtimeFails.contains(ruleNumber)) throw new NoRuleEvaluatedException("rule number " + ruleNumber);
-//
-//		BaseOutcome outcome = (BaseOutcome) getRule(ruleNumber).getFailNumberOutcome(key);
-//		if(outcome == null) return null;
-//		return getNumberOutcome(outcome);
-//
-//	}
-//	
-//	/**
-//	 * Gets a String array of the pass tag outcomes for a particular rule's outcome key.  This returns the string expression set in the rules document.  If composite
-//	 * rules are specified, the array contains all the string expressions for each composite rule key's expression.  Values are only included in the array if the rule evaluated to "true" at runtime.
-//	 * @return a rule's string array of the tag outcomes for the given key.
-//	 * @throws Exception when any exception occurs.
-//	 * @param ruleNumber value for a given rule number and the rule's outcome key.
-//	 */
-//	public ArrayList<String> getPassTagOutcome(Integer ruleNumber, String key) throws Exception {
-//
-//		if(!runtimePasses.contains(ruleNumber)) throw new NoRuleEvaluatedException("rule number " + ruleNumber);
-//
-//		BaseOutcome outcome = (BaseOutcome) getRule(ruleNumber).getPassTagOutcome(key);
-//		if(outcome == null) return null;
-//		return getTagOutcome(outcome);
-//		
-//	}
-//	
-//	/**
-//	 * Gets a String array of the fail tag outcomes for a particular rule's outcome key.  This returns the string expression set in the rules document.  If composite
-//	 * rules are specified, the array contains all the string expressions for each composite rule key's expression.  Values are only included in the array if the rule evaluated to "false" at runtime.
-//	 * @return a rule's string array of the tag outcomes for the given key.
-//	 * @throws Exception when any exception occurs.
-//	 * @param ruleNumber value for a given rule number and the rule's outcome key.
-//	 */
-//	public ArrayList<String> getFailTagOutcome(Integer ruleNumber, String key) throws Exception {
-//
-//		if(!runtimeFails.contains(ruleNumber)) throw new NoRuleEvaluatedException("rule number " + ruleNumber);
-//
-//		BaseOutcome outcome = (BaseOutcome) getRule(ruleNumber).getFailTagOutcome(key);
-//		if(outcome == null) return null;
-//		return getTagOutcome(outcome);
-//		
-//	}
-//	
-
 	/**
 	 * Get the pass number outcome for a particular rule's outcome key. This returns
 	 * the number number results of an expression. If composite rules are specified,
 	 * the number returned is the sum of each composite rule key's expressions.
-	 * Values are only returned if the rule was evaluated at runtime and passed of
+	 * Values are only returned if the rule was evaluated at runtime and passed or
 	 * failed.
 	 * 
 	 * @return a rule's number outcome for the given key.
@@ -367,7 +259,7 @@ public class RuleEvaluator implements Cloneable {
 	 * This returns the string tag expression set in the rules document. If
 	 * composite rules are specified, the array contains all the string expressions
 	 * for each composite rule key's expression. Values are only included in the
-	 * array if the rule was evaluated at runtime and passed or failed.
+	 * array if the composite rule was evaluated at runtime and passed or failed.
 	 * 
 	 * @return a rule's string array of the tag outcomes for the given key.
 	 * @throws Exception when any exception occurs.
@@ -392,54 +284,63 @@ public class RuleEvaluator implements Cloneable {
 	}
 
 	/**
-	 * Used to prevent existing variables from being overwritten at runtime.
+	 * To protect the integrity of the engine, this is used to prevent existing variables from 
+	 * being overwritten at runtime.
 	 * 
 	 * @param variableName to be added to the collection and the variable's object
 	 */
 	private void putToVariables(String variableName, Object value) throws DuplicateKeyException {
-		
-		if (this.variables.containsKey(variableName)) throw new DuplicateKeyException(variableName);
+
+		if (this.variables.containsKey(variableName))
+			throw new DuplicateKeyException(variableName);
 
 		this.variables.put(variableName, value);
 
 	}
-	
+
 	private boolean isRuntimePass(Integer ruleNumber) {
-		
-		if( cache.containsKey(ruleNumber) && cache.get(ruleNumber) == true ) {
+
+		if (cache.containsKey(ruleNumber) && cache.get(ruleNumber) == true) {
 			return true;
 		}
-		
+
 		return false;
 
 	}
-	
+
 	private boolean isRuntimeFail(Integer ruleNumber) {
 
-		if( cache.containsKey(ruleNumber) && cache.get(ruleNumber) == false ) {
+		if (cache.containsKey(ruleNumber) && cache.get(ruleNumber) == false) {
 			return true;
 		}
-		
+
 		return false;
-		
+
 	}
 
 	private void addRuntimePass(Integer ruleNumber) {
-		
-		if(cache.containsKey(ruleNumber)) return;
-		
+
+		if (cache.containsKey(ruleNumber))
+			return;
+
 		cache.put(ruleNumber, true);
 
 	}
 
 	private void addRuntimeFail(Integer ruleNumber) {
-		
-		if(cache.containsKey(ruleNumber)) return;
-		
+
+		if (cache.containsKey(ruleNumber))
+			return;
+
 		cache.put(ruleNumber, false);
-		
+
 	}
 
+	/**
+	 * After a rule evaluates, this sets global pass outcomes to the variable collection 
+	 * @param ruleNumber
+	 * @throws Exception
+	 */
 	private void setGlobalPassOutcomes(Integer ruleNumber) throws Exception {
 
 		setGlobalPassNumberOutcomesToVars(ruleNumber);
@@ -447,6 +348,11 @@ public class RuleEvaluator implements Cloneable {
 
 	}
 
+	/**
+	 * After a rule evaluates, this sets global fail outcomes to the variable collection 
+	 * @param ruleNumber
+	 * @throws Exception
+	 */
 	private void setGlobalFailOutcomes(Integer ruleNumber) throws Exception {
 
 		setGlobalFailNumberOutcomesToVars(ruleNumber);
@@ -460,7 +366,8 @@ public class RuleEvaluator implements Cloneable {
 		if (!isRuntimePass(ruleNumber))
 			return;
 		ArrayList<BaseOutcome> outcomes = rule.getPassNumberOutcomes();
-		if (outcomes == null) return;
+		if (outcomes == null)
+			return;
 
 		setGlobalNumberOutcomes(outcomes);
 
@@ -469,10 +376,11 @@ public class RuleEvaluator implements Cloneable {
 	private void setGlobalFailNumberOutcomesToVars(Integer ruleNumber) throws Exception {
 
 		Rule rule = getRule(ruleNumber);
-		if (!isRuntimeFail(ruleNumber)) 
+		if (!isRuntimeFail(ruleNumber))
 			return;
 		ArrayList<BaseOutcome> outcomes = rule.getFailNumberOutcomes();
-		if (outcomes == null) return;
+		if (outcomes == null)
+			return;
 
 		setGlobalNumberOutcomes(outcomes);
 
@@ -484,7 +392,8 @@ public class RuleEvaluator implements Cloneable {
 		if (!isRuntimePass(ruleNumber))
 			return;
 		ArrayList<BaseOutcome> outcomes = rule.getPassTagOutcomes();
-		if (outcomes == null) return;
+		if (outcomes == null)
+			return;
 
 		setGlobalTagOutcomes(outcomes);
 
@@ -496,7 +405,8 @@ public class RuleEvaluator implements Cloneable {
 		if (!isRuntimeFail(ruleNumber))
 			return;
 		ArrayList<BaseOutcome> outcomes = rule.getFailTagOutcomes();
-		if (outcomes == null) return;
+		if (outcomes == null)
+			return;
 
 		setGlobalTagOutcomes(outcomes);
 
@@ -512,7 +422,8 @@ public class RuleEvaluator implements Cloneable {
 				continue;
 			Double dbl = getNumberOutcome(outcome);
 
-			if (dbl == null) continue;
+			if (dbl == null)
+				continue;
 
 			putToVariables(outcome.getVariableName(), dbl);
 
@@ -529,7 +440,8 @@ public class RuleEvaluator implements Cloneable {
 			if (outcome.getGlobal() == null || !outcome.getGlobal())
 				continue;
 			ArrayList<String> list = getTagOutcome(outcome);
-			if (list == null) continue;
+			if (list == null)
+				continue;
 
 			putToVariables(outcome.getVariableName(), list);
 
@@ -538,54 +450,55 @@ public class RuleEvaluator implements Cloneable {
 	}
 
 	private Double getNumberOutcome(Outcome outcome) throws Exception {
-		
-		if( this.variables.containsKey( outcome.getVariableName() )) return (Double) this.variables.get(outcome.getVariableName());
-		
+
+		//if the outcome has already been calculated and added to variable collection, just get value from collection
+		if (this.variables.containsKey(outcome.getVariableName()))
+			return (Double) this.variables.get(outcome.getVariableName());
+
 		Double outcomeNumber = calcNumberOutcome(outcome);
-		
+
 		ArrayList<Integer> compositeRulesList = outcome.getCompositeOutcomeRules();
-		if(compositeRulesList == null) return outcomeNumber;
-		
+		if (compositeRulesList == null)
+			return outcomeNumber;
+
 		Iterator<Integer> iterator = compositeRulesList.iterator();
-		while(iterator.hasNext()) {
-			
+		while (iterator.hasNext()) {
+
 			BaseOutcome nextOutcome = null;
-			
+
 			Integer ruleNumber = iterator.next();
-			
+
 			int abs = Math.abs(ruleNumber);
-			
-			boolean pass = outcome instanceof PassNumberOutcome;
-			boolean fail = outcome instanceof FailNumberOutcome;
-			
-			//if ruleNumber is negative, it's a "not" rule, so take the opposite
-			if( ruleNumber.intValue() < 0 ) {
-				pass = !pass;
-				fail = !fail;
+
+			if (ruleNumber.intValue() > 0) {
+				if (!isRuntimePass(abs))
+					continue;
+				nextOutcome = (BaseOutcome) getRule(abs).getPassNumberOutcome(outcome.getKey());
+			} else if (ruleNumber.intValue() < 0) {
+				if (!isRuntimeFail(abs))
+					continue;
+				nextOutcome = (BaseOutcome) getRule(abs).getFailNumberOutcome(outcome.getKey());
 			}
-			
-			if(pass) {
-				if(!isRuntimePass(abs)) continue;
-				nextOutcome = (BaseOutcome) getRule(abs).getPassNumberOutcome(outcome.getKey());	
-			} else if(fail) {
-				if(!isRuntimeFail(abs)) continue;
-				nextOutcome = (BaseOutcome) getRule(abs).getFailNumberOutcome(outcome.getKey());	
-			}
-			
-			if(nextOutcome == null) continue;
-			
-			if(outcomeNumber == null) outcomeNumber = getNumberOutcome(nextOutcome);
-			else outcomeNumber = Double.sum(outcomeNumber, getNumberOutcome(nextOutcome));
+
+			if (nextOutcome == null)
+				continue;
+
+			if (outcomeNumber == null)
+				outcomeNumber = getNumberOutcome(nextOutcome);
+			else
+				outcomeNumber = Double.sum(outcomeNumber, getNumberOutcome(nextOutcome));
 
 		}
-		
+
 		return outcomeNumber;
-		
+
 	}
 
 	private ArrayList<String> getTagOutcome(Outcome outcome) throws Exception {
 
-		if( this.variables.containsKey( outcome.getVariableName() )) return (ArrayList<String>) this.variables.get(outcome.getVariableName());
+		//if the outcome has already been calculated and added to variable collection, just get value from collection
+		if (this.variables.containsKey(outcome.getVariableName()))
+			return (ArrayList<String>) this.variables.get(outcome.getVariableName());
 
 		ArrayList<String> outcomeTags = new ArrayList<String>();
 		outcomeTags.add(calcTagOutcome(outcome));
@@ -603,19 +516,11 @@ public class RuleEvaluator implements Cloneable {
 
 			int abs = Math.abs(ruleNumber);
 
-			boolean pass = outcome instanceof PassTagOutcome;
-			boolean fail = outcome instanceof FailTagOutcome;
-
-			// if ruleNumber is negative, it's a "not" rule, so take the opposite
-			if (ruleNumber.intValue() < 0) {
-				pass = !pass;
-				fail = !fail;
-			}
-			if (pass) {
+			if (ruleNumber.intValue() > 0) {
 				if (!isRuntimePass(abs))
 					continue;
 				nextOutcome = (BaseOutcome) getRule(abs).getPassTagOutcome(outcome.getKey());
-			} else if (fail) {
+			} else if (ruleNumber.intValue() < 0) {
 				if (!isRuntimeFail(abs))
 					continue;
 				nextOutcome = (BaseOutcome) getRule(abs).getFailTagOutcome(outcome.getKey());
@@ -628,7 +533,8 @@ public class RuleEvaluator implements Cloneable {
 
 		}
 
-		return outcomeTags;
+		// return after removing duplicates
+		return (ArrayList<String>) outcomeTags.stream().distinct().collect(Collectors.toList());
 
 	}
 
@@ -647,17 +553,17 @@ public class RuleEvaluator implements Cloneable {
 	private Boolean callRule(Integer ruleNumber) throws Exception {
 
 		ruleDefinition.isRule(ruleNumber);
-		
-		if(cache.containsKey(ruleNumber)) return cache.get(ruleNumber);
 
+		//if it's already been evaluated, get result from cache
+		if (cache.containsKey(ruleNumber))
+			return cache.get(ruleNumber);
+
+		//checking active, effective and expiration dates
 		if (!isRuleApplicable(ruleNumber))
 			return null;
 
 		if (ruleDefinition.isCalcRule(ruleNumber))
 			return (processCalcRule(ruleNumber));
-
-		if (ruleDefinition.isExecRule(ruleNumber))
-			return (processExecRule(ruleNumber));
 
 		if (ruleDefinition.isOrRule(ruleNumber))
 			return (processOrRules(ruleNumber));
@@ -678,7 +584,7 @@ public class RuleEvaluator implements Cloneable {
 	private Boolean isRuleApplicable(Integer ruleNumber) throws Exception {
 
 		TimeTrack t = new TimeTrack();
-		
+
 		Date nowDate = new Date();
 
 		Date effectiveDate = getRule(ruleNumber).getEffectiveDate();
@@ -703,7 +609,7 @@ public class RuleEvaluator implements Cloneable {
 	}
 
 	private void clearVariables() {
-		this.variables = null;
+		this.variables.clear();
 	}
 
 	private void addToCache(Integer ruleNumber, Boolean result) {
@@ -719,31 +625,12 @@ public class RuleEvaluator implements Cloneable {
 			runtineExpressionFails.add(ruleNumber);
 	}
 
-//	private void clearRuntimePasses() {
-//		runtimePasses.clear();
-//	}
-//
-//	private void clearRuntimeFails() {
-//		runtimeFails.clear();
-//	}
-
 	private Boolean processCalcRule(Integer ruleNumber) throws Exception {
 
 		TimeTrack t = new TimeTrack();
 
-//		Boolean cachedResult = cache.get(ruleNumber);
-//
-//		if (cachedResult != null) {
-//			return cachedResult;
-//		}
-
-		// if(!isRuleApplicable(ruleNumber)) return null;
-		
-		String ruleHandler = ((CalcRule)getRule(ruleNumber)).getHandlerClass();
-		String expression = ((CalcRule)getRule(ruleNumber)).getExpression();
-
-		//String ruleHandler = ruleDefinition.getHandlerClass(ruleNumber);
-		//String expression = ruleDefinition.getExpression(ruleNumber);
+		String ruleHandler = ((CalcRule) getRule(ruleNumber)).getHandlerClass();
+		String expression = ((CalcRule) getRule(ruleNumber)).getExpression();
 
 		Boolean result = null;
 		try {
@@ -762,63 +649,13 @@ public class RuleEvaluator implements Cloneable {
 		if (result.booleanValue()) {
 			addRuntimePass(ruleNumber);
 			setGlobalPassOutcomes(ruleNumber);
-			// addRulePassResultsToVariables(ruleNumber, variables);
 		} else {
 			addRuntimeFail(ruleNumber);
 			setGlobalFailOutcomes(ruleNumber);
-			// addRuleFailResultsToVariables(ruleNumber, variables);
 		}
 
 		LOGGER.debug("{} milleseconds to evaluate rule number {} expression: {}, which evaluates to {}",
 				TimeTrack.getElapsedTime(t), ruleNumber, expression, result);
-
-		return (result);
-
-	}
-
-	private Boolean processExecRule(Integer ruleNumber) throws Exception {
-
-		TimeTrack t = new TimeTrack();
-
-//		Boolean cachedResult = cache.get(ruleNumber);
-//
-//		if (cachedResult != null) {
-//			return cachedResult;
-//		}
-
-		// if(!isRuleApplicable(ruleNumber)) return null;
-		
-		String ruleHandler = ((ExecRule)getRule(ruleNumber)).getHandlerClass();
-
-		//String ruleHandler = ruleDefinition.getHandlerClass(ruleNumber);
-		//String expression = ruleDefinition.getExpression(ruleNumber);
-
-		Boolean result = null;
-		try {
-			result = ExecRuleProcessor.processExecRule(ruleHandler, variables);
-		} catch (NoRuleEvaluatedException e) {
-			LOGGER.info("Unable to process rule: \"" + ruleNumber + "\", reason: " + e);
-			throw e;
-		} catch (Exception e) {
-			LOGGER.info("Unable to process rule: \"" + ruleNumber + "\", reason: " + e);
-			addExpressionFail(ruleNumber);
-			result = false;
-		}
-
-		addToCache(ruleNumber, result);
-
-		if (result.booleanValue()) {
-			addRuntimePass(ruleNumber);
-			setGlobalPassOutcomes(ruleNumber);
-			// addRulePassResultsToVariables(ruleNumber, variables);
-		} else {
-			addRuntimeFail(ruleNumber);
-			setGlobalFailOutcomes(ruleNumber);
-			// addRuleFailResultsToVariables(ruleNumber, variables);
-		}
-
-		LOGGER.debug("{} milleseconds to evaluate rule number {} expression: {}, which evaluates to {}",
-				TimeTrack.getElapsedTime(t), ruleNumber, result);
 
 		return (result);
 
@@ -851,22 +688,19 @@ public class RuleEvaluator implements Cloneable {
 			if (result.booleanValue()) {
 				addRuntimePass(ruleNumber);
 				setGlobalPassOutcomes(ruleNumber);
-				// addCompositeRulePassResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}",
 						TimeTrack.getElapsedTime(t), ruleNumber, true);
 			} else {
 				addRuntimeFail(ruleNumber);
 				setGlobalFailOutcomes(ruleNumber);
-				// addCompositeRuleFailResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}",
 						TimeTrack.getElapsedTime(t), ruleNumber, false);
 			}
 
 		}
 
-		if (noRulesProcessed) return null;
-
-		// setGlobalPassOutcomes(ruleNumber);
+		if (noRulesProcessed)
+			return null;
 
 		return true;
 
@@ -880,7 +714,9 @@ public class RuleEvaluator implements Cloneable {
 	 * performance is an issue. The rules are processed in blocks. Set the block
 	 * size by calling setThreadBlockSize() and pass a block size value that
 	 * performs optimally in your environment. Variables set in the threads do not
-	 * persist when evaluation is complete.
+	 * persist when evaluation is complete.  The values of global Outcome keys listed in 
+	 * the 'numberKeys' and 'tagKeys' arrays are retrieved from the threads and added
+	 * to to the variables collection.
 	 * 
 	 * @return returns true
 	 * @throws Exception when any exception occurs
@@ -894,16 +730,16 @@ public class RuleEvaluator implements Cloneable {
 		// loop through all the rule results processed in the threads
 		for (int i = 0; i < threadResults.size(); i++) {
 
-			if(threadResults.get(i).getNumberOutcomes() != null) {
+			if (threadResults.get(i).getNumberOutcomes() != null) {
 				TreeMap<String, Double> numberOutcomes = threadResults.get(i).getNumberOutcomes();
-				for(Map.Entry<String, Double> entry:numberOutcomes.entrySet()) {
-					
+				for (Map.Entry<String, Double> entry : numberOutcomes.entrySet()) {
+
 					String threadVariable = variableName + entry.getKey();
-					if(this.variables.containsKey(threadVariable)) {
-						
-						Double sumOf = Double.sum( (Double) this.variables.get(threadVariable), entry.getValue());
+					if (this.variables.containsKey(threadVariable)) {
+
+						Double sumOf = Double.sum((Double) this.variables.get(threadVariable), entry.getValue());
 						this.variables.put(threadVariable, sumOf);
-						
+
 					} else {
 						this.variables.put(threadVariable, entry.getValue());
 					}
@@ -911,13 +747,13 @@ public class RuleEvaluator implements Cloneable {
 				}
 
 			}
-			
-			if(threadResults.get(i).getTagOutcomes() != null) {
+
+			if (threadResults.get(i).getTagOutcomes() != null) {
 				TreeMap<String, ArrayList<String>> tagOutcomes = threadResults.get(i).getTagOutcomes();
-				for(Map.Entry<String, ArrayList<String>> entry:tagOutcomes.entrySet()) {
-					
+				for (Map.Entry<String, ArrayList<String>> entry : tagOutcomes.entrySet()) {
+
 					String threadVariable = variableName + entry.getKey();
-					if(this.variables.containsKey(threadVariable)) {
+					if (this.variables.containsKey(threadVariable)) {
 						((ArrayList<String>) this.variables.get(threadVariable)).addAll(entry.getValue());
 					} else {
 						this.variables.put(threadVariable, entry.getValue());
@@ -926,7 +762,7 @@ public class RuleEvaluator implements Cloneable {
 				}
 
 			}
-			
+
 		}
 
 		addRuntimePass(ruleNumber);
@@ -944,15 +780,16 @@ public class RuleEvaluator implements Cloneable {
 	 */
 	private ArrayList<ThreadResults> getThreadResults(Integer ruleNumber) throws Exception {
 
-		if (pool == null) pool = new ForkJoinPool();
-		
-		ThreadRule threadRule =  ((ThreadRule) getRule(ruleNumber));
+		if (pool == null)
+			pool = new ForkJoinPool();
+
+		ThreadRule threadRule = ((ThreadRule) getRule(ruleNumber));
 
 		ArrayList<String> numberKeys = threadRule.getNumberKeys();
 		ArrayList<String> tagKeys = threadRule.getTagKeys();
 		ArrayList<Integer> threadRulesList = threadRule.getThreadRules();
 		ArrayList<Integer> block = new ArrayList<Integer>();
-		
+
 		ArrayList<ThreadRuleProcessor> tasks = new ArrayList<ThreadRuleProcessor>();
 		int listSize = threadRulesList.size();
 		int ctr = 0;
@@ -963,13 +800,14 @@ public class RuleEvaluator implements Cloneable {
 				ArrayList<Integer> passBlock = new ArrayList<Integer>();
 				passBlock.addAll(block);
 
-				ThreadProcObjects objects = new ThreadProcObjects();
-				objects.setThreadRuleNumber(ruleNumber);
-				objects.setNumberKeys(numberKeys);
-				objects.setTagKeys(tagKeys);
-				objects.setBlock(passBlock);
-				objects.setRuleEvaluator((RuleEvaluator) this.clone());
-				
+				ThreadProcObjects objects = new ThreadProcObjects(
+						ruleNumber,
+						(RuleEvaluator) this.clone(),
+						passBlock,
+						numberKeys,
+						tagKeys
+						);
+
 				ThreadRuleProcessor threadRuleProcessor = new ThreadRuleProcessor(objects);
 				tasks.add(threadRuleProcessor);
 				pool.execute(threadRuleProcessor);
@@ -1014,7 +852,6 @@ public class RuleEvaluator implements Cloneable {
 			if (result.booleanValue()) {
 				addRuntimePass(ruleNumber);
 				setGlobalPassOutcomes(ruleNumber);
-				// addCompositeRulePassResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}",
 						TimeTrack.getElapsedTime(t), ruleNumber, true);
 				return (true);
@@ -1026,7 +863,6 @@ public class RuleEvaluator implements Cloneable {
 
 		addRuntimeFail(ruleNumber);
 		setGlobalFailOutcomes(ruleNumber);
-		// addCompositeRuleFailResultsToVariables(ruleNumber, variables);
 		LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t),
 				ruleNumber, false);
 
@@ -1060,7 +896,6 @@ public class RuleEvaluator implements Cloneable {
 			if (!result.booleanValue()) {
 				addRuntimeFail(ruleNumber);
 				setGlobalFailOutcomes(ruleNumber);
-				// addCompositeRuleFailResultsToVariables(ruleNumber, variables);
 				LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}",
 						TimeTrack.getElapsedTime(t), ruleNumber, false);
 				return false;
@@ -1073,7 +908,6 @@ public class RuleEvaluator implements Cloneable {
 
 		addRuntimePass(ruleNumber);
 		setGlobalPassOutcomes(ruleNumber);
-		// addCompositeRulePassResultsToVariables(ruleNumber, variables);
 		LOGGER.debug("{} milleseconds to evaluate rule number {}, which evaluates to {}", TimeTrack.getElapsedTime(t),
 				ruleNumber, true);
 
@@ -1095,14 +929,8 @@ public class RuleEvaluator implements Cloneable {
 	}
 
 	private ArrayList<Integer> getCompositeRulesList(Integer ruleNumber) throws Exception {
-		//return ruleDefinition.getCompositeRulesList(ruleNumber);
 		return ((CompositeRule) getRule(ruleNumber)).getCompositeRules();
 	}
-
-//	private ArrayList<Integer> getThreadRulesList(Integer ruleNumber) throws Exception {
-//		//return ruleDefinition.getThreadRulesList(ruleNumber);
-//		return ((ThreadRule) getRule(ruleNumber)).getThreadRules();
-//	}
 
 	private Double evaluateNumberExpression(String expression) {
 		return ExpressionHandler.getProductOf(expression, variables);
@@ -1115,7 +943,7 @@ public class RuleEvaluator implements Cloneable {
 	public Object clone() {
 
 		RuleEvaluator newRuleEvaluator = new RuleEvaluator(this.ruleDefinition);
-		
+
 		for (int i = 0; i < 2; i++) {
 			try {
 				newRuleEvaluator.setVariables(this.variables);

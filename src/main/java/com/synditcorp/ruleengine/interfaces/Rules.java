@@ -16,35 +16,21 @@ import java.util.ArrayList;
 import com.synditcorp.ruleengine.beans.AllRule;
 import com.synditcorp.ruleengine.beans.AndRule;
 import com.synditcorp.ruleengine.beans.CalcRule;
-import com.synditcorp.ruleengine.beans.ExecRule;
 import com.synditcorp.ruleengine.beans.OrRule;
 import com.synditcorp.ruleengine.beans.ThreadRule;
 
 public interface Rules {
-	
+
 	public ArrayList<CalcRule> getCalcRules();
-	public void setCalcRules(ArrayList<CalcRule> calcRules);
-	public ArrayList<ExecRule> getExecRules();
-	public void setExecRules(ArrayList<ExecRule> calcRules);
 	public ArrayList<AndRule> getAndRules();
-	public void setAndRules(ArrayList<AndRule> andRules);
 	public ArrayList<OrRule> getOrRules();
-	public void setOrRules(ArrayList<OrRule> orRules);
 	public ArrayList<AllRule> getAllRules();
-	public void setAllRules(ArrayList<AllRule> allRules);
 	public ArrayList<ThreadRule> getThreadRules();
-	public void setThreadRules(ArrayList<ThreadRule> threadRules);
 	public String getDocumentId();
-	public void setDocumentId(String documentId);
 	public String getDescription();
-	public void setDescription(String description);
 	public String getVersion();
-	public void setVersion(String version);
 	public Boolean getActive();
-	public void setActive(Boolean active);
 	public ArrayList<String> getDocumentTags();
-	public void setDocumentTags(ArrayList<String> documentTags);
 	public Integer getStartRule();
-	public void setStartRule(Integer ruleNumber);
-	
+
 }

@@ -9,7 +9,6 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-
 package com.synditcorp.ruleengine.beans;
 
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ import com.synditcorp.ruleengine.exceptions.EngineSafeguardException;
 import com.synditcorp.ruleengine.interfaces.Outcome;
 
 public class BaseOutcome implements Outcome {
-	
 
 	private final String key;
 	private final String result;
@@ -33,33 +31,22 @@ public class BaseOutcome implements Outcome {
 	private String variableName;
 	private static final Set<String> validTypes = Set.of("number", "tag");
 	private static final List<String> validResult = List.of("pass", "fail");
-//	private static final List<String> validTrue = List.of("true", "t", "1");
-//	private static final List<String> validFalse = List.of("false", "f", "0");
-	
+
 	@JsonCreator
-	public BaseOutcome(
-			@JsonProperty("key") String key,
-			@JsonProperty("result") String result,
-			@JsonProperty("type") String type,
-			@JsonProperty("expression") String expression,
+	public BaseOutcome(@JsonProperty("key") String key, @JsonProperty("result") String result,
+			@JsonProperty("type") String type, @JsonProperty("expression") String expression,
 			@JsonProperty("global") Boolean global,
-			@JsonProperty("compositeOutcomeRules") ArrayList<Integer> compositeOutcomeRules
-		) {
-		
+			@JsonProperty("compositeOutcomeRules") ArrayList<Integer> compositeOutcomeRules) {
+
 		this.key = validateKey(key);
 		this.result = validateResult(result);
 		this.type = validateType(type);
 		this.expression = expression;
 		this.global = global;
-//		if(global == null) {
-//			this.global = null;
-//		} else {
-//			this.global = Boolean.valueOf(global);
-//		}
 		this.compositeOutcomeRules = compositeOutcomeRules;
-		
+
 	}
-	
+
 	public BaseOutcome(Outcome outcome) {
 		this.key = validateKey(outcome.getKey());
 		this.result = validateResult(outcome.getResult());
@@ -70,17 +57,11 @@ public class BaseOutcome implements Outcome {
 		this.variableName = outcome.getVariableName();
 	}
 
-
-//	@Override
-//	public void setResult(String result) throws IllegalArgumentException {
-//		if(result == null)  throw new IllegalArgumentException("Outcome result must be specified");
-//		if(!validResult.contains(result.toLowerCase())) throw new IllegalArgumentException("Outcome result must be one of these: " + validResult);
-//		this.result = result.toLowerCase();
-//	}
-
 	private String validateResult(String result) throws IllegalArgumentException {
-		if(result == null)  throw new IllegalArgumentException("Outcome result must be specified");
-		if(!validResult.contains(result.toLowerCase())) throw new IllegalArgumentException("Outcome result must be one of these: " + validResult);
+		if (result == null)
+			throw new IllegalArgumentException("Outcome result must be specified");
+		if (!validResult.contains(result.toLowerCase()))
+			throw new IllegalArgumentException("Outcome result must be one of these: " + validResult);
 		return result.toLowerCase();
 	}
 
@@ -89,16 +70,11 @@ public class BaseOutcome implements Outcome {
 		return this.result;
 	}
 
-//	@Override
-//	public void setType(String type) throws IllegalArgumentException {
-//		if(type == null)  throw new IllegalArgumentException("Outcome type must be specified");
-//		if(!validTypes.contains(type.toLowerCase())) throw new IllegalArgumentException("Rule outcome type must be one of these: " + validTypes);
-//		this.type = type.toLowerCase();
-//	}
-
 	private String validateType(String type) throws IllegalArgumentException {
-		if(type == null)  throw new IllegalArgumentException("Outcome type must be specified");
-		if(!validTypes.contains(type.toLowerCase())) throw new IllegalArgumentException("Rule outcome type must be one of these: " + validTypes);
+		if (type == null)
+			throw new IllegalArgumentException("Outcome type must be specified");
+		if (!validTypes.contains(type.toLowerCase()))
+			throw new IllegalArgumentException("Rule outcome type must be one of these: " + validTypes);
 		return type.toLowerCase();
 	}
 
@@ -107,15 +83,9 @@ public class BaseOutcome implements Outcome {
 		return this.type;
 	}
 
-//	@Override
-//	public void setKey(String key) throws IllegalArgumentException {
-//		if(key == null)  throw new IllegalArgumentException("Outcome key must be specified");
-//		this.key = key;
-//		
-//	}
-
 	private String validateKey(String key) throws IllegalArgumentException {
-		if(key == null)  throw new IllegalArgumentException("Outcome key must be specified");
+		if (key == null)
+			throw new IllegalArgumentException("Outcome key must be specified");
 		return key;
 	}
 
@@ -124,28 +94,10 @@ public class BaseOutcome implements Outcome {
 		return this.key;
 	}
 
-//	@Override
-//	public void setExpression(String expression) {
-//		this.expression = expression;
-//	}
-
 	@Override
 	public String getExpression() {
 		return this.expression;
 	}
-
-//	private static Boolean getGlobal(String global) {
-//		
-//		if(global == null) return null;
-//		if(validTrue.contains(global.toLowerCase())) {
-//			return true;
-//		}
-//		if(validFalse.contains(global.toLowerCase())) {
-//			return false;
-//		}
-//		throw new IllegalArgumentException("Global field must be true, false, or null");
-//
-//	}
 
 	@Override
 	public Boolean getGlobal() {
@@ -158,31 +110,25 @@ public class BaseOutcome implements Outcome {
 	}
 
 	/*
-	 * Variable name uses document ID, so must be set when Rules are being configured in the definition where the document ID is available
-	 * Need to safeguard this variable as it can't be FINAL.
+	 * Variable name uses document ID, so must be set when Rules are being
+	 * configured in the definition where the document ID is available. Need to
+	 * safeguard this variable as it can't be FINAL.
 	 */
 	public void setVariableName(String documentId, Integer ruleNumber) throws EngineSafeguardException {
-		if(this.variableName != null && this.variableName.length() > 0) throw new EngineSafeguardException("Variable name already populated.");
+		if (this.variableName != null && this.variableName.length() > 0)
+			throw new EngineSafeguardException("Variable name already populated.");
 		String varName = documentId + "_" + ruleNumber + "_" + this.key;
 		this.variableName = varName;
 	}
-	
 
 	@Override
 	public String getVariableName() {
 		return this.variableName;
 	}
 
-//	@Override
-//	public void setCompositeOutcomeRules(ArrayList<Integer> compositeOutcomeRules) {
-//		this.compositeOutcomeRules = compositeOutcomeRules;
-//	}
-
 	@Override
 	public ArrayList<Integer> getCompositeOutcomeRules() {
 		return this.compositeOutcomeRules;
 	}
 
-	
-	
 }

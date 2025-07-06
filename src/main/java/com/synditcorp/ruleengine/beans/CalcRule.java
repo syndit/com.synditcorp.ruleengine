@@ -22,21 +22,13 @@ public class CalcRule extends BaseRule {
 	private final String expression;
 	private final String handlerClass;
 
-
 	@JsonCreator
-	public CalcRule(
-			@JsonProperty("ruleNumber") Integer ruleNumber,
-			@JsonProperty("ruleType") String ruleType,
-			@JsonProperty("ruleTags") ArrayList<String> ruleTags,
-			@JsonProperty("description") String description,
-			@JsonProperty("active") Boolean active,
-			@JsonProperty("expirationDate") Date expirationDate,
+	public CalcRule(@JsonProperty("ruleNumber") Integer ruleNumber, @JsonProperty("ruleType") String ruleType,
+			@JsonProperty("ruleTags") ArrayList<String> ruleTags, @JsonProperty("description") String description,
+			@JsonProperty("active") Boolean active, @JsonProperty("expirationDate") Date expirationDate,
 			@JsonProperty("effecitveDate") Date effectiveDate,
-			@JsonProperty("outcomes") ArrayList<BaseOutcome> outcomes,
-			@JsonProperty("expression") String expression,
-			@JsonProperty("handlerClass") String handlerClass
-		) {
-		
+			@JsonProperty("outcomes") ArrayList<BaseOutcome> outcomes, @JsonProperty("expression") String expression,
+			@JsonProperty("handlerClass") String handlerClass) {
 
 		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes);
 
@@ -49,18 +41,8 @@ public class CalcRule extends BaseRule {
 		return expression;
 	}
 
-//	public void setExpression(String expression) throws IllegalArgumentException {
-//		if(expression == null) throw new IllegalArgumentException("Expression must be specified for CalcRule");
-//		this.expression = expression;
-//	}
-
 	public String getHandlerClass() {
 		return this.handlerClass;
 	}
-
-//	public void setHandlerClass(String handlerClass) throws IllegalArgumentException  {
-//		if(handlerClass == null) throw new IllegalArgumentException("HandlerClass must be specified for CalcRule");
-//		this.handlerClass = handlerClass;
-//	}
 
 }

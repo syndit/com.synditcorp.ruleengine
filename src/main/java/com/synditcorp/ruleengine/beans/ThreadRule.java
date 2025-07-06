@@ -22,53 +22,35 @@ public class ThreadRule extends BaseRule {
 	private final ArrayList<Integer> threadRules;
 	private final ArrayList<String> numberKeys;
 	private final ArrayList<String> tagKeys;
-	
+
 	@JsonCreator
-	public ThreadRule(
-			@JsonProperty("ruleNumber") Integer ruleNumber,
-			@JsonProperty("ruleType") String ruleType,
-			@JsonProperty("ruleTags") ArrayList<String> ruleTags,
-			@JsonProperty("description") String description,
-			@JsonProperty("active") Boolean active,
-			@JsonProperty("expirationDate") Date expirationDate,
+	public ThreadRule(@JsonProperty("ruleNumber") Integer ruleNumber, @JsonProperty("ruleType") String ruleType,
+			@JsonProperty("ruleTags") ArrayList<String> ruleTags, @JsonProperty("description") String description,
+			@JsonProperty("active") Boolean active, @JsonProperty("expirationDate") Date expirationDate,
 			@JsonProperty("effecitveDate") Date effectiveDate,
 			@JsonProperty("outcomes") ArrayList<BaseOutcome> outcomes,
 			@JsonProperty("threadRules") ArrayList<Integer> threadRules,
 			@JsonProperty("numberKeys") ArrayList<String> numberKeys,
-			@JsonProperty("tagKeys") ArrayList<String> tagKeys
-		) {
-		
+			@JsonProperty("tagKeys") ArrayList<String> tagKeys) {
+
 		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes);
 
 		this.threadRules = threadRules;
 		this.numberKeys = numberKeys;
 		this.tagKeys = tagKeys;
-		
+
 	}
 
 	public ArrayList<Integer> getThreadRules() {
 		return threadRules;
 	}
 
-//	public void setThreadRules(ArrayList<Integer> threadRules) {
-//		this.threadRules = threadRules;
-//	}
-
 	public ArrayList<String> getNumberKeys() {
 		return numberKeys;
 	}
-
-//	public void setNumberKeys(ArrayList<String> numberKeys) {
-//		this.numberKeys = numberKeys;
-//	}
 
 	public ArrayList<String> getTagKeys() {
 		return tagKeys;
 	}
 
-//	public void setTagKeys(ArrayList<String> tagKeys) {
-//		this.tagKeys = tagKeys;
-//	}
-	
-	
 }

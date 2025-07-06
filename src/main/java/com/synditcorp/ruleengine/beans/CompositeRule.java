@@ -19,31 +19,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CompositeRule extends BaseRule {
 
 	private final ArrayList<Integer> compositeRules;
-	
-	public CompositeRule(
-			@JsonProperty("ruleNumber") Integer ruleNumber,
-			@JsonProperty("ruleType") String ruleType,
-			@JsonProperty("ruleTags") ArrayList<String> ruleTags,
-			@JsonProperty("description") String description,
-			@JsonProperty("active") Boolean active,
-			@JsonProperty("expirationDate") Date expirationDate,
+
+	public CompositeRule(@JsonProperty("ruleNumber") Integer ruleNumber, @JsonProperty("ruleType") String ruleType,
+			@JsonProperty("ruleTags") ArrayList<String> ruleTags, @JsonProperty("description") String description,
+			@JsonProperty("active") Boolean active, @JsonProperty("expirationDate") Date expirationDate,
 			@JsonProperty("effecitveDate") Date effectiveDate,
 			@JsonProperty("outcomes") ArrayList<BaseOutcome> outcomes,
-			@JsonProperty("compositeRules") ArrayList<Integer> compositeRules
-		) {
-		
+			@JsonProperty("compositeRules") ArrayList<Integer> compositeRules) {
+
 		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes);
-		
+
 		this.compositeRules = compositeRules;
-		
+
 	}
 
 	public ArrayList<Integer> getCompositeRules() {
 		return compositeRules;
 	}
-
-//	public void setCompositeRules(ArrayList<Integer> compositeRules) {
-//		this.compositeRules = compositeRules;
-//	}
 
 }

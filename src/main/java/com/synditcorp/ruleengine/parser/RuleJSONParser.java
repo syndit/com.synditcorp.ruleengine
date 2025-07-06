@@ -19,37 +19,39 @@ import com.synditcorp.ruleengine.beans.BaseRules;
 import com.synditcorp.ruleengine.interfaces.RuleParser;
 
 /**
- * This class implements RulesParser and uses the Jackson JSON parser (com.fasterxml.jackson.core)
+ * This class implements RulesParser and uses the Jackson JSON parser
+ * (com.fasterxml.jackson.core)
  */
 public class RuleJSONParser implements RuleParser {
 
 	BaseRules rules;
-	
+
 	/**
-	 * Pass the JSON file name.  See test.java.verifyRulesDefinitions.json for supported JSON file format.
+	 * Pass the JSON file name. See test.java.verifyRulesDefinitions.json for
+	 * supported JSON file format.
 	 */
 	@Override
 	public void loadRules(String jsonFileName) throws Exception {
 
 		byte[] jsonData = Files.readAllBytes(Paths.get(jsonFileName));
 		ObjectMapper objectMapper = new ObjectMapper();
-		
+
 		rules = objectMapper.readValue(jsonData, BaseRules.class);
-		
+
 	}
 
 	/**
-	 * Use this for getting definitions from resources like MongoDB.  See test.java.verifyRulesDefinitions.json for supported JSON file format.
+	 * Use this for getting definitions from resources like MongoDB. See
+	 * test.java.verifyRulesDefinitions.json for supported JSON file format.
 	 */
 	@Override
 	public void loadRules(Object... arguments) throws Exception {
 		// TODO Auto-generated method stub
 	}
-	
+
 	@Override
 	public BaseRules getRules() throws Exception {
 		return rules;
 	}
-
 
 }

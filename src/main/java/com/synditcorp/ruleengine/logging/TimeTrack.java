@@ -16,10 +16,10 @@ public class TimeTrack {
 	private Long start = null;
 
 	public TimeTrack() {
-		//start = System.currentTimeMillis();
-		start = System.nanoTime();
+		start = System.currentTimeMillis();
+		//start = System.nanoTime();
 	}
-	
+
 	private Long getStart() {
 		return start;
 	}
@@ -27,17 +27,20 @@ public class TimeTrack {
 	public static synchronized Long getStartTime(TimeTrack start) {
 		return start.getStart();
 	}
-	
+
 	public static synchronized Long getElapsedTime(TimeTrack start, TimeTrack end) throws Exception {
-		if(start == null || start.getStart() == null) throw new Exception("Start time not set.");
-		if(end == null || end.getStart() == null) throw new Exception("End time not set.");
+		if (start == null || start.getStart() == null)
+			throw new Exception("Start time not set.");
+		if (end == null || end.getStart() == null)
+			throw new Exception("End time not set.");
 		return elapsed(start.getStart(), end.getStart());
 	}
 
 	public static synchronized Long getElapsedTime(TimeTrack start) throws Exception {
-		if(start == null || start.getStart() == null) throw new Exception("Start time not set.");
-		//Long end = System.currentTimeMillis();
-		Long end = System.nanoTime();
+		if (start == null || start.getStart() == null)
+			throw new Exception("Start time not set.");
+		Long end = System.currentTimeMillis();
+		//Long end = System.nanoTime();
 		return elapsed(start.getStart(), end);
 	}
 
@@ -45,5 +48,4 @@ public class TimeTrack {
 		return (end - start);
 	}
 
-	
 }

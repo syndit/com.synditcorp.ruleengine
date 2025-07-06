@@ -20,57 +20,77 @@ import com.synditcorp.ruleengine.parser.RuleJSONParser;
 public class VerifyRuleDefinition {
 
 	public static void main(String[] args) {
-		
+
 		try {
 
-			String jsonFileName = (String) args[0];
-			//String jsonCommonFileName = (String) args[1];
-			
-			verifyRules(jsonFileName);
-			
+			// String jsonFileName = (String) args[0];
+			// String jsonCommonFileName = (String) args[1];
+
+			// verifyRules(jsonFileName);
+			verifyRules();
+
 		} catch (Exception e) {
-			System.out.println("RuleEngine exception: " + e );
+			System.out.println("RuleEngine exception: " + e);
 		}
 
 	}
 
-	private static void verifyRules(String jsonFileName) throws Exception {
-		
+	private static void verifyRules() throws Exception {
+
 		TreeMap<String, Object> variables = new TreeMap<String, Object>();
-		
+
 		Double amount1 = 1.50;
 		Double amount2 = 5.00;
 		String name1 = "Buggs Bunny";
 		String ID = "987654321";
 		String phone = "724.555.1027";
-		
+
 		variables.put("amount1", amount1);
 		variables.put("amount2", amount2);
 		variables.put("name1", name1);
 		variables.put("ID", ID);
 		variables.put("phone", phone);
-		
+
 		TimeTrack t1 = new TimeTrack();
-		
-		//main Rule Engine instance
+
+		// main Rule Engine instance
 		RuleJSONParser parser = new RuleJSONParser();
-		parser.loadRules(jsonFileName);
-		
-		DefaultRuleDefinition rules = new DefaultRuleDefinition();
-		rules.loadRules(parser);
-		
+		parser.loadRules("/Users/alanjack/git/com.synditcorp.ruleengine/src/test/java/verifyRuleDefinition2.json");
+
+		DefaultRuleDefinition rules = new DefaultRuleDefinition(parser);
+		// rules.loadRules(parser);
+
 		RuleEvaluator eval = new RuleEvaluator(rules);
 		eval.setVariables(variables);
 
-		eval.evaluateRule(12);
+		//eval.evaluateRule(1);
+
+		// System.out.println(eval.getNumberOutcome(12, "fee"));
+		//System.out.println(eval.getNumberOutcome(1, "score"));
+		// System.out.println(eval.getTagOutcome(11, "i18n"));
+
+		//System.out.println(eval.getTagOutcome(1, "flag"));
+
+		//eval.evaluateRule(2);
+
+		// System.out.println(eval.getNumberOutcome(12, "fee"));
+		//System.out.println(eval.getNumberOutcome(2, "score"));
+
+		//System.out.println(eval.getTagOutcome(2, "flag"));
+
+		//
+//		
+//
+		eval.evaluateRule(11);
 		
-		System.out.println(eval.getNumberOutcome(12, "fee"));
-		System.out.println(eval.getTagOutcome(1, "i18n"));
-		System.out.println(eval.getTagOutcome(11, "i18n"));
+		eval.setThreadBlockSize(2);
+
+		eval.evaluateRule(18);
+		
 		
 		System.out.println(eval.getVariables());
-		
-		//		
+
+		//
 //		//common Rule Engine instance
 //		RuleJSONParser commonParser = new RuleJSONParser();
 //		commonParser.loadRules(jsonCommonFileName);
@@ -120,9 +140,23 @@ public class VerifyRuleDefinition {
 //			eval.reset();
 //			eval.setVariables(variables);
 //		}
-		
+
+		/*
+		 * 
+		 * final in rule and outcome
+		 * 
+		 * @JsonCreator public SimpleBean(@JsonProperty("fieldOne") String
+		 * fieldOne, @JsonProperty("fieldTwo") String fieldTwo
+		 * 
+		 * subclass call super constructor: "super()"
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
+
 	}
-
-
 
 }

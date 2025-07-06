@@ -14,12 +14,12 @@ package com.synditcorp.ruleengine.interfaces;
 import com.synditcorp.ruleengine.beans.BaseRules;
 
 /**
- * Interface for JSON, XML, or database implementations 
+ * Interface for JSON, XML, or database implementations
  */
 public interface RuleParser {
 
 	public void loadRules(String fileName) throws Exception;
 	public void loadRules(Object... arguments) throws Exception;
 	public BaseRules getRules() throws Exception;
-	
+
 }

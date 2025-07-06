@@ -1,8 +1,8 @@
 {
 	"documentId" : "TEST_RULES",
 	"description" : "This is a test definition",
-	"version" : "0.0.1",
-	"documentTags" : ["test","partial"],
+	"version" : "3.0.0",
+	"documentTags" : ["test"],
 	"startRule" : "14",
 	"calcRules":
 		[
@@ -15,16 +15,12 @@
 				"active" : "true",
 				"effectiveDate" : null,
 				"expirationDate" : null,
-				"passKeys" : ["passKey_1"],
-				"failKeys" : ["failKey_1"],
-				"passScore" : "1",
-				"failScore" : "-1",
-				"passFlags" : ["1FlagP"],
-				"failFlags" : ["1FlagF"],
-				"passReasons" : ["1ReasonP"],
-				"failReasons" : ["1ReasonF"],
-				"passActions" : ["1ActionP"],
-				"failActions" : ["1ActionF"]			
+				"outcome": [
+					{"result":"pass", "type":"number", "key":"score","expression":"1","global":"true"},
+					{"result":"fail", "type":"number", "key":"score","expression":"-1","global":"true"},
+					{"result":"pass", "type":"tag", "key":"flag","expression":"1FlagP","global":"true"},
+  					{"result":"fail", "type":"tag", "key":"flag","expression":"1FlagF","global":"true"}
+				]	
 			},
 			{
 				"ruleType" : "calc",
@@ -35,16 +31,12 @@
 				"active" : "true",
 				"effectiveDate" : null,
 				"expirationDate" : null,
-				"passKeys" : ["passKey_2"],
-				"failKeys" : ["failKey_2"],
-				"passScore" : "TEST_RULES_passScore_1 + 13",
-				"failScore" : "TEST_RULES_failScore_1 - 7",			
-				"passFlags" : ["2FlagP"],
-				"failFlags" : ["2FlagF"],
-				"passReasons" : ["2ReasonP"],
-				"failReasons" : ["2ReasonF"],
-				"passActions" : ["2ActionP"],
-				"failActions" : ["2ActionF"]			
+				"outcome": [
+					{"result":"pass", "type":"number", "key":"score","expression":"TEST_RULES_1_score + 13","global":"true"},
+					{"result":"fail", "type":"number", "key":"score","expression":"TEST_RULES_1_score - 7","global":"true"},
+					{"result":"pass", "type":"tag", "key":"flag","expression":"2FlagP","global":"true"},
+					{"result":"fail", "type":"tag", "key":"flag","expression":"2FlagF","global":"true"}
+				]	
 			},
 			{
 				"ruleType" : "calc",

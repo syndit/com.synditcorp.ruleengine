@@ -13,6 +13,8 @@ package com.synditcorp.ruleengine.beans;
 
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synditcorp.ruleengine.interfaces.Rules;
 
 public class BaseRules implements Rules {
@@ -24,95 +26,68 @@ public class BaseRules implements Rules {
 	private Integer startRule;
 	private ArrayList<String> documentTags;
 	private ArrayList<CalcRule> calcRules;
-	private ArrayList<ExecRule> execRules;
 	private ArrayList<AndRule> andRules;
 	private ArrayList<OrRule> orRules;
 	private ArrayList<AllRule> allRules;
 	private ArrayList<ThreadRule> threadRules;
-	
-	public BaseRules() {
+
+	@JsonCreator
+	public BaseRules(
+			@JsonProperty("documentId") String documentId,
+			@JsonProperty("description") String description,
+			@JsonProperty("version") String version,
+			@JsonProperty("active") Boolean active,
+			@JsonProperty("startRule") Integer startRule,
+			@JsonProperty("documentTags") ArrayList<String> documentTags,
+			@JsonProperty("calcRules") ArrayList<CalcRule> calcRules,
+			@JsonProperty("andRules") ArrayList<AndRule> andRules,
+			@JsonProperty("orRules") ArrayList<OrRule> orRules,
+			@JsonProperty("allRules") ArrayList<AllRule> allRules,
+			@JsonProperty("threadRules") ArrayList<ThreadRule> threadRules
+		) {
 		
+		this.documentId = documentId;
+		this.description = description;
+		this.version = version;
+		this.active = active;
+		this.startRule = startRule;
+		this.documentTags = documentTags;
+		this.calcRules = calcRules;
+		this.andRules = andRules;
+		this.orRules = orRules;
+		this.allRules = allRules;
+		this.threadRules = threadRules;
+
 	}
 
 	@Override
 	public ArrayList<CalcRule> getCalcRules() {
-		//if(this.calcRules == null) this.calcRules = new ArrayList<CalcRule>();
 		return this.calcRules;
 	}
 
 	@Override
-	public void setCalcRules(ArrayList<CalcRule> calcRules) {
-		this.calcRules = calcRules;
-	}
-
-
-	@Override
-	public ArrayList<ExecRule> getExecRules() {
-		//if(this.execRules == null) this.execRules = new ArrayList<ExecRule>();
-		return this.execRules;
-	}
-
-	@Override
-	public void setExecRules(ArrayList<ExecRule> execRules) {
-		this.execRules = execRules;
-		
-	}
-	@Override
 	public ArrayList<AndRule> getAndRules() {
-		//if(this.andRules == null) this.andRules = new ArrayList<AndRule>();
 		return this.andRules;
 	}
 
-
-	@Override
-	public void setAndRules(ArrayList<AndRule> andRules) {
-		this.andRules = andRules;
-	}
-
-
 	@Override
 	public ArrayList<OrRule> getOrRules() {
-		//if(this.orRules == null) this.orRules = new ArrayList<OrRule>();
 		return this.orRules;
 	}
 
-
-	@Override
-	public void setOrRules(ArrayList<OrRule> orRules) {
-		this.orRules = orRules;
-	}
-	
 	@Override
 	public ArrayList<AllRule> getAllRules() {
-		//if(this.allRules == null) this.allRules = new ArrayList<AllRule>();
 		return this.allRules;
 	}
 
 	@Override
-	public void setAllRules(ArrayList<AllRule> allRules) {
-		this.allRules = allRules;
-	}
-
-	@Override
 	public ArrayList<ThreadRule> getThreadRules() {
-		//if(this.threadRules == null) this.threadRules = new ArrayList<ThreadRule>();
 		return this.threadRules;
 	}
 
 	@Override
-	public void setThreadRules(ArrayList<ThreadRule> threadRules) {
-		this.threadRules = threadRules;
-	}
-	
-	@Override
 	public String getDocumentId() {
 		return documentId;
-	}
-
-	@Override
-	public void setDocumentId(String documentId) throws IllegalArgumentException {
-		if(documentId == null || documentId.length() == 0)  throw new IllegalArgumentException("Document ID must be provided");
-		this.documentId = documentId;
 	}
 
 	@Override
@@ -121,18 +96,8 @@ public class BaseRules implements Rules {
 	}
 
 	@Override
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	@Override
 	public String getVersion() {
 		return this.version;
-	}
-
-	@Override
-	public void setVersion(String version) {
-		this.version = version;
 	}
 
 	@Override
@@ -141,29 +106,13 @@ public class BaseRules implements Rules {
 	}
 
 	@Override
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
-
-	@Override
 	public Integer getStartRule() {
 		return this.startRule;
 	}
 
 	@Override
-	public void setStartRule(Integer ruleNumber) {
-		this.startRule = ruleNumber;
-	}
-
 	public ArrayList<String> getDocumentTags() {
 		return this.documentTags;
 	}
-
-	public void setDocumentTags(ArrayList<String> documentTags) {
-		this.documentTags = documentTags;
-	}
-
-
-
 
 }

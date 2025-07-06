@@ -9,7 +9,6 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-
 package com.synditcorp.ruleengine.beans;
 
 import java.util.ArrayList;
@@ -27,42 +26,44 @@ public class ThreadResults {
 	public TreeMap<String, Double> getNumberOutcomes() {
 		return numberOutcomes;
 	}
-	
+
 	public void setNumberOutcome(String key, Double value) {
 
-		if(value == null) return;
+		if (value == null)
+			return;
 
-		if(this.numberOutcomes == null) {
+		if (this.numberOutcomes == null) {
 			this.numberOutcomes = new TreeMap<String, Double>();
 			this.numberOutcomes.put(key, value);
 			return;
 		}
 
-		if(this.numberOutcomes.containsKey(key)) {
+		if (this.numberOutcomes.containsKey(key)) {
 			Double sumOf = Double.sum(this.numberOutcomes.get(key), value);
 			this.numberOutcomes.put(key, sumOf);
 		} else {
 			this.numberOutcomes.put(key, value);
 		}
-		
-	}
-	
-	public void setTagOutcome(String key, ArrayList<String> values) {
-		
-		if(values == null) return;
 
-		if(this.tagOutcomes == null) {
+	}
+
+	public void setTagOutcome(String key, ArrayList<String> values) {
+
+		if (values == null)
+			return;
+
+		if (this.tagOutcomes == null) {
 			this.tagOutcomes = new TreeMap<String, ArrayList<String>>();
 			this.tagOutcomes.put(key, values);
 			return;
 		}
-		
-		if(this.tagOutcomes.containsKey(key)) {
+
+		if (this.tagOutcomes.containsKey(key)) {
 			this.tagOutcomes.get(key).addAll(values);
 		} else {
 			this.tagOutcomes.put(key, values);
 		}
-		
+
 	}
 
 }

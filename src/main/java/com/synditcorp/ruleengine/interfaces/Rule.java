@@ -18,21 +18,13 @@ import com.synditcorp.ruleengine.beans.BaseOutcome;
 
 public interface Rule {
 
-//	public void setRuleNumber(Integer ruleRef) throws IllegalArgumentException;
 	public Integer getRuleNumber();
-//	public void setRuleType(String ruleType) throws IllegalArgumentException;
 	public String getRuleType();
 	public ArrayList<String> getRuleTags();
-//	public void setRuleTags(ArrayList<String> ruleTags);
-//	public void setDescription(String ruleDescription);
 	public String getDescription();
-//	public void setActive(String active);
 	public Boolean getActive();
-//	public void setEffectiveDate(Date date);
 	public Date getEffectiveDate();
-//	public void setExpirationDate(Date date);
 	public Date getExpirationDate();
-//	public void setOutcomes(ArrayList<BaseOutcome> outcomes);
 	public ArrayList<BaseOutcome> getOutcomes();
 	public Outcome getPassNumberOutcome(String key);
 	public Outcome getFailNumberOutcome(String key);

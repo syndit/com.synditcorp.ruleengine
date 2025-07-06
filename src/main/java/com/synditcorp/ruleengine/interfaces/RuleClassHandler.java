@@ -16,5 +16,5 @@ import java.util.TreeMap;
 public interface RuleClassHandler {
 
 	Boolean processCalcRule(String ruleExpression, TreeMap<String, Object> variables) throws Exception;
-	
+
 }

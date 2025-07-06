@@ -18,7 +18,8 @@ import org.mvel2.MVEL;
 public class ExpressionHandler {
 
 	/*
-	 * Run expressions where a Boolean is returned, i.e. expressions that have '==', '>', '<', 'matches', 'contains', etc. 
+	 * Run expressions where a Boolean is returned, i.e. expressions that have '==',
+	 * '>', '<', 'matches', 'contains', etc.
 	 */
 	public static Boolean evaluateBooleanExpression(String expression, TreeMap<String, Object> variables) {
 
@@ -28,7 +29,7 @@ public class ExpressionHandler {
 	}
 
 	/*
-	 * Run expressions where a String is returned 
+	 * Run expressions where a String is returned
 	 */
 	public static String evaluateStringExpression(String expression, TreeMap<String, Object> variables) {
 
@@ -38,27 +39,26 @@ public class ExpressionHandler {
 	}
 
 	/*
-	 *  Run expressions that do math to return a Double value.  
+	 * Run expressions that do math to return a Double value.
 	 */
 	public static Double getProductOf(String expression, TreeMap<String, Object> variables) {
 
 		Object obj = runExpression(expression, variables);
-		if(obj instanceof Double) {
+		if (obj instanceof Double) {
 			return (Double) obj;
 		}
-		if(obj instanceof Integer) {
+		if (obj instanceof Integer) {
 			return ((Integer) obj).doubleValue();
 		}
 		return null;
 
 	}
-	
+
 	private static Object runExpression(String expression, TreeMap<String, Object> variables) {
 		/*
 		 * Implemented with MVEL here.
 		 */
 		return MVEL.eval(expression, variables);
 	}
-	
 
 }

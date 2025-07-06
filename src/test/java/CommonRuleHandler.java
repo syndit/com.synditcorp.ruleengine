@@ -12,7 +12,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 import com.synditcorp.ruleengine.handlers.InstanceHandler;
 
 public class CommonRuleHandler extends InstanceHandler {
-	
+
 	public CommonRuleHandler() {
 		super.instanceName = "commonRuleHandler";
 	}

@@ -21,6 +21,7 @@ public class RuleLogger {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(RuleEvaluator.class.getPackageName());
 
-	private RuleLogger() {}
-	
+	private RuleLogger() {
+	}
+
 }

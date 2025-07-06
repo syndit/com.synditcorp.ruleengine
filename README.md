@@ -15,25 +15,35 @@ The Syndit Rule Engine is a light-weight, simple rule engine that can be used to
 
 # Features
 
-1. Simple, document based.  The definition document has the intelligence, not the Java code.  
+1. Simple, document based.  The intuitive definition document has the intelligence, not the Java code.  
 1. The definition documents are self-contained, making it easy to store a complete set of rules for a given purpose.
-1. The Engine's footprint is quite small, allowing as many instances as needed.
+    1. Include rules in a Mongo database or locally within a project's artifacts.
+1. The Engine's footprint is quite small, allowing as many instances as needed.  
+1. Cache definition and evaluator instances for fast rule evaluation.
 1. Reusable rules (configure one rule to be used by other rules).
-1. Caches runtime rule results so reusable rules only need to be executed once.
 1. Evaluate rules with:
     1. MVEL expressions.
     1. Optional custom Java classes.
     1. Optional APIs.
-1. Sets rule evaluation values that can be used in expressions and/or called externally for other needs:  
-    1. Keys, intended for i18n keys.
-    1. Scores, for such things as tree scoring
-    1. Flags
-    1. Actions
-    1. Reasons
+1. Set rule evaluation outcomes for use in expressions and for reference externally:  
+    1. Numbers can be used to calculate and accumulate values, like tree scores or invoice amounts.
+    1. Tags are used for such things as i18n keys or other text values that denote a rule's state or outcome, e.g. "passed" or "insufficient funds".
 1. Easily allows for multiple tenant implementations:
     1. Separate documents for each client, division, department, etc.
+1. Easily control document version
+   1. Store in Mongo DB databases and retrieve based on document ID, version, and active flag.
+   2. Store local copies in project source code and control using the repository's version control.
 
 # Changes
+
+## Version 3.0.0
+
+The changes in version 3 include
+
+ 1. Outcomes have been simplified to allow for greater flexibility, essentially letting the developer designate any outcome tag or outcome number that is needed.
+ 2. To safeguard runtime manipulation and subsequent integrity of the Engine, rule objects implement the FINAL field keyword.  If a rule definition needs to change, a new rule definition must be loaded.
+ 3. Performance tuning for much faster runtimes.
+ 4. The effectiveDate, expirationDate, and active fields have been implemented.
 
 ## Version 2.2.0
 
@@ -41,7 +51,6 @@ There are three changes in version 2.2.0
 
  1. A new rule type was added to support multi-threaded processing.  See Thread rules below for more information.
  1. Uniquely identify document-specific field artifacts using namespaces. 
- 1. Logging was changed to be easier to use.  Now, a logger doesn't need to be injected into the Evaluator.
 
 ## Version 2.1.0
 
@@ -55,27 +64,26 @@ There are two changes in version 2.1.0:
 
 ## Parser
 
-Step 1 is to instantiate a parser.  Included is a parser for JSON using the Jackson parser (com.fasterxml.jackson.core).  Any parser can be implemented, for instance for XML, MongoDB, etc., by writing a custom class that implements the RuleParser interface and uses your preferred parser.  In this example, a JSON file is parsed.  To reference the JSON document format, see verifyRulesDefinitions.JSON in the test.java folder.  See [JSON document format](#json-document-format) below for more information.
+Step 1 is to instantiate a parser.  Included is a parser for JSON using the Jackson parser (com.fasterxml.jackson.core).  Any parser can be implemented, for instance for XML, MongoDB, etc., by writing a simple custom class that implements the RuleParser interface and uses your preferred parser.  In this example, a JSON file is parsed.  To reference the JSON document format, see verifyRulesDefinitions.JSON in the test.java folder.  See [JSON document format](#json-document-format) below for more information.
 
 	RuleJSONParser parser = new RuleJSONParser();
 	parser.loadRules(jsonDefinitionFileName);
 
 ## Definition
 
-In step 2, inject the parser into a class that implements the RuleDefinition interface to load the rule Java objects.
+In step 2, instantiate a RuleDefinition object and pass the parser in the constructor.
 
-	DefaultRuleDefinition rules = new DefaultRuleDefinition();
-	rules.loadRules(parser);
+	DefaultRuleDefinition rules = new DefaultRuleDefinition(parser);
 
 ## Evaluator
 
-In step 3, inject the definitions into the evaluator.
+In step 3, instantiate an evaluator and pass the definition in the constructor.
 
 	RuleEvaluator ruleEvaluator = new RuleEvaluator(rules);
 
 ## Variables
 
-For optional step 4, load any variables to be used by the rule expressions, API handlers, or Java handlers.
+For optional step 4, load any variables to be used by rule expressions, API handlers, or Java handlers.
 
 	TreeMap<String, Object> variables = new TreeMap<String, Object>();
 	Double amount = 11.50;
@@ -93,8 +101,8 @@ Then, call a rule and use the boolean value make a decision in the calling code.
 
 And, get whatever you need before discarding the RuleEvaluator instance.
 
-	String passFlag = ruleEvaluator.getPassFlag(ruleNumber);
-	Double passScore = ruleEvaluator.getCompositePassScore(ruleNumber);
+	String i18n = ruleEvaluator.getTagOutcome(ruleNumber, "i18n");
+	Double score = ruleEvaluator.getNumberOutcome(ruleNumber, "score");
 
 # Application structure
 
@@ -106,7 +114,7 @@ _Calc_ (calculated) rules are where the expressions are evaluated, APIs called, 
 
 ## Composite rules
 
-Composite rules are used to, effectively, build a decision tree using a document.  Composite rules can reference _calc_ rules and other composite rules.  So, it's very simple to support a business requirement that involves as many decisions, or branches, as needed.
+Composite rules are used to, effectively, build a decision tree.  Composite rules can reference _calc_ rules and other composite rules.  So, it's a very simple task to support complex business requirements that involve many rules.
 
 ### And rules
 
@@ -118,15 +126,19 @@ Similar to an _and_ rule, an _or_ rule is a composite rule that references one o
 
 ### All rules
 
-_All_ composite rules are for when all the rules referenced need to be evaluated.  This type of rule is used when variable artifacts need to be set that other rules rely upon.  _All_ rules always return TRUE.  Rules are evaluated in the order listed in the rule's definition.
+_All_ composite rules are for when all the rules need to be evaluated.  This type of rule is used when variable artifacts need to be set that other rules rely upon.  _All_ rules always return TRUE.  Rules are evaluated in the order listed in the rule's definition.
 
 ### Thread rules
 
-_Thread_ composite rules are for when multi-threaded processing is needed.  The _thread_ rule was created to process very large decision trees, but can be used in any circumstances where runtime is an issue.  Like _all_ rules, all the rules referenced will run regardless of individual rule outcome.  The difference is the rules will be separated into blocks of rules with each block being processed in a different thread.  The default block size is 100, but this value can be overridden by calling RuleEvaluator.setThreadBlockSize() method.  Variables set in the threads do not persist after evaluation.  _Thread_ rules return TRUE if any of the referenced rules return TRUE, else FALSE is returned.  Use _thread_ rules when the referenced rules can be processed independently, when processing order does not matter, and when performance is an issue.
+_Thread_ composite rules are for when multi-threaded processing is needed.  The _thread_ rule was created to process very large decision trees, but can be used in any circumstances where runtime is an issue.  Like _all_ rules, all the rules referenced will run regardless of individual rule outcome.  The difference is the rules will be separated into blocks of rules with each block being processed in a different thread.  The default block size is 100, but this value can easily be overridden by calling RuleEvaluator.setThreadBlockSize() method.  Variables set in the threads do not persist after evaluation.  Thread rules return designated outcomes that are accumulated from each runtime thread. Use _thread_ rules when the referenced rules can be processed independently, when processing order does not matter, and when performance is an issue.
 
 ### Not rules
 
-_Not_ rules are _calc_ rules or composite rules referenced in a composite rule that need the inverse to be true.  In other words, a _not_ rule is used when something needs to be not true or not false.  For example, if you need a rule that evaluates if a property is not in the state of Florida, reference as a _not_ rule a rule that returns if the property is in Florida.  If the rule returns FALSE, that is the property is not in Florida, and it is being referenced as a _not_ rule, the evaluation will be TRUE that the property is not in Florida.  _Not_ rules are denoted in composite rules with a minus sign before the rule number.
+_Not_ rules are _calc_ rules or composite rules referenced in a composite rule that need the opposite to be true.  In other words, a _not_ rule is used when something needs to be not true or not false.  For example, if you need a rule that evaluates if a property is not in the state of Florida, reference as a _not_ rule a rule that returns if the property is in Florida.  If the rule returns FALSE, that is the property is not in Florida, and it is being referenced as a _not_ rule, the evaluation will be TRUE that the property is not in Florida.  _Not_ rules are denoted in composite rules with a minus sign before the rule number.
+
+## Work flow
+
+Work flow is essentially doing something based on a set of rules and steps.  Work flow is quite easy to implement in the Syndit Rule Engine.  At the end of a series of rules, merely call Java classes that implement the RuleClassHandler interface to make JDBC database calls, call APIs, etc.  Any transaction initiated in Java that an application needs can be integrated into the Engine.  
 
 # Rule fields
 
@@ -142,69 +154,63 @@ The optional "description" field holds a meaningful description for the rule.
 
 The optional "ruleTags" field is a String array useful in further describing a rule.  The ruleTags values are not used to evaluate rules at runtime.  They are intended for such things as authorization in databases or display control in custom document definition editors. 
 
-There are currently 10 other optional rule fields that can be used to store values associated with either a passing rule, or a failing rule.  These values can be accessed at runtime for whatever is needed.  For example, if a rule fails and the fail message needs to be presented in the UI, retrieve the rule's unique failKey field values, which are intended to hold i18n keys (but really can hold values for whatever scheme is being used).  Note that field values are only available if the rule has been evaluated at runtime. The 10 fields are: 
+Use the optional active, effective date, and expiration date fields to control rule availability.  If a rule is not active, or does not meet the date criteria, it is simply ignored by the Engine
 
- 1. passKeys - ArrayList<String>, intended to hold i18n keys
- 1. failKeys - ArrayList<String> , intended to hold i18n keys
- 1. passScore - An expression that returns a Double, intended for scoring a rule on a pass.  The expression can be a single value or a complex calculation using other rules' failScore values. 
- 1. failScore - An expression that returns a Double, intended for scoring a rule on a fail.  The expression can be a single value or a complex calculation using other rules' failScore values.
- 1. passFlags -  ArrayList<String>, flags for a particular rule's pass
- 1. failFlags - ArrayList<String>, flags for a particular rule's fail 
- 1. passReasons - ArrayList<String>, use to store reasons for a particular rule's pass
- 1. failReasons - ArrayList<String>, use to store reasons for a particular rule's fail
- 1. passActions -  ArrayList<String>, use to store actions for a particular rule's pass
- 1. failActions -  ArrayList<String>, use to store actions for a particular rule's fail
+Composite rules require a "compositeRules" array field that lists the rule numbers of the rules to be evaluated.  The rules are evaluated in the order they appear in the array.
 
-If a field is not to be used, set it to null in the JSON document, or just don't include it in the JSON record.
 
-## Composite Rule fields 
+## Outcomes 
 
-The "compositeRules" field is a comma separated list of calc and composite rules to evaluate.  The Engine evaluates rules in the order listed. 
+Outcomes can be specified for _calc_, _or_, and _and_ rule types.  Merely include an "outcomes" field in the rule's definition.  Exactly like _calc_ expressions, number outcomes expressions can be single numbers or math expressions that can use global variables.  Tag outcomes are accumulated in a String array.  An outcome can include other rules' outcomes by including a "compositeOutcomeRules" field array with a list of rule numbers.  A negative rule number tells the Engine to retrieve the fail outcome for the included rule.  Outcomes are only included if the associated rule has been evaluated at runtime.  After evaluation, outcomes can be accessed by passing the rule number and outcome key to "getTagOutcome" or "getNumberOutcome".  Outcomes flagged as "global" will be added to the Variables collection making them available to other rules' rule and outcome expressions.  See "Accessing outcome values from other rules at runtime" below. 
 
-There are 10 other composite rule fields and these reference calc rule fields, or other composite rule fields, for a given rule number.  Referenced rule fields need not be in the composite field list ("compositeRules" field).  At runtime, the list of composite rule field values can be retrieved, but only for those calc and composite rules that have been evaluated at runtime.  For example, with an _or_ rule, not all rules may have been evaluated.  With the exception of the score fields, all composite fields return a list of field values.  The score fields add the scores from the referenced fields that have been evaluated.  The 10 composite rule fields are:
-
- 1. compositePassKeys - ArrayList<String> 
- 1. compositeFailKeys - ArrayList<String>
- 1. compositePassScore - Double, sums the passScores for those rules listed.
- 1. compositeFailScore - Double, sums the failScores for those rules listed.
- 1. compositePassFlags -  ArrayList<String>
- 1. compositeFailFlags - ArrayList<String> 
- 1. compositePassReasons - ArrayList<String>
- 1. compositeFailReasons - ArrayList<String>
- 1. compositePassActions -  ArrayList<String>
- 1. compositeFailActions -  ArrayList<String>
-
-If a composite field is not to be used, set it to an empty array ([]), or don't include it in the record.
+	"outcomes": [
+			{"result":"pass", "type":"number", "key":"score","expression":"10","global":"true","compositeOutcomeRules":[3,10,5]},
+			{"result":"fail", "type":"number", "key":"score","expression":"-5","global":"true","compositeOutcomeRules":[1,2,-3]},
+			{"result":"pass", "type":"tag", "key":"flag","expression":"11FlagP","global":"false","compositeOutcomeRules":[1,2,3]},
+			{"result":"fail", "type":"tag", "key":"flag","expression":"11FlagF","global":"false","compositeOutcomeRules":[-1,-2,-3]}
+		]
 
 ### Thread Rule fields
 
-_Thread_ rules are considered composite rules because they process all the rules listed in the compositeRules field list.  But, _thread_ rules only have the compositePassScore and compositeFailScore composite fields.  The scoring composite field lists cannot be set, but scores accumulated in the threads can be referenced after evaluation.  Also, none of the field values for the rules called by the rules listed in the compositeRules list are available outside the thread in which they are processed.  So, rules referenced by _thread_ rules must be able to be processed independently of other parent thread rules.  But, variable values in the Variables collection when the thread rule is called are available to the thread rules.
+_Thread_ rules process all the rules listed in the "threadRules" field list.  But, because _thread_ rules are processed in separate threads, global outcomes generated in individual threads are not included in the Engine's Variables collection, they are only available within the thread itself.  So, rules referenced by _thread_ rules must be able to be processed independently of other threads.  But, variable values in the Variables collection when the thread rule is called are available to the thread rules.  To retrieve outcomes from the threads after processing, use the "numberKeys" and "tagkeys" array fields in the thread rule definition.  These fields list the global outcome keys the Engine should accumulate at runtime, and they are included in the Variables collection using the standard outcome variable naming, see "Accessing outcome values from other rules at runtime" below.  For example, to access the "score" value from the collection for a document ID of "CORE-RULES", reference "CORE-RULES_18_score".  After evaluation, access by calling `ruleEvaluator.getNumberOutcome(18, "score")`.  
+
+	"threadRules":
+		[
+			{
+					"ruleType" : "thread",
+					"ruleNumber" : "18",
+					"description" : "Run all rules",
+					"threadRules" : [1, 2, 4, 11, 23, 56, 35, 55, 64, 98, 114, 123, 134, 138, 155],
+					"active" : "true",
+					"numberKeys" : ["score"],
+					"tagKeys" : ["flag"]
+			}
+ 
 
 ## Document definition fields
 
 There are five fields for use in identifying a particular document:
 
- 1. documentId - an ID unique to the particular document.  It is recommended the documentId be set as it is quite useful for identifying various definition documents.  It is also used for field artifact namespace at runtime, and for this reason no spaces should be used.  It is recommended the documentId value be kept to a minimum so variable names are manageable: use the description field when more detail is needed.
+ 1. documentId - an ID unique to the particular document.  A documentId is required as it used for variable namespace at runtime, and for this reason no spaces should be used.  It is recommended the documentId value be kept to a minimum so variable names are manageable.  Don't use the documentId for lengthy descriptions.  Instead use the description field when more detail is needed.
  1. description - this is for providing a meaningful description of the rules in the document.
  1. version - always a good idea to version your documents.
+ 1. active - Set to true or false.  This can be used in document database queries.  For example, select the max version number for active documents.  If a document version is put into production, but needs to be rolled back, merely set the document active flag to false and re-intialize your Engines.
  1. documentTags - document tags are used to further define a document.  Tags can be used for things like authorization in databases or display control in custom rule definition editors.
- 1. startRule - for decision trees, this holds the value of the base rule of the tree.  It is intended for the developers to retrieve at runtime so you don't have to rely on Jira tickets, emails, text messages, etc. to know the base rule to call. 
+ 1. startRule - for very large decision trees, this holds the value of the base rule of the tree.  It is intended for the developers to retrieve at runtime so they don't have to rely on Jira tickets, emails, text messages, etc. to know the starting base rule to call. 
 
 
 
 	"definitionID" : "ORDACC",
 	"description" : "New vehicle order accept tree",
 	"version" : "1.0.17",
+	"active" : true,
 	"documentTags" : ["test","partial"],
 	"startRule" : "14",
 
-## Accessing field artifact values from other rules at runtime
+## Accessing outcome values from other rules at runtime
 
-Each of the rule field artifact values can be accessed by other rules at runtime.  Again, field artifacts are available only if the rule has been evaluated at runtime.  They are added to the variables collection and can be referenced using the documentId, the field name, and the rule number.  For example to access the passReason value for rule 15 in document "CORE_RULES_27", use `CORE_RULES_27_passReason_15`.  To access the compositePassActions list, use `CORE_RULES_27_compositePassActions_15`.  Scores can be used to calculate expressions, like `CORE_RULES_27_passScore_231 * (CORE_RULES_27_passScore_17 / CORE_RULES_27_compositePassScore_31)`.
+Each of the rule outcome values designated as global can be accessed by other rules in their rule expressions.  Global outcome values are available at runtime only if the associated rule has been evaluated up to the point at runtime: if an outcome hasn't been evaluated yet, it won't be available.  Global outcomes are added to the Variables collection and can be referenced using the documentId, the rule number, and the outcome key.  For example to access an outcome with key "fee" for rule 15 in document "CORE-RULES", use `CORE-RULES_15_fee`.  Number outcomes can be used to calculate expressions, like `CORE-RULES_27_pctFee * (CORE-RULES_17_sumTransAmt / CORE-RULES_6_cumDays)`.  Expressions using can use tag outcomes to check for a particular tag value: `CORE-RULES_34_flag.contains('alert')`.
 
-## Fields not yet implemented
-
-The effectiveDate, expirationDate, and active fields are not yet implemented.
 
 # JSON document format
 
@@ -393,19 +399,22 @@ If an API or a Java class needs to be used, simply create a new handler that imp
 				"ruleNumber" : "117",
 				"description" : "Get forecast for today",
 				"handlerClass" : "com.yourcompany.handlers.CallWeatherServiceAPI",
-				"passFlag" : ["Sunny"],
-				"failFlag" : ["Rain"],
+				"outcomes": [
+					{"result":"pass", "type":"tag", "key":"forecast","expression":"sunny"},
+					{"result":"fail", "type":"tag", "key":"forecast","expression":"rain"}
+				]
+			}
 
 
 # Validation
 
-The Engine does not prevent mistakes in the definition document, like recursive rules (a rule calling itself, which, by the way, is quite obvious during document definition testing).  The code is purposefully kept simple, with the intelligence in the document definition.  It is very easy to perform automated testing, particularly because any rule can be called directly.  So, be sure to create and regularly use test scripts before going to UAT, and most certainly before PROD. 
+The Engine does not prevent mistakes in the definition document, like recursive rules (a rule calling itself, which, by the way, is quite obvious during document definition testing).  There is structure validation, like checking to make sure only calc rules are in the calcRule document array.  But, the code is purposefully kept simple, with the intelligence in the document definition.  It is very easy to perform automated testing, particularly because any rule can be called directly.  So, be sure to create and regularly use test scripts before going to UAT, and most certainly before PROD. 
 
 # Usage tips
 
 ## Keep it simple
 
-The Syndit Rule Engine code is intended to be very simple, with the definition document providing the intelligence.  Over the years, the core Engine has not changed, only fields have been added, like passFlag and passScore.  So, avoid the temptation of coding changes to the Engine's functionality when a little bit of creativity with the definition document or a new handler can provide the solution.  
+The Syndit Rule Engine code is intended to be very simple, with the definition document providing the intelligence.  Over the years, the core Engine has not changed.  So, avoid the temptation of coding changes to the Engine's functionality when a little bit of creativity with the definition document or a new handler can provide the solution.  
 
 ## Document structure
 
@@ -445,11 +454,11 @@ The Engine's footprint is quite small.  Use as many implementations of the Engin
 
 ### Thread safe
 
-It takes time to parse rule documents, but the RuleDocument object is thread safe, so instances can be stored in application cache.  Do not store a RuleEvaluator object instance as it is not thread safe.
+It takes time to parse rule documents, but the rule document object is thread safe, so instances can be stored in application cache.  Rule evaluator instances are not thread safe.
 
 ### Expressions
 
-MVEL is the expression language used by the Engine.  At runtime, it takes time for each type of expression to initialize, so if milliseconds are critical to your SLA, keep the RuleEvaluator instance in memory for a given transaction's processing and, be sure to reset if variables need to be refreshed between calls.  But, Rule Evaluators are not thread safe so be mindful of this when saving an object instance.
+MVEL is the expression language used by the Engine.  At runtime, it takes time for each type of expression to initialize, so if milliseconds are critical to your SLA, keep the rule evaluator instance in memory for a given transaction's processing and, be sure to reset if variables need to be refreshed between calls.  But, rule evaluators are not thread safe so be mindful of this when saving an object instance.  Another technique is to evaluate a rule that does not set global variables as part of a server's startup.  
 
 ## Logging
 

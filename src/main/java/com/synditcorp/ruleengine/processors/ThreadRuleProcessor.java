@@ -30,9 +30,7 @@ public class ThreadRuleProcessor extends RecursiveTask<ThreadResults> {
 	private ArrayList<String> numberKeys;
 	private ArrayList<String> tagKeys;
 	private RuleEvaluator ruleEvaluator;
-	
-	
-//	public ThreadRuleProcessor(ArrayList<Integer> block, RuleEvaluator ruleEvaluator) {
+
 	public ThreadRuleProcessor(ThreadProcObjects objects) {
 		this.threadRuleNumber = objects.getThreadRuleNumber();
 		this.block = objects.getBlock();
@@ -54,27 +52,30 @@ public class ThreadRuleProcessor extends RecursiveTask<ThreadResults> {
 				try {
 					ruleEvaluator.evaluateRule(ruleNumber);
 				} catch (NoRuleEvaluatedException e) {
-					LOGGER.info("No rule evaluated exception in thread rule " +  threadRuleNumber + " for rule number " + ruleNumber + ".");
+					LOGGER.info("No rule evaluated exception in thread rule " + threadRuleNumber + " for rule number "
+							+ ruleNumber + ".");
 					continue;
 				}
-				
+
 				Iterator<String> numberIterator = numberKeys.iterator();
 				while (numberIterator.hasNext()) {
 					String key = numberIterator.next();
 					Double value = ruleEvaluator.getNumberOutcome(ruleNumber, key);
-					if(value == null) continue;
+					if (value == null)
+						continue;
 					threadResults.setNumberOutcome(key, value);
 				}
 				Iterator<String> tagIterator = tagKeys.iterator();
 				while (tagIterator.hasNext()) {
 					String key = tagIterator.next();
 					ArrayList<String> value = ruleEvaluator.getTagOutcome(ruleNumber, key);
-					if(value == null) continue;
+					if (value == null)
+						continue;
 					threadResults.setTagOutcome(key, value);
 				}
-				
+
 			} catch (NullPointerException e) {
-				LOGGER.info("Null pointer exception when evaluating " +  ruleNumber + " in Thread rule.");
+				LOGGER.info("Null pointer exception when evaluating " + ruleNumber + " in Thread rule.");
 				continue;
 			} catch (Exception e) {
 				LOGGER.info("Exception in thread when evaluating rule number " + ruleNumber + ": " + e);
@@ -122,6 +123,5 @@ public class ThreadRuleProcessor extends RecursiveTask<ThreadResults> {
 //		return threadResults;
 //
 //	}
-	
-	
+
 }
