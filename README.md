@@ -142,13 +142,12 @@ Work flow is essentially doing something based on a set of rules and steps.  Wor
 
 # Rule fields
 
-There are 3 required fields:
+There are 2 required fields:
 
  1. ruleType - either "calc", "or", "and", "all", or "thread".
  1. ruleNumber - an Integer unique to the particular rule JSON document.
- 1. handlerClass - is a Java class that implements RuleClassHandler and evaluates the MVEL expression, or makes an API or Java class call.  The handlerClass to evaluate MVEL expressions is `com.synditcorp.ruleengine.handlers.ExpressionRuleHandler`.
-
-If a MVEL expression is to be used, then an "expression" field is required.
+ 
+ For _calc_ rules, a handlerClass is required.  A handlerClass is a Java class that implements RuleClassHandler and evaluates the MVEL expression, or makes an API or Java class call.  The handlerClass to evaluate MVEL expressions is `com.synditcorp.ruleengine.handlers.ExpressionRuleHandler`.  If a MVEL expression is to be used, then an "expression" field is required.
 
 The optional "description" field holds a meaningful description for the rule. 
 
@@ -161,7 +160,7 @@ Composite rules require a "compositeRules" array field that lists the rule numbe
 
 ## Outcomes 
 
-Outcomes can be specified for _calc_, _or_, and _and_ rule types.  Merely include an "outcomes" field in the rule's definition.  Exactly like _calc_ expressions, number outcomes expressions can be single numbers or math expressions that can use global variables.  Tag outcomes are accumulated in a String array.  An outcome can include other rules' outcomes by including a "compositeOutcomeRules" field array with a list of rule numbers.  A negative rule number tells the Engine to retrieve the fail outcome for the included rule.  Outcomes are only included if the associated rule has been evaluated at runtime.  After evaluation, outcomes can be accessed by passing the rule number and outcome key to "getTagOutcome" or "getNumberOutcome".  Outcomes flagged as "global" will be added to the Variables collection making them available to other rules' rule and outcome expressions.  See "Accessing outcome values from other rules at runtime" below. 
+Outcomes can be specified for _calc_, _or_, and _and_ rule types.  Merely include an "outcomes" field in the rule's definition.  Exactly like _calc_ expressions, number outcomes expressions can be single numbers or math expressions that can use global variables.  An outcome can include other rules' outcomes by including a "compositeOutcomeRules" field array with a list of rule numbers.  A negative rule number tells the Engine to retrieve the fail outcome for the included rule.  Number outcomes are summed.  Tag outcomes are accumulated in a String array.  Outcomes are only included if the associated rule has been evaluated at runtime.  After evaluation, outcomes can be accessed by passing the rule number and outcome key to "getTagOutcome" or "getNumberOutcome".  Outcomes flagged as "global" will be added to the Variables collection so they are available to other rules' rule and outcome expressions.  See "Accessing outcome values from other rules at runtime" below. 
 
 	"outcomes": [
 			{"result":"pass", "type":"number", "key":"score","expression":"10","global":"true","compositeOutcomeRules":[3,10,5]},
@@ -172,7 +171,7 @@ Outcomes can be specified for _calc_, _or_, and _and_ rule types.  Merely includ
 
 ### Thread Rule fields
 
-_Thread_ rules process all the rules listed in the "threadRules" field list.  But, because _thread_ rules are processed in separate threads, global outcomes generated in individual threads are not included in the Engine's Variables collection, they are only available within the thread itself.  So, rules referenced by _thread_ rules must be able to be processed independently of other threads.  But, variable values in the Variables collection when the thread rule is called are available to the thread rules.  To retrieve outcomes from the threads after processing, use the "numberKeys" and "tagkeys" array fields in the thread rule definition.  These fields list the global outcome keys the Engine should accumulate at runtime, and they are included in the Variables collection using the standard outcome variable naming, see "Accessing outcome values from other rules at runtime" below.  For example, to access the "score" value from the collection for a document ID of "CORE-RULES", reference "CORE-RULES_18_score".  After evaluation, access by calling `ruleEvaluator.getNumberOutcome(18, "score")`.  
+_Thread_ rules process all the rules listed in the "threadRules" field list.  But, because _thread_ rules are processed in separate threads, global outcomes generated in individual threads are not included in the Engine's Variables collection, they are only available within the thread itself.  So, rules referenced by _thread_ rules must be able to be processed independently of other threads.  But, variables in the Variables collection when the _thread_ rule is called are available to the individual threads.  To retrieve outcomes from the threads after processing, use the "numberKeys" and "tagkeys" array fields in the _thread_ rule definition.  These fields list the global outcome keys the Engine should accumulate from the individual threads at runtime.  These accumulated outcomes are included in the Variables collection using the standard outcome variable naming, see "Accessing outcome values from other rules at runtime" below.  For example, to access the "score" number value from the collection for a document ID of "CORE-RULES", reference "CORE-RULES_18_score".  After evaluation, access by calling `ruleEvaluator.getNumberOutcome(18, "score")`.  
 
 	"threadRules":
 		[
@@ -271,7 +270,8 @@ Reference this handler class in main document calc rules.  The "expression" fiel
 
 Then, create an instance of the Engine with common rules and add this instance to the main Engine instance's variables collection.  
 
-	mainInstance.getVariables().put("commonRuleHandler", commonInstance);
+	myVariablesMap.put("commonRuleHandler", commonInstance);
+	mainInstance.setVariables(myVariablesMap);
 
 Keep in mind the documentId field value is used for variable namespace to keep the variable artifact names unique across the common and use-specific documents.
 

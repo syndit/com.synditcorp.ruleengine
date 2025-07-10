@@ -21,7 +21,8 @@ import java.util.TreeMap;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.mvel2.PropertyAccessException;
+
 import com.synditcorp.ruleengine.beans.BaseOutcome;
 import com.synditcorp.ruleengine.beans.CalcRule;
 import com.synditcorp.ruleengine.beans.CompositeRule;
@@ -31,6 +32,7 @@ import com.synditcorp.ruleengine.beans.ThreadRule;
 import com.synditcorp.ruleengine.exceptions.DuplicateKeyException;
 import com.synditcorp.ruleengine.exceptions.EngineSafeguardException;
 import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
+import com.synditcorp.ruleengine.exceptions.RuleEvaluationException;
 import com.synditcorp.ruleengine.handlers.ExpressionHandler;
 import com.synditcorp.ruleengine.interfaces.Outcome;
 import com.synditcorp.ruleengine.interfaces.Rule;
@@ -51,7 +53,6 @@ public class RuleEvaluator implements Cloneable {
 	private RuleDefinition ruleDefinition;
 	protected TreeMap<Integer, Boolean> cache = new TreeMap<Integer, Boolean>();
 	protected TreeMap<String, Object> variables = new TreeMap<String, Object>();
-	private ArrayList<Integer> runtineExpressionFails = new ArrayList<Integer>(1000);
 	private int threadBlockSize = 100;
 	private ForkJoinPool pool = null;
 
@@ -211,18 +212,6 @@ public class RuleEvaluator implements Cloneable {
 		if (!this.cache.isEmpty())
 			throw new EngineSafeguardException("Cache contains evaulation results.  Use 'reset' to clear results.");
 		this.cache.putAll(cache);
-	}
-
-	/**
-	 * Get the list of rules whose expressions failed at runtime.  This is used for troubleshooting 
-	 * runtime expression evaluation.
-	 * 
-	 * @return an ArrayList of rule number expression that failed
-	 */
-	public ArrayList<Integer> getRuntimeExpressionFails() {
-		ArrayList<Integer> copyOf = new ArrayList<Integer>();
-		copyOf.addAll(this.runtineExpressionFails);
-		return copyOf;
 	}
 
 	/**
@@ -620,11 +609,6 @@ public class RuleEvaluator implements Cloneable {
 		cache.clear();
 	}
 
-	private void addExpressionFail(Integer ruleNumber) {
-		if (!runtineExpressionFails.contains(ruleNumber))
-			runtineExpressionFails.add(ruleNumber);
-	}
-
 	private Boolean processCalcRule(Integer ruleNumber) throws Exception {
 
 		TimeTrack t = new TimeTrack();
@@ -638,10 +622,9 @@ public class RuleEvaluator implements Cloneable {
 		} catch (NoRuleEvaluatedException e) {
 			LOGGER.info("Unable to process rule expression: \"" + expression + "\", reason: " + e);
 			throw e;
-		} catch (Exception e) {
+		} catch (PropertyAccessException e) {
 			LOGGER.info("Unable to process rule expression: \"" + expression + "\", reason: " + e);
-			addExpressionFail(ruleNumber);
-			result = false;
+			throw new RuleEvaluationException("Unable to process rule expression: \"" + expression + "\", reason: " + e);
 		}
 
 		addToCache(ruleNumber, result);

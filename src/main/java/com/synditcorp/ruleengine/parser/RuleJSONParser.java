@@ -24,7 +24,7 @@ import com.synditcorp.ruleengine.interfaces.RuleParser;
  */
 public class RuleJSONParser implements RuleParser {
 
-	BaseRules rules;
+	private BaseRules rules;
 
 	/**
 	 * Pass the JSON file name. See test.java.verifyRulesDefinitions.json for
