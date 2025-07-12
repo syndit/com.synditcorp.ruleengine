@@ -16,17 +16,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.synditcorp.ruleengine.beans.AllRule;
-import com.synditcorp.ruleengine.beans.AndRule;
-import com.synditcorp.ruleengine.beans.BaseRules;
-import com.synditcorp.ruleengine.beans.CalcRule;
-import com.synditcorp.ruleengine.beans.OrRule;
-import com.synditcorp.ruleengine.beans.ThreadRule;
 import com.synditcorp.ruleengine.exceptions.NoRuleFoundException;
 import com.synditcorp.ruleengine.exceptions.OutcomeKeyException;
-import com.synditcorp.ruleengine.interfaces.Outcome;
-import com.synditcorp.ruleengine.interfaces.Rule;
-import com.synditcorp.ruleengine.interfaces.RuleDefinition;
 import com.synditcorp.ruleengine.interfaces.RuleParser;
 
 /**
@@ -36,12 +27,12 @@ import com.synditcorp.ruleengine.interfaces.RuleParser;
  * rules, this class is primarily to be used by the rule engine evaluator and
  * shouldn't be accessed directly.
  */
-public class DefaultRuleDefinition implements RuleDefinition {
+public class RuleDefinition {
 
-	private final BaseRules baseRules;
+	private final Rules baseRules;
 	private final TreeMap<Integer, Rule> aggregateRules = new TreeMap<Integer, Rule>();
 
-	public DefaultRuleDefinition(RuleParser parser) throws Exception {
+	public RuleDefinition(RuleParser parser) throws Exception {
 		this.baseRules = parser.getRules();
 		setToAggregateRules();
 	}
@@ -50,8 +41,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 * Returns the ID of the rules definition. Definition is not used at runtime to
 	 * evaluate rules.
 	 */
-	@Override
-	public String getDocumentId() {
+	protected String getDocumentId() {
 		return baseRules.getDocumentId();
 	}
 
@@ -59,8 +49,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 * Returns the description of the rules definition. Description is not used at
 	 * runtime to evaluate rules.
 	 */
-	@Override
-	public String getDescription() {
+	protected String getDescription() {
 		return baseRules.getDescription();
 	}
 
@@ -68,8 +57,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 * Returns the version of the rules definition. Version is not used at runtime
 	 * to evaluate rules.
 	 */
-	@Override
-	public String getVersion() {
+	protected String getVersion() {
 		return baseRules.getVersion();
 	}
 
@@ -77,8 +65,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 * Returns the version of the rules definition. Version is not used at runtime
 	 * to evaluate rules.
 	 */
-	@Override
-	public Boolean getActive() {
+	protected Boolean getActive() {
 		return baseRules.getActive();
 	}
 
@@ -88,8 +75,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 * authorization in databases or display control in custom rule definition
 	 * editors
 	 */
-	@Override
-	public ArrayList<String> getDocumentTags() {
+	protected ArrayList<String> getDocumentTags() {
 		return baseRules.getDocumentTags();
 	}
 
@@ -100,8 +86,7 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 * This is optional: any rule can be called directly. This is not used when
 	 * evaluating rules at runtime.
 	 */
-	@Override
-	public Integer getStartRule() {
+	protected Integer getStartRule() {
 		return baseRules.getStartRule();
 	}
 
@@ -110,16 +95,14 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	 * evaluating rules at runtime. Tags can be used for things like authorization
 	 * in databases or display control in custom rule definition editors
 	 */
-	@Override
-	public ArrayList<String> getRuleTags(Integer ruleNumber) throws Exception {
+	protected ArrayList<String> getRuleTags(Integer ruleNumber) throws Exception {
 		return getRule(ruleNumber).getRuleTags();
 	}
 
 	/**
 	 * Returns "true" if the rule is a "base" rule
 	 */
-	@Override
-	public void isRule(Integer ruleNumber) throws NoRuleFoundException {
+	protected void isRule(Integer ruleNumber) throws NoRuleFoundException {
 		if (!aggregateRules.containsKey(ruleNumber))
 			throw new NoRuleFoundException(ruleNumber.toString());
 	}
@@ -127,48 +110,42 @@ public class DefaultRuleDefinition implements RuleDefinition {
 	/**
 	 * Returns "true" if the rule is a "calc" rule
 	 */
-	@Override
-	public boolean isCalcRule(Integer ruleNumber) throws Exception {
+	protected boolean isCalcRule(Integer ruleNumber) throws Exception {
 		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("CalcRule");
 	}
 
 	/**
 	 * Returns "true" if the rule is an "or" rule
 	 */
-	@Override
-	public boolean isOrRule(Integer ruleNumber) throws Exception {
+	protected boolean isOrRule(Integer ruleNumber) throws Exception {
 		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("OrRule");
 	}
 
 	/**
 	 * Returns "true" if the rule is an "and" rule
 	 */
-	@Override
-	public boolean isAndRule(Integer ruleNumber) throws Exception {
+	protected boolean isAndRule(Integer ruleNumber) throws Exception {
 		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("AndRule");
 	}
 
 	/**
 	 * Returns "true" if the rule is an "all" rule
 	 */
-	@Override
-	public boolean isAllRule(Integer ruleNumber) throws Exception {
+	protected boolean isAllRule(Integer ruleNumber) throws Exception {
 		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("AllRule");
 	}
 
 	/**
 	 * Returns "true" if the rule is a "thread" rule
 	 */
-	@Override
-	public boolean isThreadRule(Integer ruleNumber) throws Exception {
+	protected boolean isThreadRule(Integer ruleNumber) throws Exception {
 		return aggregateRules.get(ruleNumber).getClass().getSimpleName().equals("ThreadRule");
 	}
 
 	/**
 	 * Returns a Rule object for a particular rule number
 	 */
-	@Override
-	public Rule getRule(Integer ruleNumber) throws Exception {
+	protected Rule getRule(Integer ruleNumber) throws Exception {
 
 		return this.aggregateRules.get(ruleNumber);
 

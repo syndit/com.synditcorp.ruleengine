@@ -9,27 +9,56 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.synditcorp.ruleengine.beans;
+package com.synditcorp.ruleengine;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AndRule extends CompositeRule {
+public class ThreadProcObjects {
+
+	private final Integer threadRuleNumber;
+	private final RuleEvaluator ruleEvaluator;
+	private final ArrayList<Integer> block;
+	private final ArrayList<String> numberKeys;
+	private final ArrayList<String> tagKeys;
 
 	@JsonCreator
-	public AndRule(@JsonProperty("ruleNumber") Integer ruleNumber, @JsonProperty("ruleType") String ruleType,
-			@JsonProperty("ruleTags") ArrayList<String> ruleTags, @JsonProperty("description") String description,
-			@JsonProperty("active") Boolean active, @JsonProperty("expirationDate") Date expirationDate,
-			@JsonProperty("effecitveDate") Date effectiveDate,
-			@JsonProperty("outcomes") ArrayList<BaseOutcome> outcomes,
-			@JsonProperty("compositeRules") ArrayList<Integer> compositeRules) {
+	public ThreadProcObjects(
+			@JsonProperty("threadRuleNumber") Integer threadRuleNumber,
+			@JsonProperty("ruleEvaluator") RuleEvaluator ruleEvaluator,
+			@JsonProperty("block") ArrayList<Integer> block,
+			@JsonProperty("numberKeys") ArrayList<String> numberKeys,
+			@JsonProperty("tagKeys") ArrayList<String> tagKeys
+		) {
+		
+		this.threadRuleNumber = threadRuleNumber;
+		this.ruleEvaluator = ruleEvaluator;
+		this.block = block;
+		this.numberKeys = numberKeys;
+		this.tagKeys = tagKeys;
 
-		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes,
-				compositeRules);
+	};
 
+	protected Integer getThreadRuleNumber() {
+		return threadRuleNumber;
+	}
+
+	protected RuleEvaluator getRuleEvaluator() {
+		return ruleEvaluator;
+	}
+
+	protected ArrayList<Integer> getBlock() {
+		return block;
+	}
+
+	protected ArrayList<String> getNumberKeys() {
+		return numberKeys;
+	}
+
+	protected ArrayList<String> getTagKeys() {
+		return tagKeys;
 	}
 
 }

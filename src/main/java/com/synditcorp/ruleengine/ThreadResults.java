@@ -9,7 +9,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.synditcorp.ruleengine.beans;
+package com.synditcorp.ruleengine;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -27,7 +27,7 @@ public class ThreadResults {
 		return numberOutcomes;
 	}
 
-	public void setNumberOutcome(String key, Double value) {
+	protected void setNumberOutcome(String key, Double value) {
 
 		if (value == null)
 			return;
@@ -47,7 +47,7 @@ public class ThreadResults {
 
 	}
 
-	public void setTagOutcome(String key, ArrayList<String> values) {
+	protected void setTagOutcome(String key, ArrayList<String> values) {
 
 		if (values == null)
 			return;

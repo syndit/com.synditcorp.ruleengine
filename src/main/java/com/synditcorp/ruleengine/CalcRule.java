@@ -9,19 +9,40 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.synditcorp.ruleengine.interfaces;
+package com.synditcorp.ruleengine;
 
 import java.util.ArrayList;
+import java.util.Date;
 
-public interface Outcome {
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-	public String getKey();
-	public String getResult();
-	public String getType();
-	public Boolean getGlobal();
-	public void setVariableName(String variableName);
-	public String getVariableName();
-	public String getExpression();
-	public ArrayList<Integer> getCompositeOutcomeRules();
+public class CalcRule extends Rule {
+
+	private final String expression;
+	private final String handlerClass;
+
+	@JsonCreator
+	public CalcRule(@JsonProperty("ruleNumber") Integer ruleNumber, @JsonProperty("ruleType") String ruleType,
+			@JsonProperty("ruleTags") ArrayList<String> ruleTags, @JsonProperty("description") String description,
+			@JsonProperty("active") Boolean active, @JsonProperty("expirationDate") Date expirationDate,
+			@JsonProperty("effectiveDate") Date effectiveDate,
+			@JsonProperty("outcomes") ArrayList<Outcome> outcomes, @JsonProperty("expression") String expression,
+			@JsonProperty("handlerClass") String handlerClass) {
+
+		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes);
+
+		this.expression = expression;
+		this.handlerClass = handlerClass;
+
+	}
+
+	protected String getExpression() {
+		return expression;
+	}
+
+	protected String getHandlerClass() {
+		return this.handlerClass;
+	}
 
 }

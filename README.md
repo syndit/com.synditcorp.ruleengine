@@ -263,12 +263,12 @@ Rules can reference other document rules.  For instance, rules can be organized 
 		}
 	}
 	
-Reference this handler class in main document calc rules.  The "expression" field contains the rule number in the common rule document.
+Reference this handler class in main document calc rules.  The "expression" field contains the rule number to evaluate in the common rule document.
 
 	"handlerClass" : "com.yourcompany.handlers.CommonRuleHandler",
 	"expression" : "23"
 
-Then, create an instance of the Engine with common rules and add this instance to the main Engine instance's variables collection.  
+Then, create an instance of the Engine with common rules and add this instance to the main Engine instance's variables collection.  Do not set variables in the instance because the main Engine's variables will replace the instance's variables at runtime.
 
 	myVariablesMap.put("commonRuleHandler", commonInstance);
 	mainInstance.setVariables(myVariablesMap);

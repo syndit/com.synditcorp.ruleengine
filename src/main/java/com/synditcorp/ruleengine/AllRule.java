@@ -9,7 +9,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.synditcorp.ruleengine.beans;
+package com.synditcorp.ruleengine;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,32 +17,19 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CalcRule extends BaseRule {
-
-	private final String expression;
-	private final String handlerClass;
+public class AllRule extends CompositeRule {
 
 	@JsonCreator
-	public CalcRule(@JsonProperty("ruleNumber") Integer ruleNumber, @JsonProperty("ruleType") String ruleType,
+	public AllRule(@JsonProperty("ruleNumber") Integer ruleNumber, @JsonProperty("ruleType") String ruleType,
 			@JsonProperty("ruleTags") ArrayList<String> ruleTags, @JsonProperty("description") String description,
 			@JsonProperty("active") Boolean active, @JsonProperty("expirationDate") Date expirationDate,
-			@JsonProperty("effecitveDate") Date effectiveDate,
-			@JsonProperty("outcomes") ArrayList<BaseOutcome> outcomes, @JsonProperty("expression") String expression,
-			@JsonProperty("handlerClass") String handlerClass) {
+			@JsonProperty("effectiveDate") Date effectiveDate,
+			@JsonProperty("outcomes") ArrayList<Outcome> outcomes,
+			@JsonProperty("compositeRules") ArrayList<Integer> compositeRules) {
 
-		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes);
+		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes,
+				compositeRules);
 
-		this.expression = expression;
-		this.handlerClass = handlerClass;
-
-	}
-
-	public String getExpression() {
-		return expression;
-	}
-
-	public String getHandlerClass() {
-		return this.handlerClass;
 	}
 
 }

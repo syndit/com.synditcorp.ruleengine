@@ -9,7 +9,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.synditcorp.ruleengine.beans;
+package com.synditcorp.ruleengine;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,10 +20,8 @@ import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.synditcorp.ruleengine.interfaces.Outcome;
-import com.synditcorp.ruleengine.interfaces.Rule;
 
-abstract class BaseRule implements Rule {
+public class Rule {
 
 	private final Integer ruleNumber;
 	private final String ruleType;
@@ -32,25 +30,25 @@ abstract class BaseRule implements Rule {
 	private final Boolean active;
 	private final Date expirationDate;
 	private final Date effectiveDate;
-	private final ArrayList<BaseOutcome> outcomes;
+	private final ArrayList<Outcome> outcomes;
 
-	private TreeMap<String, BaseOutcome> passNumbers;
-	private TreeMap<String, BaseOutcome> failNumbers;
-	private TreeMap<String, BaseOutcome> passTags;
-	private TreeMap<String, BaseOutcome> failTags;
+	private TreeMap<String, Outcome> passNumbers;
+	private TreeMap<String, Outcome> failNumbers;
+	private TreeMap<String, Outcome> passTags;
+	private TreeMap<String, Outcome> failTags;
 
 	private static List<String> validRuleTypes = List.of("calc", "and", "or", "all", "thread");
 	private static List<String> canHaveOutcomes = List.of("calc", "and", "or");
 
 	@JsonCreator
-	public BaseRule(@JsonProperty("ruleNumber") Integer ruleNumber, 
+	public Rule(@JsonProperty("ruleNumber") Integer ruleNumber, 
 			@JsonProperty("ruleType") String ruleType,
 			@JsonProperty("ruleTags") ArrayList<String> ruleTags, 
 			@JsonProperty("description") String description,
 			@JsonProperty("active") Boolean active, 
 			@JsonProperty("expirationDate") Date expirationDate,
-			@JsonProperty("effecitveDate") Date effectiveDate,
-			@JsonProperty("outcomes") ArrayList<BaseOutcome> outcomes) {
+			@JsonProperty("effectiveDate") Date effectiveDate,
+			@JsonProperty("outcomes") ArrayList<Outcome> outcomes) {
 
 		this.ruleNumber = validateRuleNumber(ruleNumber);
 		this.ruleType = validateRuleType(ruleType);
@@ -71,13 +69,11 @@ abstract class BaseRule implements Rule {
 		return lowerCaseRuleType;
 	}
 
-	@Override
-	public String getRuleType() {
+	protected String getRuleType() {
 		return this.ruleType;
 	}
 
-	@Override
-	public ArrayList<String> getRuleTags() {
+	protected ArrayList<String> getRuleTags() {
 		return this.ruleTags;
 	}
 
@@ -87,110 +83,96 @@ abstract class BaseRule implements Rule {
 		return ruleNumber;
 	}
 
-	@Override
-	public Integer getRuleNumber() {
+	protected Integer getRuleNumber() {
 		return this.ruleNumber;
 	}
 
-	@Override
-	public String getDescription() {
+	protected String getDescription() {
 		return this.description;
 	}
 
-	@Override
-	public Boolean getActive() {
+	protected Boolean getActive() {
 		return this.active;
 	}
 
-	@Override
-	public Date getEffectiveDate() {
+	protected Date getEffectiveDate() {
 		return this.effectiveDate;
 	}
 
-	@Override
-	public Date getExpirationDate() {
+	protected Date getExpirationDate() {
 		return this.expirationDate;
 	}
 
-	private void canHaveOutcomes(String ruleType, ArrayList<BaseOutcome> outcomes) throws IllegalArgumentException {
+	private void canHaveOutcomes(String ruleType, ArrayList<Outcome> outcomes) throws IllegalArgumentException {
 		if (!canHaveOutcomes.contains(ruleType) && outcomes != null)
 			throw new IllegalArgumentException("'" + this.ruleType + "' rule types cannot have outcomes");
 	}
 
-	@Override
-	public ArrayList<BaseOutcome> getOutcomes() {
+	protected ArrayList<Outcome> getOutcomes() {
 		return this.outcomes;
 	}
 
-	@Override
-	public Outcome getPassNumberOutcome(String key) {
+	protected Outcome getPassNumberOutcome(String key) {
 		if (passNumbers == null)
 			return null;
 		return (Outcome) passNumbers.get(key);
 
 	}
 
-	@Override
-	public Outcome getFailNumberOutcome(String key) {
+	protected Outcome getFailNumberOutcome(String key) {
 		if (failNumbers == null)
 			return null;
 		return failNumbers.get(key);
 
 	}
 
-	@Override
-	public Outcome getPassTagOutcome(String key) {
+	protected Outcome getPassTagOutcome(String key) {
 		if (passTags == null)
 			return null;
 		return passTags.get(key);
 
 	}
 
-	@Override
-	public Outcome getFailTagOutcome(String key) {
+	protected Outcome getFailTagOutcome(String key) {
 		if (failTags == null)
 			return null;
 		return failTags.get(key);
 
 	}
 
-	@Override
-	public ArrayList<BaseOutcome> getPassNumberOutcomes() {
+	protected ArrayList<Outcome> getPassNumberOutcomes() {
 		if (passNumbers == null)
 			return null;
 
-		return new ArrayList<BaseOutcome>(passNumbers.values());
+		return new ArrayList<Outcome>(passNumbers.values());
 
 	};
 
-	@Override
-	public ArrayList<BaseOutcome> getFailNumberOutcomes() {
+	protected ArrayList<Outcome> getFailNumberOutcomes() {
 		if (failNumbers == null)
 			return null;
-		ArrayList<BaseOutcome> list = new ArrayList<BaseOutcome>();
-		for (Map.Entry<String, BaseOutcome> entry : failNumbers.entrySet()) {
+		ArrayList<Outcome> list = new ArrayList<Outcome>();
+		for (Map.Entry<String, Outcome> entry : failNumbers.entrySet()) {
 			list.add(entry.getValue());
 		}
 		return list;
 	};
 
-	@Override
-	public ArrayList<BaseOutcome> getPassTagOutcomes() {
+	protected ArrayList<Outcome> getPassTagOutcomes() {
 		if (passTags == null)
 			return null;
-		ArrayList<BaseOutcome> list = new ArrayList<BaseOutcome>();
-		for (Map.Entry<String, BaseOutcome> entry : passTags.entrySet()) {
+		ArrayList<Outcome> list = new ArrayList<Outcome>();
+		for (Map.Entry<String, Outcome> entry : passTags.entrySet()) {
 			list.add(entry.getValue());
 		}
 		return list;
 	};
 
-	@Override
-	public ArrayList<BaseOutcome> getFailTagOutcomes() {
+	protected ArrayList<Outcome> getFailTagOutcomes() {
 		if (failTags == null)
 			return null;
-		ArrayList<BaseOutcome> list = new ArrayList<BaseOutcome>();
-		for (Map.Entry<String, BaseOutcome> entry : failTags.entrySet()) {
+		ArrayList<Outcome> list = new ArrayList<Outcome>();
+		for (Map.Entry<String, Outcome> entry : failTags.entrySet()) {
 			list.add(entry.getValue());
 		}
 		return list;
@@ -200,38 +182,38 @@ abstract class BaseRule implements Rule {
 	 * For runtime performance, put outcome types into separate Maps when loading
 	 * definitions
 	 */
-	public void setOutcomesToCategories(String documentId) throws Exception {
+	protected void setOutcomesToCategories(String documentId) throws Exception {
 
 		if (outcomes == null)
 			return;
 
-		Iterator<BaseOutcome> iterator = outcomes.iterator();
+		Iterator<Outcome> iterator = outcomes.iterator();
 		while (iterator.hasNext()) {
 
-			BaseOutcome outcome = (BaseOutcome) iterator.next();
+			Outcome outcome = (Outcome) iterator.next();
 			outcome.setVariableName(documentId, this.ruleNumber);
 
 			if (outcome.getType().equalsIgnoreCase("tag") && outcome.getResult().equalsIgnoreCase("pass")) {
 				if (this.passTags == null)
-					passTags = new TreeMap<String, BaseOutcome>();
+					passTags = new TreeMap<String, Outcome>();
 				this.passTags.put(outcome.getKey(),outcome);
 				continue;
 			}
 			if (outcome.getType().equalsIgnoreCase("tag") && outcome.getResult().equalsIgnoreCase("fail")) {
 				if (this.failTags == null)
-					failTags = new TreeMap<String, BaseOutcome>();
+					failTags = new TreeMap<String, Outcome>();
 				this.failTags.put(outcome.getKey(), outcome);
 				continue;
 			}
 			if (outcome.getType().equalsIgnoreCase("number") && outcome.getResult().equalsIgnoreCase("pass")) {
 				if (this.passNumbers == null)
-					passNumbers = new TreeMap<String, BaseOutcome>();
+					passNumbers = new TreeMap<String, Outcome>();
 				this.passNumbers.put(outcome.getKey(), outcome);
 				continue;
 			}
 			if (outcome.getType().equalsIgnoreCase("number") && outcome.getResult().equalsIgnoreCase("fail")) {
 				if (this.failNumbers == null)
-					failNumbers = new TreeMap<String, BaseOutcome>();
+					failNumbers = new TreeMap<String, Outcome>();
 				this.failNumbers.put(outcome.getKey(), outcome);
 				continue;
 			}

@@ -9,7 +9,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.synditcorp.ruleengine.beans;
+package com.synditcorp.ruleengine;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,7 +17,7 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ThreadRule extends BaseRule {
+public class ThreadRule extends Rule {
 
 	private final ArrayList<Integer> threadRules;
 	private final ArrayList<String> numberKeys;
@@ -27,8 +27,8 @@ public class ThreadRule extends BaseRule {
 	public ThreadRule(@JsonProperty("ruleNumber") Integer ruleNumber, @JsonProperty("ruleType") String ruleType,
 			@JsonProperty("ruleTags") ArrayList<String> ruleTags, @JsonProperty("description") String description,
 			@JsonProperty("active") Boolean active, @JsonProperty("expirationDate") Date expirationDate,
-			@JsonProperty("effecitveDate") Date effectiveDate,
-			@JsonProperty("outcomes") ArrayList<BaseOutcome> outcomes,
+			@JsonProperty("effectiveDate") Date effectiveDate,
+			@JsonProperty("outcomes") ArrayList<Outcome> outcomes,
 			@JsonProperty("threadRules") ArrayList<Integer> threadRules,
 			@JsonProperty("numberKeys") ArrayList<String> numberKeys,
 			@JsonProperty("tagKeys") ArrayList<String> tagKeys) {
@@ -41,15 +41,15 @@ public class ThreadRule extends BaseRule {
 
 	}
 
-	public ArrayList<Integer> getThreadRules() {
+	protected ArrayList<Integer> getThreadRules() {
 		return threadRules;
 	}
 
-	public ArrayList<String> getNumberKeys() {
+	protected ArrayList<String> getNumberKeys() {
 		return numberKeys;
 	}
 
-	public ArrayList<String> getTagKeys() {
+	protected ArrayList<String> getTagKeys() {
 		return tagKeys;
 	}
 

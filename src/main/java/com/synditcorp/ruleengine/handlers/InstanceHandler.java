@@ -16,6 +16,7 @@ import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
 import java.util.TreeMap;
 
 import com.synditcorp.ruleengine.RuleEvaluator;
+import com.synditcorp.ruleengine.exceptions.EngineSafeguardException;
 import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 import com.synditcorp.ruleengine.interfaces.RuleClassHandler;
 
@@ -64,21 +65,33 @@ public abstract class InstanceHandler implements RuleClassHandler {
 			throw e;
 		}
 	}
-
+	
+	/*
+	 * Remove from main instance's variables so don't have recursive collection.
+	 * Sets main's variables if they haven't been set yet in the separate instance.
+	 * The instance's runtime cache will not be cleared so it's available for the next call.
+	 */
 	private void set(RuleEvaluator ruleEvaluator, TreeMap<String, Object> variables) throws Exception {
 
 		if (ruleEvaluator == null)
 			throw new Exception("RuleEvaluator nested instance is null.");
-		variables.remove(instanceName); // remove so don't have recursive collection
-		ruleEvaluator.setVariables(variables);
+
+		variables.remove(instanceName); 
+		
+		try {
+			ruleEvaluator.setVariables(variables);
+		} catch (EngineSafeguardException e) {
+			ruleEvaluator.resetVariables(variables);
+		}
 
 	}
 
+	/*
+	 * Put the separate instance back in the main instance's variables collection.
+	 */
 	private void reset(RuleEvaluator ruleEvaluator, TreeMap<String, Object> variables) throws Exception {
 
-		if (ruleEvaluator != null)
-			ruleEvaluator.setVariables(null);
-		variables.put(instanceName, ruleEvaluator); // put it back to collection
+		variables.put(instanceName, ruleEvaluator);
 
 	}
 

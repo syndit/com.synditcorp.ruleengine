@@ -11,7 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.interfaces;
 
-import com.synditcorp.ruleengine.beans.BaseRules;
+import com.synditcorp.ruleengine.Rules;
 
 /**
  * Interface for JSON, XML, or database implementations
@@ -20,6 +20,6 @@ public interface RuleParser {
 
 	public void loadRules(String fileName) throws Exception;
 	public void loadRules(Object... arguments) throws Exception;
-	public BaseRules getRules() throws Exception;
+	public Rules getRules() throws Exception;
 
 }

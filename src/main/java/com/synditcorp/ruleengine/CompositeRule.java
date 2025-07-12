@@ -9,30 +9,32 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.synditcorp.ruleengine.interfaces;
+package com.synditcorp.ruleengine;
 
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.synditcorp.ruleengine.beans.BaseOutcome;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public interface Rule {
+public class CompositeRule extends Rule {
 
-	public Integer getRuleNumber();
-	public String getRuleType();
-	public ArrayList<String> getRuleTags();
-	public String getDescription();
-	public Boolean getActive();
-	public Date getEffectiveDate();
-	public Date getExpirationDate();
-	public ArrayList<BaseOutcome> getOutcomes();
-	public Outcome getPassNumberOutcome(String key);
-	public Outcome getFailNumberOutcome(String key);
-	public Outcome getPassTagOutcome(String key);
-	public Outcome getFailTagOutcome(String key);
-	public ArrayList<BaseOutcome> getPassNumberOutcomes();
-	public ArrayList<BaseOutcome> getFailNumberOutcomes();
-	public ArrayList<BaseOutcome> getPassTagOutcomes();
-	public ArrayList<BaseOutcome> getFailTagOutcomes();
+	private final ArrayList<Integer> compositeRules;
+
+	public CompositeRule(@JsonProperty("ruleNumber") Integer ruleNumber, @JsonProperty("ruleType") String ruleType,
+			@JsonProperty("ruleTags") ArrayList<String> ruleTags, @JsonProperty("description") String description,
+			@JsonProperty("active") Boolean active, @JsonProperty("expirationDate") Date expirationDate,
+			@JsonProperty("effectiveDate") Date effectiveDate,
+			@JsonProperty("outcomes") ArrayList<Outcome> outcomes,
+			@JsonProperty("compositeRules") ArrayList<Integer> compositeRules) {
+
+		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes);
+
+		this.compositeRules = compositeRules;
+
+	}
+
+	protected ArrayList<Integer> getCompositeRules() {
+		return compositeRules;
+	}
 
 }

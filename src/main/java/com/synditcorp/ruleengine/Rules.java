@@ -9,30 +9,29 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.synditcorp.ruleengine.beans;
+package com.synditcorp.ruleengine;
 
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.synditcorp.ruleengine.interfaces.Rules;
 
-public class BaseRules implements Rules {
+public class Rules {
 
-	private String documentId;
-	private String description;
-	private String version;
-	private Boolean active;
-	private Integer startRule;
-	private ArrayList<String> documentTags;
-	private ArrayList<CalcRule> calcRules;
-	private ArrayList<AndRule> andRules;
-	private ArrayList<OrRule> orRules;
-	private ArrayList<AllRule> allRules;
-	private ArrayList<ThreadRule> threadRules;
+	private final String documentId;
+	private final String description;
+	private final String version;
+	private final Boolean active;
+	private final Integer startRule;
+	private final ArrayList<String> documentTags;
+	private final ArrayList<CalcRule> calcRules;
+	private final ArrayList<AndRule> andRules;
+	private final ArrayList<OrRule> orRules;
+	private final ArrayList<AllRule> allRules;
+	private final ArrayList<ThreadRule> threadRules;
 
 	@JsonCreator
-	public BaseRules(
+	public Rules(
 			@JsonProperty("documentId") String documentId,
 			@JsonProperty("description") String description,
 			@JsonProperty("version") String version,
@@ -60,58 +59,47 @@ public class BaseRules implements Rules {
 
 	}
 
-	@Override
-	public ArrayList<CalcRule> getCalcRules() {
+	protected ArrayList<CalcRule> getCalcRules() {
 		return this.calcRules;
 	}
 
-	@Override
-	public ArrayList<AndRule> getAndRules() {
+	protected ArrayList<AndRule> getAndRules() {
 		return this.andRules;
 	}
 
-	@Override
-	public ArrayList<OrRule> getOrRules() {
+	protected ArrayList<OrRule> getOrRules() {
 		return this.orRules;
 	}
 
-	@Override
-	public ArrayList<AllRule> getAllRules() {
+	protected ArrayList<AllRule> getAllRules() {
 		return this.allRules;
 	}
 
-	@Override
-	public ArrayList<ThreadRule> getThreadRules() {
+	protected ArrayList<ThreadRule> getThreadRules() {
 		return this.threadRules;
 	}
 
-	@Override
-	public String getDocumentId() {
+	protected String getDocumentId() {
 		return documentId;
 	}
 
-	@Override
-	public String getDescription() {
+	protected String getDescription() {
 		return this.description;
 	}
 
-	@Override
-	public String getVersion() {
+	protected String getVersion() {
 		return this.version;
 	}
 
-	@Override
-	public Boolean getActive() {
+	protected Boolean getActive() {
 		return this.active;
 	}
 
-	@Override
-	public Integer getStartRule() {
+	protected Integer getStartRule() {
 		return this.startRule;
 	}
 
-	@Override
-	public ArrayList<String> getDocumentTags() {
+	protected ArrayList<String> getDocumentTags() {
 		return this.documentTags;
 	}
 

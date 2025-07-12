@@ -15,7 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.synditcorp.ruleengine.beans.BaseRules;
+import com.synditcorp.ruleengine.Rules;
 import com.synditcorp.ruleengine.interfaces.RuleParser;
 
 /**
@@ -24,7 +24,7 @@ import com.synditcorp.ruleengine.interfaces.RuleParser;
  */
 public class RuleJSONParser implements RuleParser {
 
-	private BaseRules rules;
+	private Rules rules;
 
 	/**
 	 * Pass the JSON file name. See test.java.verifyRulesDefinitions.json for
@@ -36,7 +36,7 @@ public class RuleJSONParser implements RuleParser {
 		byte[] jsonData = Files.readAllBytes(Paths.get(jsonFileName));
 		ObjectMapper objectMapper = new ObjectMapper();
 
-		rules = objectMapper.readValue(jsonData, BaseRules.class);
+		rules = objectMapper.readValue(jsonData, Rules.class);
 
 	}
 
@@ -50,7 +50,7 @@ public class RuleJSONParser implements RuleParser {
 	}
 
 	@Override
-	public BaseRules getRules() throws Exception {
+	public Rules getRules() throws Exception {
 		return rules;
 	}
 

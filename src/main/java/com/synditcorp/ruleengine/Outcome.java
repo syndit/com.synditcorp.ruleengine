@@ -9,7 +9,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.synditcorp.ruleengine.beans;
+package com.synditcorp.ruleengine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +18,8 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.synditcorp.ruleengine.exceptions.EngineSafeguardException;
-import com.synditcorp.ruleengine.interfaces.Outcome;
 
-public class BaseOutcome implements Outcome {
+public class Outcome {
 
 	private final String key;
 	private final String result;
@@ -33,8 +32,11 @@ public class BaseOutcome implements Outcome {
 	private static final List<String> validResult = List.of("pass", "fail");
 
 	@JsonCreator
-	public BaseOutcome(@JsonProperty("key") String key, @JsonProperty("result") String result,
-			@JsonProperty("type") String type, @JsonProperty("expression") String expression,
+	public Outcome(
+			@JsonProperty("key") String key, 
+			@JsonProperty("result") String result,
+			@JsonProperty("type") String type, 
+			@JsonProperty("expression") String expression,
 			@JsonProperty("global") Boolean global,
 			@JsonProperty("compositeOutcomeRules") ArrayList<Integer> compositeOutcomeRules) {
 
@@ -47,16 +49,6 @@ public class BaseOutcome implements Outcome {
 
 	}
 
-	public BaseOutcome(Outcome outcome) {
-		this.key = validateKey(outcome.getKey());
-		this.result = validateResult(outcome.getResult());
-		this.type = validateType(outcome.getType());
-		this.expression = outcome.getExpression();
-		this.global = outcome.getGlobal();
-		this.compositeOutcomeRules = outcome.getCompositeOutcomeRules();
-		this.variableName = outcome.getVariableName();
-	}
-
 	private String validateResult(String result) throws IllegalArgumentException {
 		if (result == null)
 			throw new IllegalArgumentException("Outcome result must be specified");
@@ -65,7 +57,6 @@ public class BaseOutcome implements Outcome {
 		return result.toLowerCase();
 	}
 
-	@Override
 	public String getResult() {
 		return this.result;
 	}
@@ -78,8 +69,7 @@ public class BaseOutcome implements Outcome {
 		return type.toLowerCase();
 	}
 
-	@Override
-	public String getType() {
+	protected String getType() {
 		return this.type;
 	}
 
@@ -89,23 +79,19 @@ public class BaseOutcome implements Outcome {
 		return key;
 	}
 
-	@Override
-	public String getKey() {
+	protected String getKey() {
 		return this.key;
 	}
 
-	@Override
-	public String getExpression() {
+	protected String getExpression() {
 		return this.expression;
 	}
 
-	@Override
-	public Boolean getGlobal() {
+	protected Boolean getGlobal() {
 		return this.global;
 	}
 
-	@Override
-	public void setVariableName(String variableName) {
+	protected void setVariableName(String variableName) {
 		this.variableName = variableName;
 	}
 
@@ -114,20 +100,18 @@ public class BaseOutcome implements Outcome {
 	 * configured in the definition where the document ID is available. Need to
 	 * safeguard this variable as it can't be FINAL.
 	 */
-	public void setVariableName(String documentId, Integer ruleNumber) throws EngineSafeguardException {
+	protected void setVariableName(String documentId, Integer ruleNumber) throws EngineSafeguardException {
 		if (this.variableName != null && this.variableName.length() > 0)
 			throw new EngineSafeguardException("Variable name already populated.");
 		String varName = documentId + "_" + ruleNumber + "_" + this.key;
 		this.variableName = varName;
 	}
 
-	@Override
-	public String getVariableName() {
+	protected String getVariableName() {
 		return this.variableName;
 	}
 
-	@Override
-	public ArrayList<Integer> getCompositeOutcomeRules() {
+	protected ArrayList<Integer> getCompositeOutcomeRules() {
 		return this.compositeOutcomeRules;
 	}
 
