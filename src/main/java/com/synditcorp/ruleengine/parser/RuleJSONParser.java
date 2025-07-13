@@ -11,11 +11,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.parser;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synditcorp.ruleengine.Rules;
+import com.synditcorp.ruleengine.exceptions.InvalidDefinitionException;
 import com.synditcorp.ruleengine.interfaces.RuleParser;
 
 /**
@@ -33,10 +35,18 @@ public class RuleJSONParser implements RuleParser {
 	@Override
 	public void loadRules(String jsonFileName) throws Exception {
 
-		byte[] jsonData = Files.readAllBytes(Paths.get(jsonFileName));
-		ObjectMapper objectMapper = new ObjectMapper();
+		try {
 
-		rules = objectMapper.readValue(jsonData, Rules.class);
+			byte[] jsonData = Files.readAllBytes(Paths.get(jsonFileName));
+			ObjectMapper objectMapper = new ObjectMapper();
+			rules = objectMapper.readValue(jsonData, Rules.class);
+			
+		} catch (IOException e) {
+			throw new Exception("Unable to load rules from file " + jsonFileName);
+		} catch (IllegalArgumentException e) {
+			throw new InvalidDefinitionException("Problem with definition file " + jsonFileName + ": " + e.getMessage());
+		}
+		
 
 	}
 
@@ -45,9 +55,7 @@ public class RuleJSONParser implements RuleParser {
 	 * test.java.verifyRulesDefinitions.json for supported JSON file format.
 	 */
 	@Override
-	public void loadRules(Object... arguments) throws Exception {
-		// TODO Auto-generated method stub
-	}
+	public void loadRules(Object... arguments) throws Exception	{}
 
 	@Override
 	public Rules getRules() throws Exception {

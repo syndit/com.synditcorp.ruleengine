@@ -12,7 +12,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.synditcorp.ruleengine.DefaultRuleDefinition;
+import com.synditcorp.ruleengine.RuleDefinition;
 import com.synditcorp.ruleengine.RuleEvaluator;
 import com.synditcorp.ruleengine.logging.TimeTrack;
 import com.synditcorp.ruleengine.parser.RuleJSONParser;
@@ -57,7 +57,7 @@ public class VerifyRuleDefinition {
 		RuleJSONParser parser = new RuleJSONParser();
 		parser.loadRules("/Users/alanjack/git/com.synditcorp.ruleengine/src/test/java/verifyRuleDefinition2.json");
 
-		DefaultRuleDefinition rules = new DefaultRuleDefinition(parser);
+		RuleDefinition rules = new RuleDefinition(parser);
 		// rules.loadRules(parser);
 
 		RuleEvaluator eval = new RuleEvaluator(rules);

@@ -1,0 +1,31 @@
+{
+	"documentId" : "TEST1",
+	"description" : "This definition should fail.  A calc rule cant be in an andRule array.",
+	"version" : "3.0.0",
+	"documentTags" : ["test"],
+	"startRule" : "14",
+	"calcRules":
+		[
+		]
+	, "andRules" : 
+		[
+			{
+				"ruleType" : "calc",
+				"ruleNumber" : "1",
+				"description" : "This rule is in the wrong array.",
+				"expression" : "true",
+				"handlerClass" : "com.synditcorp.ruleengine.handlers.ExpressionRuleHandler"
+			}
+		]
+	, "orRules" : 
+		[
+		]
+	, "allRules" : 
+		[
+		]
+	, "threadRules":
+		[
+		]
+}
+
+
