@@ -36,15 +36,17 @@ public class RuleJSONParser implements RuleParser {
 	public void loadRules(String jsonFileName) throws Exception {
 
 		try {
-
+			
 			byte[] jsonData = Files.readAllBytes(Paths.get(jsonFileName));
 			ObjectMapper objectMapper = new ObjectMapper();
 			rules = objectMapper.readValue(jsonData, Rules.class);
 			
 		} catch (IOException e) {
-			throw new Exception("Unable to load rules from file " + jsonFileName);
+			throw new InvalidDefinitionException("Problem with rule file " + jsonFileName + ".  Error: " + e.getMessage());
 		} catch (IllegalArgumentException e) {
-			throw new InvalidDefinitionException("Problem with definition file " + jsonFileName + ": " + e.getMessage());
+			throw new InvalidDefinitionException("Problem with rule document definition for " + jsonFileName + ".  Error: " + e.getMessage());
+		} catch (java.lang.Exception e) {
+			throw new InvalidDefinitionException("Problem parsing rules for " + jsonFileName + ".  Error: " + e.getMessage());
 		}
 		
 

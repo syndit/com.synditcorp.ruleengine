@@ -1,6 +1,6 @@
 {
 	"documentId" : "TEST1",
-	"description" : "This definition should fail.  A calc rule cant be in an andRule array.",
+	"description" : "This definition should fail.  A calc rule can't be in an andRule array.",
 	"version" : "3.0.0",
 	"documentTags" : ["test"],
 	"startRule" : "14",

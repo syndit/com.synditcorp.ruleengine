@@ -1,31 +1,31 @@
 
 
-import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
 
 import com.synditcorp.ruleengine.RuleDefinition;
+import com.synditcorp.ruleengine.RuleEvaluator;
+import com.synditcorp.ruleengine.exceptions.InvalidDefinitionException;
 import com.synditcorp.ruleengine.parser.RuleJSONParser;
 
 public class DefinitionTests {
 
 	@Test
-	void test1() {
+	void test1() throws Exception {
 		
 		try {
-		
+			
+			String fileName = "test1.json";
+			String jsonFile = this.getClass().getResource(fileName).toExternalForm();
 			RuleJSONParser parser = new RuleJSONParser();
-			parser.loadRules("src/test/java/definitionDocs/test1.json");
-			RuleDefinition rules = new RuleDefinition(parser);
+			parser.loadRules(jsonFile);
 
-		} catch(Exception e) {
-			assertEquals("Problem with definition file", e.getMessage());
+		} catch(Exception e) {;
+			assertTrue(e instanceof InvalidDefinitionException, "Expecting an InvalidDefinitionException");
 		}
-		
-		fail("Exception not thrown");
-		
 		
 	}
 	
