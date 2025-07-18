@@ -11,13 +11,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.parser;
 
-import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synditcorp.ruleengine.Rules;
-import com.synditcorp.ruleengine.exceptions.InvalidDefinitionException;
+import com.synditcorp.ruleengine.exceptions.DefinitionResourceException;
 import com.synditcorp.ruleengine.interfaces.RuleParser;
 
 /**
@@ -32,32 +32,60 @@ public class RuleJSONParser implements RuleParser {
 	 * Pass the JSON file name. See test.java.verifyRulesDefinitions.json for
 	 * supported JSON file format.
 	 */
-	@Override
-	public void loadRules(String jsonFileName) throws Exception {
-
-		try {
-			
-			byte[] jsonData = Files.readAllBytes(Paths.get(jsonFileName));
-			ObjectMapper objectMapper = new ObjectMapper();
-			rules = objectMapper.readValue(jsonData, Rules.class);
-			
-		} catch (IOException e) {
-			throw new InvalidDefinitionException("Problem with rule file " + jsonFileName + ".  Error: " + e.getMessage());
-		} catch (IllegalArgumentException e) {
-			throw new InvalidDefinitionException("Problem with rule document definition for " + jsonFileName + ".  Error: " + e.getMessage());
-		} catch (java.lang.Exception e) {
-			throw new InvalidDefinitionException("Problem parsing rules for " + jsonFileName + ".  Error: " + e.getMessage());
-		}
-		
-
-	}
+//	@Override
+//	public void loadRules(String jsonFileName) throws Exception {
+//
+//		try {
+//			
+//			byte[] jsonData = Files.readAllBytes(Paths.get(jsonFileName));
+//			ObjectMapper objectMapper = new ObjectMapper();
+//			rules = objectMapper.readValue(jsonData, Rules.class);
+//			
+//
+//		} catch (java.lang.Exception e) {
+//		System.out.println("Exception class: " + e.getClass().getSimpleName());
+//			throw e;
+//		}
+//
+//			
+//		} catch (IOException e) {
+//			System.out.println("Exception class: " + e.getClass().getSimpleName());
+//			throw new InvalidDefinitionException("Problem with rule document definition " + jsonFileName + ".  Error: " + e.getMessage());
+//		} catch (IllegalArgumentException e) {
+//			throw new InvalidDefinitionException("Problem with rule document definition for " + jsonFileName + ".  Error: " + e.getMessage());
+//		} catch (java.lang.Exception e) {
+//			throw new Exception("Problem parsing rules for " + jsonFileName + ".  Error: " + e.getMessage());
+//		}
+//		
+//
+//	}
 
 	/**
 	 * Use this for getting definitions from resources like MongoDB. See
 	 * test.java.verifyRulesDefinitions.json for supported JSON file format.
 	 */
 	@Override
-	public void loadRules(Object... arguments) throws Exception	{}
+	public void loadRules(Object... arguments) throws Exception	{
+		
+		Object object = arguments[0];
+		
+		if(object instanceof String) {
+			byte[] jsonData = Files.readAllBytes(Paths.get( (String) object ));
+			ObjectMapper objectMapper = new ObjectMapper();
+			rules = objectMapper.readValue(jsonData, Rules.class);
+			return;
+		}
+		
+		if(object instanceof URI) {
+			byte[] jsonData = Files.readAllBytes(Paths.get( (URI) object ));
+			ObjectMapper objectMapper = new ObjectMapper();
+			rules = objectMapper.readValue(jsonData, Rules.class);
+			return;
+		}
+		
+		throw new DefinitionResourceException("Unable to find definition resource.");
+		
+	}
 
 	@Override
 	public Rules getRules() throws Exception {
