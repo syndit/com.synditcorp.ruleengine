@@ -1,0 +1,28 @@
+{
+	"documentId" : "TEST_RULES",
+	"description" : "This definition should fail.  An 'all' rule can't be in a threadRule array.",
+	"version" : "3.0.0",
+	"calcRules":
+		[
+		]
+	, "andRules" : 
+		[
+		]
+	, "orRules" : 
+		[
+		]
+	, "allRules" : 
+		[
+		]
+	, "threadRules":
+		[
+		{
+			"ruleType" : "all",
+			"ruleNumber" : "12",
+			"description" : "This rule is in the wrong array.",
+			"compositeRules" : [10,11]
+		}
+		]
+}
+
+

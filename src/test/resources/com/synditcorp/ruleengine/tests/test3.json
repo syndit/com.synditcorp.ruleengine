@@ -1,0 +1,28 @@
+{
+	"documentId" : "TEST_RULES",
+	"description" : "This definition should fail.  An 'or' rule can't be in an allRule array.",
+	"version" : "3.0.0",
+	"calcRules":
+		[
+		]
+	, "andRules" : 
+		[
+		]
+	, "orRules" : 
+		[
+		]
+	, "allRules" : 
+		[
+		{
+			"ruleType" : "or",
+			"ruleNumber" : "12",
+			"description" : "This rule is in the wrong array.",
+			"compositeRules" : [10,11]
+		}
+		]
+	, "threadRules":
+		[
+		]
+}
+
+

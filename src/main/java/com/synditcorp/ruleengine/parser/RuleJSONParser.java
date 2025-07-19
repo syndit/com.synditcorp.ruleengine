@@ -11,8 +11,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.parser;
 
-import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +21,7 @@ import com.synditcorp.ruleengine.exceptions.DefinitionResourceException;
 import com.synditcorp.ruleengine.interfaces.RuleParser;
 
 /**
- * This class implements RulesParser and uses the Jackson JSON parser
+ * This class implements RuleParser and uses the Jackson JSON parser
  * (com.fasterxml.jackson.core)
  */
 public class RuleJSONParser implements RuleParser {
@@ -29,40 +29,10 @@ public class RuleJSONParser implements RuleParser {
 	private Rules rules;
 
 	/**
-	 * Pass the JSON file name. See test.java.verifyRulesDefinitions.json for
-	 * supported JSON file format.
-	 */
-//	@Override
-//	public void loadRules(String jsonFileName) throws Exception {
-//
-//		try {
-//			
-//			byte[] jsonData = Files.readAllBytes(Paths.get(jsonFileName));
-//			ObjectMapper objectMapper = new ObjectMapper();
-//			rules = objectMapper.readValue(jsonData, Rules.class);
-//			
-//
-//		} catch (java.lang.Exception e) {
-//		System.out.println("Exception class: " + e.getClass().getSimpleName());
-//			throw e;
-//		}
-//
-//			
-//		} catch (IOException e) {
-//			System.out.println("Exception class: " + e.getClass().getSimpleName());
-//			throw new InvalidDefinitionException("Problem with rule document definition " + jsonFileName + ".  Error: " + e.getMessage());
-//		} catch (IllegalArgumentException e) {
-//			throw new InvalidDefinitionException("Problem with rule document definition for " + jsonFileName + ".  Error: " + e.getMessage());
-//		} catch (java.lang.Exception e) {
-//			throw new Exception("Problem parsing rules for " + jsonFileName + ".  Error: " + e.getMessage());
-//		}
-//		
-//
-//	}
-
-	/**
-	 * Use this for getting definitions from resources like MongoDB. See
-	 * test.java.verifyRulesDefinitions.json for supported JSON file format.
+	 * Loads the JSON definition file.  Pass a String with the path and file name, or a java.nio.file.Path object.  This parser uses the Jackson parser. 
+	 * If getting definitions from resources like MongoDB, create a new parser that implements the RuleParser interface.
+	 * 
+	 * @param String with path and file name, or java.nio.file.Path object
 	 */
 	@Override
 	public void loadRules(Object... arguments) throws Exception	{
@@ -76,8 +46,8 @@ public class RuleJSONParser implements RuleParser {
 			return;
 		}
 		
-		if(object instanceof URI) {
-			byte[] jsonData = Files.readAllBytes(Paths.get( (URI) object ));
+		if(object instanceof Path) {
+			byte[] jsonData = Files.readAllBytes( (Path) object );
 			ObjectMapper objectMapper = new ObjectMapper();
 			rules = objectMapper.readValue(jsonData, Rules.class);
 			return;
@@ -87,6 +57,11 @@ public class RuleJSONParser implements RuleParser {
 		
 	}
 
+	/**
+	 * Get the rule definitions that have been parsed into a Rules object
+	 * 
+	 * @return com.synditcorp.ruleengine.Rules object
+	 */
 	@Override
 	public Rules getRules() throws Exception {
 		return rules;

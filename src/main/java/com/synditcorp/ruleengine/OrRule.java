@@ -20,9 +20,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class OrRule extends CompositeRule {
 
 	@JsonCreator
-	public OrRule(@JsonProperty("ruleNumber") Integer ruleNumber, @JsonProperty("ruleType") String ruleType,
-			@JsonProperty("ruleTags") ArrayList<String> ruleTags, @JsonProperty("description") String description,
-			@JsonProperty("active") Boolean active, @JsonProperty("expirationDate") Date expirationDate,
+	public OrRule(@JsonProperty("ruleNumber") Integer ruleNumber, 
+			@JsonProperty("ruleType") String ruleType,
+			@JsonProperty("ruleTags") ArrayList<String> ruleTags, 
+			@JsonProperty("description") String description,
+			@JsonProperty("active") Boolean active, 
+			@JsonProperty("expirationDate") Date expirationDate,
 			@JsonProperty("effectiveDate") Date effectiveDate,
 			@JsonProperty("outcomes") ArrayList<Outcome> outcomes,
 			@JsonProperty("compositeRules") ArrayList<Integer> compositeRules) {

@@ -1,0 +1,29 @@
+{
+	"documentId" : "TEST_RULES",
+	"description" : "This definition should fail.  An 'and' rule can't be in an orRule array.",
+	"version" : "3.0.0",
+	"calcRules":
+		[
+		]
+	, "andRules" : 
+		[
+		]
+	, "orRules" : 
+		[
+		{
+			"ruleType" : "and",
+			"ruleNumber" : "10",
+			"ruleTags" : [],
+			"description" : "This rule is in the wrong array.",
+			"compositeRules" : [1, 2, -3, 4]
+		}
+		]
+	, "allRules" : 
+		[
+		]
+	, "threadRules":
+		[
+		]
+}
+
+
