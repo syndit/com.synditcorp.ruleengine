@@ -178,16 +178,16 @@ public class DefinitionTests {
 		
 		RuleEvaluator ruleEvaluator = getRuleEvaluator();
 		ruleEvaluator.evaluateRule(1);
-		Double score = ruleEvaluator.getNumberOutcome(1,"score");
+		Double amount = ruleEvaluator.getNumberOutcome(1,"amount");
 		boolean included = ruleEvaluator.getTagOutcome(1, "flag").contains("1FlagP");
 		
 		
-		assertTrue( (score == 10 && included), "Rule 1 values not returned as expected.");
+		assertTrue( (amount == 10 && included), "Rule 1 values not returned as expected.");
 		
 	}
 	
 	/*
-	 * Rule 1 should fail because variables do not exist in collection (in this case, they weren't loaded)
+	 * Rule 1 should fail because variables do not exist in collection (in this case, they simply weren't loaded)
 	 */
 	@Test
 	void test12() throws Exception {
@@ -213,14 +213,29 @@ public class DefinitionTests {
 		
 		RuleEvaluator ruleEvaluator = getRuleEvaluator();
 		ruleEvaluator.evaluateRule(1);
-		Double score = ruleEvaluator.getNumberOutcome(1,"score");
+		boolean correctScore = ruleEvaluator.getNumberOutcome(1,"amount") == 10;
 		boolean included = ruleEvaluator.getTagOutcome(1, "flag").contains("1FlagP");
 		
-		assertTrue( (score == 10 && included), "Rule 1 values not returned as expected.");
+		assertTrue( (correctScore && included), "Rule 1 values not returned as expected.");
 		
 	}
 	
-	
+	/*
+	 * Rule 18 should return an amount of 74.25 and include a flag with value '7FlagP'
+	 */
+	@Test
+	void test14() throws Exception {
+		
+		RuleEvaluator ruleEvaluator = getRuleEvaluator();
+		ruleEvaluator.setThreadBlockSize(4);
+		ruleEvaluator.evaluateRule(18);
+		
+		boolean correctScore = ruleEvaluator.getNumberOutcome(18,"amount") == 74.25;
+		boolean included = ruleEvaluator.getTagOutcome(18,"flag").contains("7FlagP");
+		
+		assertTrue( (correctScore && included), "Rule 18 values not returned as expected.");
+		
+	}
 	
 	private RuleEvaluator getRuleEvaluator() throws Exception {
 		
@@ -230,12 +245,16 @@ public class DefinitionTests {
 			
 			Double amount1 = 1.50;
 			Double amount2 = 5.00;
+			Double amount3 = 7.15;
+			Integer score = 4;
 			String name1 = "Buggs Bunny";
 			String ID = "987654321";
 			String phone = "724.555.1027";
 	
 			variables.put("amount1", amount1);
 			variables.put("amount2", amount2);
+			variables.put("amount3", amount3);
+			variables.put("score", score);
 			variables.put("name1", name1);
 			variables.put("ID", ID);
 			variables.put("phone", phone);

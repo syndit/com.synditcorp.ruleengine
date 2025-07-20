@@ -32,9 +32,9 @@ public class Rule {
 	private final Date effectiveDate;
 	private final ArrayList<Outcome> outcomes;
 
-	private TreeMap<String, Outcome> passNumbers;
+	protected TreeMap<String, Outcome> passNumbers;
 	private TreeMap<String, Outcome> failNumbers;
-	private TreeMap<String, Outcome> passTags;
+	protected TreeMap<String, Outcome> passTags;
 	private TreeMap<String, Outcome> failTags;
 
 	private static List<String> validRuleTypes = List.of("calc", "and", "or", "all", "thread");

@@ -725,7 +725,8 @@ public class RuleEvaluator implements Cloneable {
 	 */
 	private Boolean processThreadRules(Integer ruleNumber) throws Exception {
 
-		ArrayList<ThreadResults> threadResults = getThreadResults(ruleNumber);
+		ThreadRule threadRule = ((ThreadRule) getRule(ruleNumber));
+		ArrayList<ThreadResults> threadResults = getThreadResults(threadRule);
 		String variableName = ruleDefinition.getDocumentId() + "_" + ruleNumber + "_";
 
 		// loop through all the rule results processed in the threads
@@ -743,6 +744,7 @@ public class RuleEvaluator implements Cloneable {
 
 					} else {
 						this.variables.put(threadVariable, entry.getValue());
+						threadRule.setPassNumberOutcome(entry.getKey(), threadVariable);
 					}
 
 				}
@@ -758,6 +760,7 @@ public class RuleEvaluator implements Cloneable {
 						((ArrayList<String>) this.variables.get(threadVariable)).addAll(entry.getValue());
 					} else {
 						this.variables.put(threadVariable, entry.getValue());
+						threadRule.setPassTagOutcome(entry.getKey(), threadVariable);
 					}
 
 				}
@@ -779,12 +782,10 @@ public class RuleEvaluator implements Cloneable {
 	 * @throws Exception when any exception occurs
 	 * @param ruleNumber value for a given rule number
 	 */
-	private ArrayList<ThreadResults> getThreadResults(Integer ruleNumber) throws Exception {
+	private ArrayList<ThreadResults> getThreadResults(ThreadRule threadRule) throws Exception {
 
 		if (pool == null)
 			pool = new ForkJoinPool();
-
-		ThreadRule threadRule = ((ThreadRule) getRule(ruleNumber));
 
 		ArrayList<String> numberKeys = threadRule.getNumberKeys();
 		ArrayList<String> tagKeys = threadRule.getTagKeys();
@@ -800,18 +801,20 @@ public class RuleEvaluator implements Cloneable {
 			if (ctr == this.threadBlockSize || (i + 1) == listSize) {
 				ArrayList<Integer> passBlock = new ArrayList<Integer>();
 				passBlock.addAll(block);
-
+				
+				RuleEvaluator cloneOf = (RuleEvaluator) this.clone();
+				
 				ThreadProcObjects objects = new ThreadProcObjects(
-						ruleNumber,
-						(RuleEvaluator) this.clone(),
+						threadRule.getRuleNumber(),
+						cloneOf,
 						passBlock,
 						numberKeys,
 						tagKeys
 						);
 
-				ThreadRuleCompute threadRuleProcessor = new ThreadRuleCompute(objects);
-				tasks.add(threadRuleProcessor);
-				pool.execute(threadRuleProcessor);
+				ThreadRuleCompute threadRuleCompute = new ThreadRuleCompute(objects);
+				tasks.add(threadRuleCompute);
+				pool.execute(threadRuleCompute);
 				block.clear();
 				ctr = 0;
 			}

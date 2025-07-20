@@ -13,6 +13,7 @@ package com.synditcorp.ruleengine;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -52,5 +53,33 @@ public class ThreadRule extends Rule {
 	protected ArrayList<String> getTagKeys() {
 		return tagKeys;
 	}
+	
+	/*
+	 * Setting rule outcome so can be retrieved with getNumberOutcome()
+	 */
+	protected void setPassNumberOutcome(String key, String variableName) {
+		if(key != null && variableName != null) {
+			Outcome outcome = new Outcome(key, "pass", "number", null, true, null);
+			outcome.setVariableName(variableName);
+			if(super.passNumbers == null)
+				super.passNumbers = new TreeMap<String, Outcome>();
+			super.passNumbers.put(key, outcome);
+		}
+	}
 
+	/*
+	 * Setting rule outcome so can be retrieved with getTagOutcome()
+	 */
+	protected void setPassTagOutcome(String key, String variableName) {
+		if(key != null && variableName != null) {
+			Outcome outcome = new Outcome(key, "pass", "tag", null, true, null);
+			outcome.setVariableName(variableName);
+			if(super.passTags == null)
+				super.passTags = new TreeMap<String, Outcome>();
+			super.passTags.put(key, outcome);
+		}
+	}
+	
+	
+	
 }
