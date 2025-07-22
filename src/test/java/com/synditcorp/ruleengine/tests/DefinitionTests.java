@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
@@ -221,7 +222,7 @@ public class DefinitionTests {
 	}
 	
 	/*
-	 * Rule 18 should return an amount of 74.25 and include a flag with value '7FlagP'
+	 * Rule 18 is a ThreadRule and should return an amount of 74.25 and include a flag with value '7FlagP'
 	 */
 	@Test
 	void test14() throws Exception {
@@ -234,6 +235,50 @@ public class DefinitionTests {
 		boolean included = ruleEvaluator.getTagOutcome(18,"flag").contains("7FlagP");
 		
 		assertTrue( (correctScore && included), "Rule 18 values not returned as expected.");
+		
+	}
+	
+	/*
+	 * Rule 10 fails should return an amount of -530 and include a flag with value '10FlagF'
+	 */
+	@Test
+	void test15() throws Exception {
+		
+		RuleEvaluator ruleEvaluator = getRuleEvaluator();
+		Boolean result = ruleEvaluator.evaluateRule(10);
+		
+		boolean correctScore = ruleEvaluator.getNumberOutcome(10,"amount") == -530;
+		boolean included = ruleEvaluator.getTagOutcome(10,"flag").contains("10FlagF");
+		
+		assertTrue( (!result && correctScore && included), "Rule 10 values not returned as expected.");
+		
+	}
+	
+	/*
+	 * Rule 11 passes and should return an amount of 473 and includes flags with values '10FlagF', 1FlagP, 2FlagP, 3FlagF, 10FlagF, 11ReasonP  
+	 */
+	@Test
+	void test16() throws Exception {
+		
+		RuleEvaluator ruleEvaluator = getRuleEvaluator();
+		Boolean result = ruleEvaluator.evaluateRule(11);
+		
+		System.out.println(ruleEvaluator.getVariables());
+		
+		boolean correctScore = ruleEvaluator.getNumberOutcome(11,"amount") == 473;
+		
+		String[] tags = {"11FlagP", "1FlagP", "2FlagP", "3FlagF"};
+		boolean included = true;
+		for (int i = 0; i < tags.length; i++) {
+	        if(!ruleEvaluator.getTagOutcome(11,"flag").contains(tags[i])) {
+	        	included = false;
+	        	break;
+	        }
+	    }
+		
+		boolean alsoIncluded = ruleEvaluator.getTagOutcome(11,"reason").contains("11ReasonP");
+		
+		assertTrue( (result && correctScore && included && alsoIncluded), "Rule 11 values not returned as expected.");
 		
 	}
 	

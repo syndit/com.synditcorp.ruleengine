@@ -130,7 +130,7 @@
 			"ruleType" : "calc",
 			"ruleNumber" : "9",
 			"description" : "Rule 9 passes",
-			"expression" : "TEST_RULES_10_flag.contains('10FlagP') && TEST_RULES_2_flag.contains('2FlagP') && TEST_RULES_1_flag.contains('1FlagP')",
+			"expression" : "TEST_RULES_10_flag.contains('10FlagF') && TEST_RULES_2_flag.contains('2FlagP') && TEST_RULES_1_flag.contains('1FlagP')",
 			"handlerClass" : "com.synditcorp.ruleengine.handlers.ExpressionRuleHandler",
 			"active" : "true",
 			"effectiveDate" : null,
@@ -247,41 +247,39 @@
 				"ruleType" : "and",
 				"ruleNumber" : "10",
 				"ruleTags" : ["protected"],
-				"description" : "Rule 10 returns true",
-				"compositeRules" : [1, 2, -3, 4],
+				"description" : "Rule 10 will fail becuase 3 fails",
+				"compositeRules" : [1, 2, 3, 4, 5, 6, 7, 8],
 				"active" : "true",
 				"effectiveDate" : null,
 				"expirationDate" : null,
 				"outcomes": [
 						{"result":"pass", "type":"number", "key":"amount","expression":"500","global":"true","compositeOutcomeRules":[1,-3,2]},
-						{"result":"fail", "type":"number", "key":"amount","expression":"-10","global":"true","compositeOutcomeRules":[-3]},
+						{"result":"fail", "type":"number", "key":"amount","expression":"-500","global":"true","compositeOutcomeRules":[-3]},
 						{"result":"pass", "type":"tag", "key":"flag","expression":"10FlagP","global":"true","compositeOutcomeRules":[1,2,-3]},
-						{"result":"fail", "type":"tag", "key":"flag","expression":"10FlagF","global":"false","compositeOutcomeRules":[1,2]},
-						{"result":"pass", "type":"tag", "key":"flag","expression":"10ReasonP","global":"true","compositeOutcomeRules":[1,2,-3]},
-						{"result":"fail", "type":"tag", "key":"flag","expression":"10ReasonF","global":"false","compositeOutcomeRules":[1,2]}
-					]
-			},
-			{
-				"ruleType" : "and",
-				"ruleNumber" : "910",
-				"ruleTags" : ["protected"],
-				"description" : "Rule 10 returns true",
-				"compositeRules" : [1, 2, -3, 4],
-				"active" : "true",
-				"effectiveDate" : null,
-				"expirationDate" : null,
-				"outcomes": [
-						{"result":"pass", "type":"number", "key":"amount","expression":"500","global":"true","compositeOutcomeRules":[1,-3,2]},
-						{"result":"fail", "type":"number", "key":"amount","expression":"-10","global":"true","compositeOutcomeRules":[-3]},
-						{"result":"pass", "type":"tag", "key":"flag","expression":"10FlagP","global":"true","compositeOutcomeRules":[1,2,-3]},
-						{"result":"fail", "type":"tag", "key":"flag","expression":"10FlagF","global":"false","compositeOutcomeRules":[1,2]},
-						{"result":"pass", "type":"tag", "key":"flag","expression":"10ReasonP","global":"true","compositeOutcomeRules":[1,2,-3]},
-						{"result":"fail", "type":"tag", "key":"flag","expression":"10ReasonF","global":"false","compositeOutcomeRules":[1,2]}
+						{"result":"fail", "type":"tag", "key":"flag","expression":"10FlagF","global":"false","compositeOutcomeRules":[1,2]}
 					]
 			},
 			{
 				"ruleType" : "and",
 				"ruleNumber" : "11",
+				"ruleTags" : ["protected"],
+				"description" : "Rule 10 returns true",
+				"compositeRules" : [-10, 2],
+				"active" : "true",
+				"effectiveDate" : null,
+				"expirationDate" : null,
+				"outcomes": [
+						{"result":"pass", "type":"number", "key":"amount","expression":"1000","global":"true","compositeOutcomeRules":[-10,1,-3,2]},
+						{"result":"fail", "type":"number", "key":"amount","expression":"-10","global":"true","compositeOutcomeRules":[-3]},
+						{"result":"pass", "type":"tag", "key":"reason","expression":"11ReasonP","global":"true","compositeOutcomeRules":[1,2,-3]},
+						{"result":"fail", "type":"tag", "key":"reason","expression":"11ReasonF","global":"false","compositeOutcomeRules":[1,2]},
+						{"result":"pass", "type":"tag", "key":"flag","expression":"11FlagP","global":"true","compositeOutcomeRules":[1,2,-3]},
+						{"result":"fail", "type":"tag", "key":"flag","expression":"11FlagF","global":"false","compositeOutcomeRules":[1,2]}
+					]
+			},
+			{
+				"ruleType" : "and",
+				"ruleNumber" : "119",
 				"description" : "11 passes",
 				"compositeRules" : [-3,4],
 				"active" : "true",
