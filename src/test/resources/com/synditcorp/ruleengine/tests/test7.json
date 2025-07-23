@@ -1,0 +1,33 @@
+{
+	"documentId" : "TEST_RULES",
+	"description" : "This definition should fail.  Rule 1 has a duplicate pass number key.",
+	"version" : "3.0.0",
+	"calcRules":
+		[
+			{
+				"ruleType" : "calc",
+				"ruleNumber" : "1",
+				"description" : "Rule 1 fails to load because of duplicate pass number key",
+				"expression" : true,
+				"handlerClass" : "com.synditcorp.ruleengine.handlers.ExpressionRuleHandler",
+				"outcomes": [
+					{"result":"pass", "type":"number", "key":"amount","expression":"10","global":"true"},
+					{"result":"pass", "type":"number", "key":"amount","expression":"10","global":"true"}
+					]
+			}
+		]
+	, "andRules" : 
+		[
+		]
+	, "orRules" : 
+		[
+		]
+	, "allRules" : 
+		[
+		]
+	, "threadRules":
+		[
+		]
+}
+
+

@@ -168,7 +168,7 @@ public class RuleDefinition {
 	}
 
 	private void setCalcRules() throws Exception {
-		if (this.baseRules.getCalcRules() == null)
+		if (this.baseRules.getCalcRules() == null || this.baseRules.getCalcRules().isEmpty())
 			return;
 		ArrayList<CalcRule> ar = this.baseRules.getCalcRules();
 		for (Iterator<CalcRule> iterator = ar.iterator(); iterator.hasNext();) {
@@ -181,7 +181,7 @@ public class RuleDefinition {
 	}
 
 	private void setOrRules() throws Exception {
-		if (this.baseRules.getOrRules() == null)
+		if (this.baseRules.getOrRules() == null || this.baseRules.getOrRules().isEmpty())
 			return;
 		ArrayList<OrRule> ar = this.baseRules.getOrRules();
 		for (Iterator<OrRule> iterator = ar.iterator(); iterator.hasNext();) {
@@ -194,7 +194,7 @@ public class RuleDefinition {
 	}
 
 	private void setAndRules() throws Exception {
-		if (this.baseRules.getAndRules() == null)
+		if (this.baseRules.getAndRules() == null || this.baseRules.getAndRules().isEmpty())
 			return;
 		ArrayList<AndRule> ar = this.baseRules.getAndRules();
 		for (Iterator<AndRule> iterator = ar.iterator(); iterator.hasNext();) {
@@ -207,7 +207,7 @@ public class RuleDefinition {
 	}
 
 	private void setAllRules() throws Exception {
-		if (this.baseRules.getAllRules() == null)
+		if (this.baseRules.getAllRules() == null || this.baseRules.getAllRules().isEmpty())
 			return;
 		ArrayList<AllRule> ar = this.baseRules.getAllRules();
 		for (Iterator<AllRule> iterator = ar.iterator(); iterator.hasNext();) {
@@ -219,7 +219,7 @@ public class RuleDefinition {
 	}
 
 	private void setThreadRules() throws Exception {
-		if (this.baseRules.getThreadRules() == null)
+		if (this.baseRules.getThreadRules() == null || this.baseRules.getThreadRules().isEmpty())
 			return;
 		ArrayList<ThreadRule> ar = this.baseRules.getThreadRules();
 		for (Iterator<ThreadRule> iterator = ar.iterator(); iterator.hasNext();) {

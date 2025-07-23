@@ -20,6 +20,7 @@ import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.synditcorp.ruleengine.exceptions.DuplicateKeyException;
 
 public class Rule {
 
@@ -194,26 +195,49 @@ public class Rule {
 			outcome.setVariableName(documentId, this.ruleNumber);
 
 			if (outcome.getType().equalsIgnoreCase("tag") && outcome.getResult().equalsIgnoreCase("pass")) {
+
 				if (this.passTags == null)
 					passTags = new TreeMap<String, Outcome>();
+
+				if(this.passTags.containsKey(outcome.getKey()))
+					throw new DuplicateKeyException("Duplicate Outcome " + outcome.getKey() + " key for rule " + this.ruleNumber);
+				
 				this.passTags.put(outcome.getKey(),outcome);
 				continue;
+
 			}
 			if (outcome.getType().equalsIgnoreCase("tag") && outcome.getResult().equalsIgnoreCase("fail")) {
+
 				if (this.failTags == null)
 					failTags = new TreeMap<String, Outcome>();
+
+				if(this.failTags.containsKey(outcome.getKey()))
+					throw new DuplicateKeyException("Duplicate Outcome " + outcome.getKey() + " key for rule " + this.ruleNumber);
+				
 				this.failTags.put(outcome.getKey(), outcome);
 				continue;
+
 			}
 			if (outcome.getType().equalsIgnoreCase("number") && outcome.getResult().equalsIgnoreCase("pass")) {
+
 				if (this.passNumbers == null)
 					passNumbers = new TreeMap<String, Outcome>();
+				
+				if(this.passNumbers.containsKey(outcome.getKey()))
+					throw new DuplicateKeyException("Duplicate Outcome " + outcome.getKey() + " key for rule " + this.ruleNumber);
+				
 				this.passNumbers.put(outcome.getKey(), outcome);
 				continue;
+
 			}
 			if (outcome.getType().equalsIgnoreCase("number") && outcome.getResult().equalsIgnoreCase("fail")) {
+
 				if (this.failNumbers == null)
 					failNumbers = new TreeMap<String, Outcome>();
+
+				if(this.failNumbers.containsKey(outcome.getKey()))
+					throw new DuplicateKeyException("Duplicate Outcome " + outcome.getKey() + " key for rule " + this.ruleNumber);
+				
 				this.failNumbers.put(outcome.getKey(), outcome);
 				continue;
 			}

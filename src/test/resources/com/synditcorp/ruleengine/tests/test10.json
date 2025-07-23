@@ -1,0 +1,32 @@
+{
+	"documentId" : "TEST_RULES",
+	"description" : "This definition should fail.  Rule 1 has a duplicate fail number key.",
+	"version" : "3.0.0",
+	"calcRules":
+		[
+		]
+	, "andRules" : 
+		[
+		]
+	, "orRules" : 
+		[
+		{
+			"ruleType" : "or",
+			"ruleNumber" : "1",
+			"description" : "Rule 1 will fail because of duplicate outcome tag keys",
+			"compositeRules" : [1],
+			"outcomes": [
+				{"result":"fail", "type":"tag", "key":"flag","expression":"1FlagF","global":"true"},
+				{"result":"fail", "type":"tag", "key":"flag","expression":"1FlagF","global":"true"}
+				]
+		}
+		]
+	, "allRules" : 
+		[
+		]
+	, "threadRules":
+		[
+		]
+}
+
+
