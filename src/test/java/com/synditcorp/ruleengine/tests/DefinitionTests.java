@@ -118,10 +118,75 @@ public class DefinitionTests {
 	}
 	
 	/*
-	 * Rule 19 is set to false, throws NoRuleEvaluatedException
+	 * Fails because of a duplicate outcome number pass key 
 	 */
 	@Test
 	void test7() throws Exception {
+		
+		Exception exception = assertThrows(com.synditcorp.ruleengine.exceptions.DuplicateKeyException.class, () -> {
+			String fileName = "test7.json";
+			Path definitionResource = Paths.get(this.getClass().getResource(fileName).toURI());
+			RuleJSONParser parser = new RuleJSONParser();
+			parser.loadRules(definitionResource);
+			RuleDefinition rules = new RuleDefinition(parser);
+
+	    });
+		
+	}
+	
+	/*
+	 * Fails because of a duplicate outcome number fail key 
+	 */
+	@Test
+	void test8() throws Exception {
+		
+		Exception exception = assertThrows(com.synditcorp.ruleengine.exceptions.DuplicateKeyException.class, () -> {
+			String fileName = "test8.json";
+			Path definitionResource = Paths.get(this.getClass().getResource(fileName).toURI());
+			RuleJSONParser parser = new RuleJSONParser();
+			parser.loadRules(definitionResource);
+			RuleDefinition rules = new RuleDefinition(parser);
+	    });
+		
+	}
+	
+	/*
+	 * Fails because of a duplicate outcome tag pass key 
+	 */
+	@Test
+	void test9() throws Exception {
+		
+		Exception exception = assertThrows(com.synditcorp.ruleengine.exceptions.DuplicateKeyException.class, () -> {
+			String fileName = "test9.json";
+			Path definitionResource = Paths.get(this.getClass().getResource(fileName).toURI());
+			RuleJSONParser parser = new RuleJSONParser();
+			parser.loadRules(definitionResource);
+			RuleDefinition rules = new RuleDefinition(parser);
+	    });
+		
+	}
+	
+	/*
+	 * Fails because of a duplicate outcome tag fail key 
+	 */
+	@Test
+	void test10() throws Exception {
+		
+		Exception exception = assertThrows(com.synditcorp.ruleengine.exceptions.DuplicateKeyException.class, () -> {
+			String fileName = "test10.json";
+			Path definitionResource = Paths.get(this.getClass().getResource(fileName).toURI());
+			RuleJSONParser parser = new RuleJSONParser();
+			parser.loadRules(definitionResource);
+			RuleDefinition rules = new RuleDefinition(parser);
+	    });
+		
+	}
+	
+	/*
+	 * Rule 19 is set to false, throws NoRuleEvaluatedException
+	 */
+	@Test
+	void test11() throws Exception {
 		
 		RuleEvaluator ruleEvaluator = getRuleEvaluator();
 
@@ -135,7 +200,7 @@ public class DefinitionTests {
 	 * Rule 20 has expired, throws NoRuleEvaluatedException
 	 */
 	@Test
-	void test8() throws Exception {
+	void test12() throws Exception {
 		
 		RuleEvaluator ruleEvaluator = getRuleEvaluator();
 
@@ -149,7 +214,7 @@ public class DefinitionTests {
 	 * Rule 21 is not effective yet, throws NoRuleEvaluatedException
 	 */
 	@Test
-	void test9() throws Exception {
+	void test13() throws Exception {
 		
 		RuleEvaluator ruleEvaluator = getRuleEvaluator();
 
@@ -163,7 +228,7 @@ public class DefinitionTests {
 	 * Rule 22 this rule will pass because it is active and falls within the date range
 	 */
 	@Test
-	void test10() throws Exception {
+	void test14() throws Exception {
 		
 		RuleEvaluator ruleEvaluator = getRuleEvaluator();
 		
@@ -175,7 +240,7 @@ public class DefinitionTests {
 	 * Rule 1 should return a score of 10 and a flag with value '1FlagP'
 	 */
 	@Test
-	void test11() throws Exception {
+	void test15() throws Exception {
 		
 		RuleEvaluator ruleEvaluator = getRuleEvaluator();
 		ruleEvaluator.evaluateRule(1);
@@ -191,7 +256,7 @@ public class DefinitionTests {
 	 * Rule 1 should fail because variables do not exist in collection (in this case, they simply weren't loaded)
 	 */
 	@Test
-	void test12() throws Exception {
+	void test16() throws Exception {
 		
 		String fileName = "definitionsForTesting.json";
 		Path definitionResource = Paths.get(this.getClass().getResource(fileName).toURI());
@@ -210,7 +275,7 @@ public class DefinitionTests {
 	 * Rule 1 should return a score of 10 and a flag with value '1FlagP'
 	 */
 	@Test
-	void test13() throws Exception {
+	void test17() throws Exception {
 		
 		RuleEvaluator ruleEvaluator = getRuleEvaluator();
 		ruleEvaluator.evaluateRule(1);
@@ -225,7 +290,7 @@ public class DefinitionTests {
 	 * Rule 18 is a ThreadRule and should return an amount of 74.25 and include a flag with value '7FlagP'
 	 */
 	@Test
-	void test14() throws Exception {
+	void test18() throws Exception {
 		
 		RuleEvaluator ruleEvaluator = getRuleEvaluator();
 		ruleEvaluator.setThreadBlockSize(4);
@@ -242,7 +307,7 @@ public class DefinitionTests {
 	 * Rule 10 fails should return an amount of -530 and include a flag with value '10FlagF'
 	 */
 	@Test
-	void test15() throws Exception {
+	void test19() throws Exception {
 		
 		RuleEvaluator ruleEvaluator = getRuleEvaluator();
 		Boolean result = ruleEvaluator.evaluateRule(10);
@@ -258,12 +323,10 @@ public class DefinitionTests {
 	 * Rule 11 passes and should return an amount of 473 and includes flags with values '10FlagF', 1FlagP, 2FlagP, 3FlagF, 10FlagF, 11ReasonP  
 	 */
 	@Test
-	void test16() throws Exception {
+	void test20() throws Exception {
 		
 		RuleEvaluator ruleEvaluator = getRuleEvaluator();
 		Boolean result = ruleEvaluator.evaluateRule(11);
-		
-		System.out.println(ruleEvaluator.getVariables());
 		
 		boolean correctScore = ruleEvaluator.getNumberOutcome(11,"amount") == 473;
 		
@@ -281,6 +344,105 @@ public class DefinitionTests {
 		assertTrue( (result && correctScore && included && alsoIncluded), "Rule 11 values not returned as expected.");
 		
 	}
+	
+
+	
+	/*
+	 * Rule 10 passes and returns an amount of -7
+	 */
+	@Test
+	void test21() throws Exception {
+		
+		RuleEvaluator ruleEvaluator = getRuleEvaluator();
+		Boolean result = ruleEvaluator.evaluateRule(24);
+		
+		boolean correctScore = ruleEvaluator.getNumberOutcome(24,"amount") == 46;
+		
+		assertTrue( (result && correctScore), "Rule 24 values not returned as expected.");
+		
+	}
+	
+	/*
+	 * Fails because of a duplicate rule number in definition file 
+	 */
+	@Test
+	void test22() throws Exception {
+		
+		Exception exception = assertThrows(com.synditcorp.ruleengine.exceptions.DuplicateKeyException.class, () -> {
+			String fileName = "test11.json";
+			Path definitionResource = Paths.get(this.getClass().getResource(fileName).toURI());
+			RuleJSONParser parser = new RuleJSONParser();
+			parser.loadRules(definitionResource);
+			RuleDefinition rules = new RuleDefinition(parser);
+	    });
+		
+	}
+	
+	/*
+	 * Fails because of a duplicate rule number in definition file 
+	 */
+	@Test
+	void test23() throws Exception {
+		
+		Exception exception = assertThrows(com.synditcorp.ruleengine.exceptions.DuplicateKeyException.class, () -> {
+			String fileName = "test12.json";
+			Path definitionResource = Paths.get(this.getClass().getResource(fileName).toURI());
+			RuleJSONParser parser = new RuleJSONParser();
+			parser.loadRules(definitionResource);
+			RuleDefinition rules = new RuleDefinition(parser);
+	    });
+		
+	}
+	
+	/*
+	 * Fails because of a duplicate rule number in definition file 
+	 */
+	@Test
+	void test24() throws Exception {
+		
+		Exception exception = assertThrows(com.synditcorp.ruleengine.exceptions.DuplicateKeyException.class, () -> {
+			String fileName = "test13.json";
+			Path definitionResource = Paths.get(this.getClass().getResource(fileName).toURI());
+			RuleJSONParser parser = new RuleJSONParser();
+			parser.loadRules(definitionResource);
+			RuleDefinition rules = new RuleDefinition(parser);
+	    });
+		
+	}
+	
+	/*
+	 * Fails because of a duplicate rule number in definition file 
+	 */
+	@Test
+	void test25() throws Exception {
+		
+		Exception exception = assertThrows(com.synditcorp.ruleengine.exceptions.DuplicateKeyException.class, () -> {
+			String fileName = "test14.json";
+			Path definitionResource = Paths.get(this.getClass().getResource(fileName).toURI());
+			RuleJSONParser parser = new RuleJSONParser();
+			parser.loadRules(definitionResource);
+			RuleDefinition rules = new RuleDefinition(parser);
+	    });
+		
+	}
+	
+	/*
+	 * Fails because of a duplicate rule number in definition file 
+	 */
+	@Test
+	void test26() throws Exception {
+		
+		Exception exception = assertThrows(com.synditcorp.ruleengine.exceptions.DuplicateKeyException.class, () -> {
+			String fileName = "test15.json";
+			Path definitionResource = Paths.get(this.getClass().getResource(fileName).toURI());
+			RuleJSONParser parser = new RuleJSONParser();
+			parser.loadRules(definitionResource);
+			RuleDefinition rules = new RuleDefinition(parser);
+	    });
+		
+	}
+	
+
 	
 	private RuleEvaluator getRuleEvaluator() throws Exception {
 		

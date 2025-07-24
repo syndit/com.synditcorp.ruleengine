@@ -1,6 +1,6 @@
 {
 	"documentId" : "TEST_RULES",
-	"description" : "These definitions are for unit testing the Syndit Rule Engine.  Currently work in progress",
+	"description" : "These definitions are for unit testing the Syndit Rule Engine.",
 	"version" : "3.0.0",
 	"documentTags" : ["test"],
 	"startRule" : "1",
@@ -143,38 +143,6 @@
 				]
 			},	
 			{
-			"ruleType" : "calc",
-			"ruleNumber" : "99",
-			"description" : "Rule 5 passes",
-			"expression" : "TEST_RULES_10_flag.contains('10FlagP') && TEST_RULES_2_flag.contains('2FlagP') && TEST_RULES_1_flag.contains('1FlagP')",
-			"handlerClass" : "com.synditcorp.ruleengine.handlers.ExpressionRuleHandler",
-			"active" : "true",
-			"effectiveDate" : null,
-			"expirationDate" : null,
-			"outcomes": [
-					{"result":"pass", "type":"number", "key":"amount","expression":"3.45","global":"true"},
-					{"result":"fail", "type":"number", "key":"amount","expression":"-6.17","global":"true"},
-					{"result":"pass", "type":"tag", "key":"flag","expression":"5FlagP","global":"false"},
-					{"result":"fail", "type":"tag", "key":"flag","expression":"5FlagF","global":"false"}
-				]
-			},	
-			{
-				"ruleType" : "calc",
-				"ruleNumber" : "89",
-				"description" : "Rule 9 passes",
-				"expression" : "TEST_RULES_1_flag.contains('1FlagP') && TEST_RULES_2_flag.contains('2FlagP')",
-				"handlerClass" : "com.synditcorp.ruleengine.handlers.ExpressionRuleHandler",
-				"active" : "true",
-				"effectiveDate" : null,
-				"expirationDate" : null,
-				"outcomes": [
-						{"result":"pass", "type":"number", "key":"amount","expression":"7","global":"true"},
-						{"result":"fail", "type":"number", "key":"amount","expression":"14","global":"true"},
-						{"result":"pass", "type":"tag", "key":"flag","expression":"9FlagP","global":"false"},
-						{"result":"fail", "type":"tag", "key":"flag","expression":"9FlagF","global":"false"}
-					]
-			},
-			{
 				"ruleType" : "calc",
 				"ruleNumber" : "17",
 				"description" : "Calling rule from another Rule Engine instance",
@@ -192,16 +160,14 @@
 			},
 			{
 				"ruleType" : "calc",
-				"ruleNumber" : "92",
-				"description" : "Rule 2 passes",
-				"expression" : "amount2 == 5.00 && TEST_RULES_1_flag.contains('1FlagP') && phone.matches('.*[.]555[.].*')",
+				"ruleNumber" : "23",
+				"description" : "Rule 23 passes",
+				"expression" : "(TEST_RULES_3_amount + TEST_RULES_2_amount) == -7",
 				"handlerClass" : "com.synditcorp.ruleengine.handlers.ExpressionRuleHandler",
 				"active" : "true",
 				"outcomes": [
-					{"result":"pass", "type":"number", "key":"amount","expression":"TEST_RULES_1_amount + 13","global":"true"},
-					{"result":"fail", "type":"number", "key":"amount","expression":"TEST_RULES_1_amount - 7","global":"true"},
-					{"result":"pass", "type":"tag", "key":"flag","expression":"2FlagP","global":"true"},
-					{"result":"fail", "type":"tag", "key":"flag","expression":"2FlagF","global":"true"}
+					{"result":"pass", "type":"number", "key":"amount","expression":"TEST_RULES_1_amount + 13","global":"true","compositeOutcomeRules":[2]},
+					{"result":"fail", "type":"number", "key":"amount","expression":"TEST_RULES_1_amount - 7","global":"true","compositeOutcomeRules":[-2]}
 				]	
 			},
 			{
@@ -255,6 +221,8 @@
 				"outcomes": [
 						{"result":"pass", "type":"number", "key":"amount","expression":"500","global":"true","compositeOutcomeRules":[1,-3,2]},
 						{"result":"fail", "type":"number", "key":"amount","expression":"-500","global":"true","compositeOutcomeRules":[-3]},
+						{"result":"pass", "type":"number", "key":"amount2","expression":"500","global":"true","compositeOutcomeRules":[1,-3,2]},
+						{"result":"fail", "type":"number", "key":"amount2","expression":"-500","global":"true","compositeOutcomeRules":[-3]},
 						{"result":"pass", "type":"tag", "key":"flag","expression":"10FlagP","global":"true","compositeOutcomeRules":[1,2,-3]},
 						{"result":"fail", "type":"tag", "key":"flag","expression":"10FlagF","global":"false","compositeOutcomeRules":[1,2]}
 					]
@@ -263,7 +231,7 @@
 				"ruleType" : "and",
 				"ruleNumber" : "11",
 				"ruleTags" : ["protected"],
-				"description" : "Rule 10 returns true",
+				"description" : "Rule 11 returns true",
 				"compositeRules" : [-10, 2],
 				"active" : "true",
 				"effectiveDate" : null,
@@ -278,57 +246,26 @@
 					]
 			},
 			{
-				"ruleType" : "and",
-				"ruleNumber" : "119",
-				"description" : "11 passes",
-				"compositeRules" : [-3,4],
-				"active" : "true",
-				"effectiveDate" : null,
-				"expirationDate" : null,
-				"outcomes": [
-						{"result":"pass", "type":"number", "key":"amount","expression":"11","global":"true","compositeOutcomeRules":[3,10,5]},
-						{"result":"fail", "type":"number", "key":"amount","expression":"-11","global":"true","compositeOutcomeRules":[1,2,-3]},
-						{"result":"pass", "type":"tag", "key":"flag","expression":"11FlagP","global":"false","compositeOutcomeRules":[1,2,3]},
-						{"result":"fail", "type":"tag", "key":"flag","expression":"11FlagF","global":"false","compositeOutcomeRules":[1,2,3]}
-					]
-			},
-			{
-				"ruleType" : "and",
-				"ruleNumber" : "13",
-				"description" : "Rule 13 is true",
-				"compositeRules" : [10,5],
-				"active" : "true",
-				"effectiveDate" : null,
-				"expirationDate" : null,
-				"outcomes": [
-						{"result":"pass", "type":"number", "key":"amount","expression":"13","global":"true","compositeOutcomeRules":[10,5]},
-						{"result":"fail", "type":"number", "key":"amount","expression":"-13","global":"true","compositeOutcomeRules":[-10,-5]},
-						{"result":"pass", "type":"tag", "key":"flag","expression":"13FlagP","global":"false","compositeOutcomeRules":[10,5]},
-						{"result":"fail", "type":"tag", "key":"flag","expression":"12FlagF","global":"false","compositeOutcomeRules":[-10,-5]}
-					]
-			},
-			{
-				"ruleType" : "and",
-				"ruleNumber" : "14",
-				"description" : "Rule 14 is true",
-				"compositeRules" : [13,12,-4,5,6,7,-15,-8,9,16,17],
-				"active" : "true",
-				"effectiveDate" : null,
-				"expirationDate" : null,
-				"outcomes": [
-						{"result":"pass", "type":"number", "key":"amount","expression":"14","global":"true","compositeOutcomeRules":[13,4]},
-						{"result":"fail", "type":"number", "key":"amount","expression":"-14","global":"true","compositeOutcomeRules":[-13,-4]},
-						{"result":"pass", "type":"tag", "key":"flag","expression":"13FlagP","global":"false","compositeOutcomeRules":[13,4]},
-						{"result":"fail", "type":"tag", "key":"flag","expression":"12FlagF","global":"false","compositeOutcomeRules":[-13,-4]}
-					]
-			}
+			"ruleType" : "and",
+			"ruleNumber" : "24",
+			"ruleTags" : ["protected"],
+			"description" : "Rule 11 returns true",
+			"compositeRules" : [-10, 2,-15,23],
+			"active" : "true",
+			"effectiveDate" : null,
+			"expirationDate" : null,
+			"outcomes": [
+					{"result":"pass", "type":"number", "key":"amount","global":"true","compositeOutcomeRules":[23]},
+					{"result":"fail", "type":"number", "key":"amount","global":"true","compositeOutcomeRules":[-23]}
+				]
+		}
 		]
 	, "orRules" : 
 		[
 			{
 				"ruleType" : "or",
 				"ruleNumber" : "12",
-				"description" : "Rule 12 is true",
+				"description" : "Rule 12 is true because 11 passes",
 				"compositeRules" : [10,11],
 				"active" : "true",
 				"effectiveDate" : null,
@@ -344,7 +281,7 @@
 				"ruleType" : "or",
 				"ruleNumber" : "15",
 				"description" : "Rule 15 is false",
-				"compositeRules" : [3],
+				"compositeRules" : [3,-2],
 				"active" : "true",
 				"effectiveDate" : null,
 				"expirationDate" : null,

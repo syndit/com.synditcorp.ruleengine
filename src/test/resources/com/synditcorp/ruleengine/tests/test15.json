@@ -1,0 +1,35 @@
+{
+	"documentId" : "TEST_RULES",
+	"description" : "This definition should fail.  Rule number 1 is used twice.",
+	"version" : "3.0.0",
+	"calcRules":
+		[
+		{
+			"ruleType" : "calc",
+			"ruleNumber" : "1",
+			"description" : "Rule 1 passes",
+			"expression" : "true",
+			"handlerClass" : "com.synditcorp.ruleengine.handlers.ExpressionRuleHandler"
+		}
+		]
+	, "andRules" : 
+		[
+		]
+	, "orRules" : 
+		[
+		]
+	, "allRules" : 
+		[
+		]
+	, "threadRules":
+		[
+		{
+			"ruleType" : "thread",
+			"ruleNumber" : "1",
+			"description" : "Rule 1 will fail because of duplicate rule",
+			"threadRules" : [1]
+		}
+		]
+}
+
+

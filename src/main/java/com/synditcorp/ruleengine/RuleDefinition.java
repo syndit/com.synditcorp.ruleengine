@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.synditcorp.ruleengine.exceptions.DuplicateKeyException;
 import com.synditcorp.ruleengine.exceptions.NoRuleFoundException;
 import com.synditcorp.ruleengine.exceptions.OutcomeKeyException;
 import com.synditcorp.ruleengine.interfaces.RuleParser;
@@ -176,6 +177,10 @@ public class RuleDefinition {
 			if (!calcRule.getRuleType().equalsIgnoreCase("calc"))
 				throw new IllegalArgumentException("calc rules list can't have '" + calcRule.getRuleType() + "' rules");
 			calcRule.setOutcomesToCategories(this.getDocumentId());
+
+			if(this.aggregateRules.containsKey(calcRule.getRuleNumber()))
+				throw new DuplicateKeyException("Rule number " + calcRule.getRuleNumber() + "is duplicated in the definitions.");
+
 			this.aggregateRules.put(calcRule.getRuleNumber(), calcRule);
 		}
 	}
@@ -189,6 +194,10 @@ public class RuleDefinition {
 			if (!orRule.getRuleType().equalsIgnoreCase("or"))
 				throw new IllegalArgumentException("'Or' rules list can't have '" + orRule.getRuleType() + "' rules");
 			orRule.setOutcomesToCategories(this.getDocumentId());
+
+			if(this.aggregateRules.containsKey(orRule.getRuleNumber()))
+				throw new DuplicateKeyException("Rule number " + orRule.getRuleNumber() + "is duplicated in the definitions.");
+
 			this.aggregateRules.put(orRule.getRuleNumber(), orRule);
 		}
 	}
@@ -202,6 +211,10 @@ public class RuleDefinition {
 			if (!andRule.getRuleType().equalsIgnoreCase("and"))
 				throw new IllegalArgumentException("'And' rules list can't have '" + andRule.getRuleType() + "' rules");
 			andRule.setOutcomesToCategories(this.getDocumentId());
+
+			if(this.aggregateRules.containsKey(andRule.getRuleNumber()))
+				throw new DuplicateKeyException("Rule number " + andRule.getRuleNumber() + "is duplicated in the definitions.");
+
 			this.aggregateRules.put(andRule.getRuleNumber(), andRule);
 		}
 	}
@@ -214,6 +227,10 @@ public class RuleDefinition {
 			AllRule allRule = (AllRule) iterator.next();
 			if (!allRule.getRuleType().equalsIgnoreCase("all"))
 				throw new IllegalArgumentException("'All' rules list can't have '" + allRule.getRuleType() + "' rules");
+
+			if(this.aggregateRules.containsKey(allRule.getRuleNumber()))
+				throw new DuplicateKeyException("Rule number " + allRule.getRuleNumber() + "is duplicated in the definitions.");
+
 			this.aggregateRules.put(allRule.getRuleNumber(), allRule);
 		}
 	}
@@ -228,6 +245,10 @@ public class RuleDefinition {
 				throw new IllegalArgumentException(
 						"'Thread' rules list can't have '" + threadRule.getRuleType() + "' rules");
 			threadRule.setOutcomesToCategories(this.getDocumentId());
+
+			if(this.aggregateRules.containsKey(threadRule.getRuleNumber()))
+				throw new DuplicateKeyException("Rule number " + threadRule.getRuleNumber() + "is duplicated in the definitions.");
+
 			this.aggregateRules.put(threadRule.getRuleNumber(), threadRule);
 		}
 	}
