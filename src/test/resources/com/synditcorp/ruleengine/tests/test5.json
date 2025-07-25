@@ -1,14 +1,14 @@
 {
 	"documentId" : "TEST_RULES",
-	"description" : "This definition should fail.  An 'all' rule can't be in a calcRule array.",
-	"version" : "3.0.0",
+	"description" : "This definition should fail.  A thread rule can't be in a calcRule array.",
+	"version" : "3.0.5",
 	"calcRules":
 		[
 		{
 			"ruleType" : "thread",
 			"ruleNumber" : "12",
 			"description" : "This rule is in the wrong array.",
-			"compositeRules" : [10,11]
+			"threadRules" : [10,11]
 		}
 		]
 	, "andRules" : 

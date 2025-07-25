@@ -442,7 +442,32 @@ public class DefinitionTests {
 		
 	}
 	
+	/*
+	 * Common rule outcome should be in the Variables collection 
+	 */
+	@Test
+	void test27() throws Exception {
+		
+		String fileName = "commonRuleDefinitions.json";
+		Path definitionResource = Paths.get(this.getClass().getResource(fileName).toURI());
+		RuleJSONParser parser = new RuleJSONParser();
+		parser.loadRules(definitionResource);
+		RuleDefinition ruleDefinition = new RuleDefinition(parser);
+		RuleEvaluator commonEvaluator = new RuleEvaluator(ruleDefinition);
 
+		
+		RuleEvaluator ruleEvaluator = getRuleEvaluator();
+		ruleEvaluator.setVariable("commonRuleHandler", commonEvaluator);
+		ruleEvaluator.evaluateRule(17);
+		
+		Double amount = ruleEvaluator.getNumberOutcome(17,"amount");
+		boolean included = ruleEvaluator.getTagOutcome(17, "flag").contains("17FlagP");
+		
+		Double commonAmount = (Double) ruleEvaluator.getVariables().get("COMMON_RULES_1_amount"); 
+		
+		assertTrue( (amount == 17 && included && commonAmount == 999), "Rule 17 values not returned as expected.");
+			
+	}
 	
 	private RuleEvaluator getRuleEvaluator() throws Exception {
 		

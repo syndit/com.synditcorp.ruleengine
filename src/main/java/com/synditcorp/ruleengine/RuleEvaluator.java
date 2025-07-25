@@ -168,10 +168,10 @@ public class RuleEvaluator implements Cloneable {
 	 * Set the variables the rules engine will use in expressions, or passed to
 	 * custom rule handlers. To protect the integrity of the engine, the passed map
 	 * collection entries are added to the internal map collection. Also to protect
-	 * the integrity of the Engine, if variables exist, a VariablesExistException is
+	 * the integrity of the Engine, if variables exist, a EngineSafeguardException is
 	 * thrown.  Use resetVariables to set a new variable collection.
 	 * 
-	 * @throws VariablesExistException when variables exist in the internal map collection
+	 * @throws EngineSafeguardException when variables exist in the internal map collection
 	 * @param variables for the Engine's expressions
 	 */
 	public void setVariables(TreeMap<String, Object> variables) throws EngineSafeguardException {
@@ -185,6 +185,45 @@ public class RuleEvaluator implements Cloneable {
 
 		this.variables.putAll(variables);
 
+	}
+	
+	/**
+	 * Replaces the Engine variable collection.  This is used internally by the engine
+	 * to set the collection without safeguards. 
+	 * 
+	 * @throws Exception
+	 * @param variables for the Engine's expressions
+	 */
+	protected void setVariablesProtected(TreeMap<String, Object> variables) throws Exception {
+		
+		//if same instance being set within the Engine
+		if(this.variables == variables) return;
+
+		this.variables = variables;
+
+	}
+
+	/**
+	 * Set a variable to the rules engine variables collection.  To protect
+	 * the integrity of the Engine, if variables exist, an DuplicateKeyException is 
+	 * thrown.  If the key or variable is null, an EngineSafeguardException is thrown.
+	 * 
+	 * @throws EngineSafeguardException when the key or variable is null.
+	 * @throws DuplicateKeyException when the key or variable is already exist in the variable
+	 * collection.
+	 * @param variable key
+	 * @param variable object
+	 */
+	public void setVariable(String key, Object variable) throws Exception {
+		
+		if(key == null || variable == null)
+			throw new EngineSafeguardException("Variable key or object is null");
+		
+		if(this.variables.containsKey(key))
+			throw new DuplicateKeyException("Variable already exists in variables collection");
+		
+		this.variables.put(key, variable);	
+		
 	}
 	
 	/**
@@ -283,6 +322,7 @@ public class RuleEvaluator implements Cloneable {
 	protected Object clone() {
 
 		RuleEvaluator newRuleEvaluator = new RuleEvaluator(this.ruleDefinition);
+		
 
 		for (int i = 0; i < 2; i++) {
 			try {

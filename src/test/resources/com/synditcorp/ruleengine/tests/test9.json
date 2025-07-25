@@ -1,7 +1,7 @@
 {
 	"documentId" : "TEST_RULES",
-	"description" : "This definition should fail.  Rule 1 has a duplicate fail number key.",
-	"version" : "3.0.0",
+	"description" : "This definition should fail.  Rule 1 has a duplicate pass tag key.",
+	"version" : "3.0.9",
 	"calcRules":
 		[
 		]

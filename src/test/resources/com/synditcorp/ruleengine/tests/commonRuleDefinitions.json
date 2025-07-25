@@ -1,0 +1,23 @@
+{
+	"documentId" : "COMMON_RULES",
+	"description" : "These are common rules",
+	"version" : "3.0.16",
+	"calcRules":
+		[
+			{
+				"ruleType" : "calc",
+				"ruleNumber" : "1",
+				"description" : "Common rule 1. Variables come from the main instance's' variables collection",
+				"expression" : "name1.matches('Buggs.*')",
+				"handlerClass" : "com.synditcorp.ruleengine.handlers.ExpressionRuleHandler",
+				"outcomes": [
+					{"result":"pass", "type":"number", "key":"amount","expression":"999","global":"true"},
+					{"result":"fail", "type":"number", "key":"amount","expression":"-999","global":"true"},
+					{"result":"pass", "type":"tag", "key":"flag","expression":"1FlagP","global":"true"},
+					{"result":"fail", "type":"tag", "key":"flag","expression":"1FlagF","global":"true"}
+				]	
+			}
+		]
+}
+
+

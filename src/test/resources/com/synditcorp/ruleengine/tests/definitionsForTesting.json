@@ -147,10 +147,8 @@
 				"ruleNumber" : "17",
 				"description" : "Calling rule from another Rule Engine instance",
 				"expression" : "1",
-				"handlerClass" : "test.java.CommonRuleHandler",
+				"handlerClass" : "com.somecompany.tests.CommonRuleHandler",
 				"active" : "true",
-				"effectiveDate" : null,
-				"expirationDate" : null,
 				"outcomes": [
 						{"result":"pass", "type":"number", "key":"amount","expression":"17","global":"true"},
 						{"result":"fail", "type":"number", "key":"amount","expression":"-17","global":"true"},

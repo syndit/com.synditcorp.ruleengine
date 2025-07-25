@@ -9,14 +9,12 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.synditcorp.ruleengine.handlers;
+package com.synditcorp.ruleengine;
 
 import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
 
 import java.util.TreeMap;
 
-import com.synditcorp.ruleengine.RuleEvaluator;
-import com.synditcorp.ruleengine.exceptions.EngineSafeguardException;
 import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 import com.synditcorp.ruleengine.interfaces.RuleClassHandler;
 
@@ -51,7 +49,9 @@ public abstract class InstanceHandler implements RuleClassHandler {
 			ruleEvaluator = (RuleEvaluator) variables.get(instanceName);
 			set(ruleEvaluator, variables);
 			Integer ruleNumber = Integer.parseInt(ruleExpression);
+			
 			boolean result = ruleEvaluator.evaluateRule(ruleNumber);
+
 			reset(ruleEvaluator, variables);
 			return Boolean.valueOf(result);
 
@@ -79,8 +79,8 @@ public abstract class InstanceHandler implements RuleClassHandler {
 		variables.remove(instanceName); 
 		
 		try {
-			ruleEvaluator.setVariables(variables);
-		} catch (EngineSafeguardException e) {
+			ruleEvaluator.setVariablesProtected(variables);
+		} catch (Exception e) {
 			ruleEvaluator.resetVariables(variables);
 		}
 

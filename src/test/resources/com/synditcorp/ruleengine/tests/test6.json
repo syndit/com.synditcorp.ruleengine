@@ -1,7 +1,7 @@
 {
 	"documentId" : "TEST_RULES",
-	"description" : "This definition should fail.  An 'and' rule can't be in an orRule array.",
-	"version" : "3.0.0",
+	"description" : "This definition should fail.  The rule type is invalid.",
+	"version" : "3.0.6",
 	"calcRules":
 		[
 		]

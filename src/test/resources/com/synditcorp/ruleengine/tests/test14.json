@@ -1,7 +1,7 @@
 {
 	"documentId" : "TEST_RULES",
 	"description" : "This definition should fail.  Rule number 1 is used twice.",
-	"version" : "3.0.0",
+	"version" : "3.0.14",
 	"calcRules":
 		[
 		{
