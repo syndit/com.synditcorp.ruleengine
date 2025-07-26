@@ -32,7 +32,8 @@ public class RuleJSONParser implements RuleParser {
 	 * Loads the JSON definition file.  Pass a String with the path and file name, or a java.nio.file.Path object.  This parser uses the Jackson parser. 
 	 * If getting definitions from resources like MongoDB, create a new parser that implements the RuleParser interface.
 	 * 
-	 * @param String with path and file name, or java.nio.file.Path object
+	 * @param agruments java.nio.file.Path object
+	 * @throws DefinitionResourceException
 	 */
 	@Override
 	public void loadRules(Object... arguments) throws Exception	{

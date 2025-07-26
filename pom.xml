@@ -64,7 +64,7 @@
  	      </execution>
 	    </executions>
 	  </plugin>
-	 <plugin>
+	  <plugin>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-deploy-plugin</artifactId>
 		<version>3.1.4</version>
@@ -78,18 +78,18 @@
 				</goals>
 			</execution>
 		</executions>
-	</plugin>
-    <plugin>
-      <groupId>org.sonatype.plugins</groupId>
-      <artifactId>nexus-staging-maven-plugin</artifactId>
-      <version>1.7.0</version>
-      <extensions>true</extensions>
-      <configuration>
-        <serverId>ossrh</serverId>
-        <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-        <autoReleaseAfterClose>true</autoReleaseAfterClose>
-      </configuration>
-    </plugin>
+	  </plugin>
+      <plugin>
+      	<groupId>org.sonatype.plugins</groupId>
+      	<artifactId>nexus-staging-maven-plugin</artifactId>
+      	<version>1.7.0</version>
+      	<extensions>true</extensions>
+      	<configuration>
+        	<serverId>ossrh</serverId>
+        	<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+        	<autoReleaseAfterClose>true</autoReleaseAfterClose>
+      	</configuration>
+	  </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -101,8 +101,11 @@
 				</goals>
  			</execution>
 		</executions>
-        </plugin>
-	    <plugin>
+	    <configuration>
+    	    <doclint>none</doclint>
+        </configuration>
+      </plugin>
+	  <plugin>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-source-plugin</artifactId>
     	<version>3.3.1</version>
