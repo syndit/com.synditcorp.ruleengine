@@ -33,6 +33,7 @@ public class RuleJSONParser implements RuleParser {
 	 * If getting definitions from resources like MongoDB, create a new parser that implements the RuleParser interface.
 	 * 
 	 * @param agruments java.nio.file.Path object
+	 * @param agruments java.lang.String
 	 * @throws DefinitionResourceException
 	 */
 	@Override
