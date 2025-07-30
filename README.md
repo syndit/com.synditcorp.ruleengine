@@ -288,8 +288,6 @@ There are five fields for use in identifying a particular document:
  1. documentTags - document tags are used to further define a document.  Tags can be used for things like authorization in databases or display control in custom rule definition editors.
  1. startRule - for very large decision trees, this holds the value of the base rule of the tree.  It is intended for the developers to retrieve at runtime so they don't have to rely on Jira tickets, emails, text messages, etc. to know the starting base rule to call. 
 
-
-
 	"definitionId" : "ORDACC",
 	"description" : "New vehicle order accept tree",
 	"version" : "1.0.17",
@@ -341,7 +339,7 @@ The Syndit Rule Engine is very flexible.  Because at runtime any rule can be cal
 
 ### Calling rules in other documents
 
-Rules can reference other document rules.  For instance, rules can be organized into a common rules document and then use-specific rule documents.  To refer to other document rules, write a simple handler that extends InstanceHandler.  The instanceName field contains the String used to be used for the Variables Map collection key.
+Rules can reference other document rules.  For instance, rules can be organized into a common rules document and then use-specific rule documents.  To refer to other document rules, write a simple handler that extends InstanceHandler.  The instanceName field contains the String to be used for the Variables Map collection key.
 
 	import com.synditcorp.ruleengine.handlers.InstanceHandler;
 	
