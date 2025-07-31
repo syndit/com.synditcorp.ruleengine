@@ -322,13 +322,12 @@ public class RuleEvaluator implements Cloneable {
 	protected Object clone() {
 
 		RuleEvaluator newRuleEvaluator = new RuleEvaluator(this.ruleDefinition);
-		
 
 		for (int i = 0; i < 2; i++) {
 			try {
-				newRuleEvaluator.setVariables(this.variables);
+				newRuleEvaluator.setVariablesProtected(this.variables);
 				newRuleEvaluator.setCache(this.cache);
-			} catch (EngineSafeguardException e) {
+			} catch (Exception e) {
 				newRuleEvaluator.reset();
 				continue;
 			}

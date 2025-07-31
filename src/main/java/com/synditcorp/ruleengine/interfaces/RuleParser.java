@@ -18,7 +18,6 @@ import com.synditcorp.ruleengine.Rules;
  */
 public interface RuleParser {
 
-	//public void loadRules(String fileName) throws Exception;
 	public void loadRules(Object... arguments) throws Exception;
 	public Rules getRules() throws Exception;
 
