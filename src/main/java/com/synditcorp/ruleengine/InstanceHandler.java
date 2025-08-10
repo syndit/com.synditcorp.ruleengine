@@ -11,8 +11,6 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 package com.synditcorp.ruleengine;
 
-import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
-
 import java.util.TreeMap;
 
 import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
@@ -56,11 +54,9 @@ public abstract class InstanceHandler implements RuleClassHandler {
 			return Boolean.valueOf(result);
 
 		} catch (NoRuleEvaluatedException e) {
-			LOGGER.info("Rule number " + ruleExpression + " not evaluated.");
 			reset(ruleEvaluator, variables);
 			throw e;
 		} catch (Exception e) {
-			LOGGER.info("Unable to process expression in InstanceHandler: " + e.toString());
 			reset(ruleEvaluator, variables);
 			throw e;
 		}

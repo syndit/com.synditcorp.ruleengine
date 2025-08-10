@@ -11,15 +11,19 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 package com.synditcorp.ruleengine;
 
-import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.RecursiveTask;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 
 public class ThreadRuleCompute extends RecursiveTask<ThreadResults> {
+
+	
+	public static final Logger logger = LogManager.getLogger(RuleEvaluator.class);
 
 	private static final long serialVersionUID = 1L;
 	private final Integer threadRuleNumber;
@@ -49,7 +53,7 @@ public class ThreadRuleCompute extends RecursiveTask<ThreadResults> {
 				try {
 					ruleEvaluator.evaluateRule(ruleNumber);
 				} catch (NoRuleEvaluatedException e) {
-					LOGGER.info("No rule evaluated exception in thread rule " + threadRuleNumber + " for rule number "
+					logger.info("No rule evaluated exception in thread rule " + threadRuleNumber + " for rule number "
 							+ ruleNumber + ".");
 					continue;
 				}
@@ -72,10 +76,10 @@ public class ThreadRuleCompute extends RecursiveTask<ThreadResults> {
 				}
 
 			} catch (NullPointerException e) {
-				LOGGER.info("Null pointer exception when evaluating " + ruleNumber + " in Thread rule.");
+				logger.info("Null pointer exception when evaluating " + ruleNumber + " in Thread rule.");
 				continue;
 			} catch (Exception e) {
-				LOGGER.info("Exception in thread when evaluating rule number " + ruleNumber + ": " + e);
+				logger.info("Exception in thread when evaluating rule number " + ruleNumber + ": " + e);
 			}
 		}
 

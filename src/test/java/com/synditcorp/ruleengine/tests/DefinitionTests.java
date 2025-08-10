@@ -469,6 +469,45 @@ public class DefinitionTests {
 			
 	}
 	
+	/*
+	 * This tests the ignoreCache feature.  Because ignoreCache in rule 25 is set to 'true', the cached result is ignored resulting 
+	 * in the com.somecompany.tests.MultipleUseClass class called the second time.  MultipleUseClass checks if the variable TEST_RULES_25_flag
+	 * exists in the variables collection, which in this case is set after the first call. 
+	 */
+	@Test
+	void test28() throws Exception {
+		
+		RuleEvaluator ruleEvaluator = getRuleEvaluator();
+		
+		boolean expectedResult1 = (ruleEvaluator.evaluateRule(25) == false); //false is cached
+		
+		boolean expectedResult2 = (ruleEvaluator.evaluateRule(25) == true);  //false is cached, but ignored, so MultipleUseClass is called again and the variable now exists.
+
+		
+		assertTrue( (expectedResult1 && expectedResult2 ), "Rule 25 results not as expected.");
+			
+	}
+
+	/*
+	 * This tests the ignoreCache feature.  Because ignoreCache in rule 26 is set to 'false', the cached result is not ignored resulting 
+	 * in the com.somecompany.tests.MultipleUseClass class called only once.  MultipleUseClass checks if the variable TEST_RULES_26_flag
+	 * exists in the variables collection, which in this case is set after the first call. Because cache is not ignored, the cache will 
+	 * be used and the second evaluateRule call will return the result of the first evaluation and not call MulipleUseClass again.
+	 */
+	@Test
+	void test29() throws Exception {
+		
+		RuleEvaluator ruleEvaluator = getRuleEvaluator();
+		
+		boolean expectedResult1 = (ruleEvaluator.evaluateRule(26) == false); //false is cached
+		
+		boolean expectedResult2 = (ruleEvaluator.evaluateRule(26) == false); //false returned from the cache
+
+		
+		assertTrue( (expectedResult1 && expectedResult2 ), "Rule 26 results not as expected.");
+			
+	}
+
 	private RuleEvaluator getRuleEvaluator() throws Exception {
 		
 		if(this.ruleEvaluator == null) {

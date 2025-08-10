@@ -203,8 +203,30 @@
 				"active" : "true",
 				"effectiveDate" : "2020-01-01",
 				"expirationDate" : "2100-01-01"
-			}
+			},
+			{
+				"ruleType" : "calc",
+				"ruleNumber" : "25",
+				"description" : "Test ruleCache.  Setting ignoreCache to true allows the rule to be repeatedly evaluated.",
+				"expression" : "TEST_RULES_25_flag",
+				"handlerClass" : "com.somecompany.tests.MultipleUseClass",
+				"ignoreCache":"true",
+				"outcomes": [
+						{"result":"fail", "type":"tag", "key":"flag","expression":"25FlagF","global":"true"}
 				]
+			},
+			{
+				"ruleType" : "calc",
+				"ruleNumber" : "26",
+				"description" : "Test ruleCache.  Setting ignoreCache to false means this rule will evaluate only once.",
+				"expression" : "TEST_RULES_26_flag",
+				"handlerClass" : "com.somecompany.tests.MultipleUseClass",
+				"ignoreCache":"false",
+				"outcomes": [
+						{"result":"fail", "type":"tag", "key":"flag","expression":"26FlagF","global":"true"}
+				]
+			}
+		]
 	, "andRules" : 
 		[
 			{

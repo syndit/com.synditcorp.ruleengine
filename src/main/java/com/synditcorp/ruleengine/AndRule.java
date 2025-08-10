@@ -20,14 +20,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class AndRule extends CompositeRule {
 
 	@JsonCreator
-	public AndRule(@JsonProperty("ruleNumber") Integer ruleNumber, @JsonProperty("ruleType") String ruleType,
-			@JsonProperty("ruleTags") ArrayList<String> ruleTags, @JsonProperty("description") String description,
-			@JsonProperty("active") Boolean active, @JsonProperty("expirationDate") Date expirationDate,
+	public AndRule(@JsonProperty("ruleNumber") Integer ruleNumber, 
+			@JsonProperty("ruleType") String ruleType,
+			@JsonProperty("ruleTags") ArrayList<String> ruleTags, 
+			@JsonProperty("description") String description,
+			@JsonProperty("active") Boolean active, 
+			@JsonProperty("ignoreCache") Boolean ignoreCache,
+			@JsonProperty("expirationDate") Date expirationDate,
 			@JsonProperty("effectiveDate") Date effectiveDate,
 			@JsonProperty("outcomes") ArrayList<Outcome> outcomes,
 			@JsonProperty("compositeRules") ArrayList<Integer> compositeRules) {
 
-		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes,
+		super(ruleNumber, ruleType, ruleTags, description, active, ignoreCache, expirationDate, effectiveDate, outcomes,
 				compositeRules);
 
 	}

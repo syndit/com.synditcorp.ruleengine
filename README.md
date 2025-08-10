@@ -149,6 +149,7 @@ An  _and_  rule is a composite rule that references one or more  _calc_  rules, 
 				"description" : "Rule 10 will fail because rule 3 fails",
 				"compositeRules" : [1, 2, 3, 4, 5, 6, 7, 8],
 				"active" : "true",
+				"ignoreCache":"true",
 				"effectiveDate" : null,
 				"expirationDate" : null,
 				"outcomes": [
@@ -242,7 +243,9 @@ The optional "description" field holds a meaningful description for the rule.
 
 The optional "ruleTags" field is a String array useful in further describing a rule.  The ruleTags values are not used to evaluate rules at runtime.  They are intended for such things as rule authorization or display control in custom document definition editors. 
 
-Use the optional active, effective date, and expiration date fields to control rule availability.  If a rule is not active, or does not meet the date criteria, it is simply ignored by the Engine
+Use the optional active, effective date, and expiration date fields to control rule availability.  If a rule is not active, or does not meet the date criteria, it is simply ignored by the Engine.
+
+The optional "ignoreCache" field, when set to TRUE, will ignore the cached runtime rule results and evaluate a rule each time it is called.  The default is FALSE, meaning the rule's initial evaluation result will be cached and used for subsequent calls.  
 
 Composite rules require a "compositeRules" array field that lists the rule numbers of the rules to be evaluated.  The rules are evaluated in the order they appear in the array.
 
@@ -288,12 +291,12 @@ There are five fields for use in identifying a particular document:
  1. documentTags - document tags are used to further define a document.  Tags can be used for things like authorization in databases or display control in custom rule definition editors.
  1. startRule - for very large decision trees, this holds the value of the base rule of the tree.  It is intended for the developers to retrieve at runtime so they don't have to rely on Jira tickets, emails, text messages, etc. to know the starting base rule to call. 
 
-	"definitionId" : "ORDACC",
-	"description" : "New vehicle order accept tree",
-	"version" : "1.0.17",
-	"active" : true,
-	"documentTags" : ["test","partial"],
-	"startRule" : "14",
+		"definitionId" : "ORDACC",
+		"description" : "New vehicle order accept tree",
+		"version" : "1.0.17",
+		"active" : true,
+		"documentTags" : ["test","partial"],
+		"startRule" : "14",
 
 ## Accessing outcome values from other rules at runtime
 
@@ -376,7 +379,7 @@ It takes time to parse rule documents, and parsing very large documents can add 
 
 ### Expressions
 
-MVEL is the default expression language used by the Engine.  At runtime, it takes time for each MVEL statement type to initialize.  So, if milliseconds are critical to your SLA, keep the rule evaluator instance in memory for a given transaction's processing and, be sure to reset if variables need to be refreshed between calls.  But, rule evaluators are not thread safe so be mindful of this when caching an object instance.  Another technique is to evaluate immediately after initialization a simple  _calc_  rule that has each MVEL statement type your definition's rules will use.  
+MVEL is the default expression language used by the Engine.  At runtime, it takes time for each MVEL statement type to initialize.  So, if milliseconds are critical to your SLA, keep the rule evaluator instance in memory for a given transaction's processing and, be sure to reset if variables need to be refreshed between calls.  But, rule evaluators are not thread safe so be mindful of this when caching an object instance.  Another technique is to evaluate immediately after a rule evaluator's initialization a simple  _calc_  rule that has each MVEL statement type your definition's rules will use.  
 
 ## Logging
 

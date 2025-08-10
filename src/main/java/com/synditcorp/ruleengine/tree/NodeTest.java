@@ -12,15 +12,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.tree;
 
-import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.synditcorp.ruleengine.RuleEvaluator;
 
 public class NodeTest {
 
+	public static final Logger logger = LogManager.getLogger(RuleEvaluator.class);
+	
+	
 	public static void main(String[] args) {
 
 		try {
 
-			LOGGER.info("Starting NodeTest");
+			logger.info("Starting NodeTest");
 			
 			Node rootNode = TestTree.setTree();
 			Nodes.getPaths(rootNode);

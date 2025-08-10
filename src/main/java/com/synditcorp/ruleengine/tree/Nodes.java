@@ -11,14 +11,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine.tree;
 
-import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
-
 import java.util.ArrayList;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.synditcorp.ruleengine.RuleEvaluator;
 
 /**
  * Nodes is a way to map the paths in a decision tree
  */
 public class Nodes {
+	
+	public static final Logger logger = LogManager.getLogger(RuleEvaluator.class);
 
 	public Nodes() {
 		
@@ -84,7 +89,7 @@ public class Nodes {
 				list.add(path[i]);
 	            pathList = pathList + " " + path[i];
 		}
-		LOGGER.debug("Path: " + pathList);
+		logger.debug("Path: " + pathList);
 		
 		return list;  
 	       

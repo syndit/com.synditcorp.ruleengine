@@ -11,17 +11,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 package com.synditcorp.ruleengine;
 
-import static com.synditcorp.ruleengine.logging.RuleLogger.LOGGER;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ForkJoinPool;
-import java.util.stream.Collectors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mvel2.PropertyAccessException;
 
 import com.synditcorp.ruleengine.exceptions.DuplicateKeyException;
@@ -40,6 +40,8 @@ import com.synditcorp.ruleengine.processors.CalcRuleProcessor;
  * accessed directly.
  */
 public class RuleEvaluator implements Cloneable {
+	
+	public static final Logger logger = LogManager.getLogger(RuleEvaluator.class);
 
 	private RuleDefinition ruleDefinition;
 	private TreeMap<Integer, Boolean> cache = new TreeMap<Integer, Boolean>();
@@ -127,20 +129,20 @@ public class RuleEvaluator implements Cloneable {
 	 */
 	public boolean evaluateRule(Integer ruleNumber) throws Exception {
 
-		LOGGER.info("Syndit Rule Engine evaluating rule number {} using document ID {}, version {}", ruleNumber,
+		logger.info("Syndit Rule Engine evaluating rule number {} using document ID {}, version {}", ruleNumber,
 				this.getDocumentId(), this.getVersion());
 		
 		TimeTrack t = null;
-		if(LOGGER.isDebugEnabled()) {
+		if(logger.isDebugEnabled()) {
 			t = new TimeTrack();
 		}
 
 		Boolean result = callRule(ruleNumber);
 		
-		if(LOGGER.isDebugEnabled()) {
+		if(logger.isDebugEnabled()) {
 			if( t != null) {
 				long l = TimeTrack.getElapsedTime(t);
-				LOGGER.debug("{} milliseconds ({} nanoseconds) to evaluate rule number {}", TimeUnit.NANOSECONDS.toMillis(l), l,  ruleNumber);
+				logger.debug("{} milliseconds ({} nanoseconds) to evaluate rule number {}", TimeUnit.NANOSECONDS.toMillis(l), l,  ruleNumber);
 			}
 		}
 		
@@ -148,7 +150,7 @@ public class RuleEvaluator implements Cloneable {
 		if (result == null)
 			throw new NoRuleEvaluatedException();
 
-		LOGGER.info("Syndit Rule Engine completed evaluation of rule number {} with result equal to {}", ruleNumber,
+		logger.info("Syndit Rule Engine completed evaluation of rule number {} with result equal to {}", ruleNumber,
 				result);
 
 		return (result.booleanValue());
@@ -355,10 +357,12 @@ public class RuleEvaluator implements Cloneable {
 	 * 
 	 * @param variableName to be added to the collection and the variable's object
 	 */
-	private void putToVariables(String variableName, Object value) throws DuplicateKeyException {
+	private void putToVariables(String variableName, Object value) throws Exception {
 
-		if (this.variables.containsKey(variableName))
-			throw new DuplicateKeyException(variableName);
+		if(logger.isDebugEnabled()) {
+			if (this.variables.containsKey(variableName)) 
+				logger.debug("Variable value being overwritten: " + variableName);
+		}
 
 		this.variables.put(variableName, value);
 
@@ -619,11 +623,11 @@ public class RuleEvaluator implements Cloneable {
 	private Boolean callRule(Integer ruleNumber) throws Exception {
 
 		ruleDefinition.isRule(ruleNumber);
-
-		//if it's already been evaluated, get result from cache
-		if (cache.containsKey(ruleNumber))
+		
+		//if it's already been evaluated and rule uses cache, get result from cache
+		if (cache.containsKey(ruleNumber) && useCache(ruleNumber))
 			return cache.get(ruleNumber);
-
+		
 		//checking active, effective and expiration dates
 		if (!isRuleApplicable(ruleNumber))
 			return null;
@@ -663,6 +667,15 @@ public class RuleEvaluator implements Cloneable {
 		return isApplicable;
 
 	}
+	
+	/**
+	 * Returns whether to use the runtime cache when determining whether to evaluate.  Defaults to true.
+	 */
+	private boolean useCache(Integer ruleNumber) throws Exception {
+		
+		return (getRule(ruleNumber).getIgnoreCache() == null) || (getRule(ruleNumber).getIgnoreCache() == false);
+		
+	}
 
 	private Rule getRule(Integer ruleNumber) throws Exception {
 		return ruleDefinition.getRule(ruleNumber);
@@ -694,10 +707,10 @@ public class RuleEvaluator implements Cloneable {
 		try {
 			result = CalcRuleProcessor.processCalcRule(ruleHandler, expression, variables);
 		} catch (NoRuleEvaluatedException e) {
-			LOGGER.info("Unable to process rule expression: \"" + expression + "\", reason: " + e);
+			logger.info("Unable to process rule expression: \"" + expression + "\", reason: " + e);
 			throw e;
 		} catch (PropertyAccessException e) {
-			LOGGER.info("Unable to process rule expression: \"" + expression + "\", reason: " + e);
+			logger.info("Unable to process rule expression: \"" + expression + "\", reason: " + e);
 			throw new RuleEvaluationException("Unable to process rule expression: \"" + expression + "\", reason: " + e);
 		}
 

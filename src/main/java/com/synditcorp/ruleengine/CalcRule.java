@@ -23,14 +23,19 @@ public class CalcRule extends Rule {
 	private final String handlerClass;
 
 	@JsonCreator
-	public CalcRule(@JsonProperty("ruleNumber") Integer ruleNumber, @JsonProperty("ruleType") String ruleType,
-			@JsonProperty("ruleTags") ArrayList<String> ruleTags, @JsonProperty("description") String description,
-			@JsonProperty("active") Boolean active, @JsonProperty("expirationDate") Date expirationDate,
+	public CalcRule(@JsonProperty("ruleNumber") Integer ruleNumber, 
+			@JsonProperty("ruleType") String ruleType,
+			@JsonProperty("ruleTags") ArrayList<String> ruleTags, 
+			@JsonProperty("description") String description,
+			@JsonProperty("active") Boolean active, 
+			@JsonProperty("ignoreCache") Boolean ignoreCache,
+			@JsonProperty("expirationDate") Date expirationDate,
 			@JsonProperty("effectiveDate") Date effectiveDate,
-			@JsonProperty("outcomes") ArrayList<Outcome> outcomes, @JsonProperty("expression") String expression,
+			@JsonProperty("outcomes") ArrayList<Outcome> outcomes, 
+			@JsonProperty("expression") String expression,
 			@JsonProperty("handlerClass") String handlerClass) {
 
-		super(ruleNumber, ruleType, ruleTags, description, active, expirationDate, effectiveDate, outcomes);
+		super(ruleNumber, ruleType, ruleTags, description, active, ignoreCache, expirationDate, effectiveDate, outcomes);
 
 		this.expression = expression;
 		this.handlerClass = handlerClass;

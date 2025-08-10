@@ -29,6 +29,7 @@ public class Rule {
 	private final ArrayList<String> ruleTags;
 	private final String description;
 	private final Boolean active;
+	private final Boolean ignoreCache;
 	private final Date expirationDate;
 	private final Date effectiveDate;
 	private final ArrayList<Outcome> outcomes;
@@ -47,6 +48,7 @@ public class Rule {
 			@JsonProperty("ruleTags") ArrayList<String> ruleTags, 
 			@JsonProperty("description") String description,
 			@JsonProperty("active") Boolean active, 
+			@JsonProperty("ignoreCache") Boolean ignoreCache,
 			@JsonProperty("expirationDate") Date expirationDate,
 			@JsonProperty("effectiveDate") Date effectiveDate,
 			@JsonProperty("outcomes") ArrayList<Outcome> outcomes) {
@@ -56,6 +58,7 @@ public class Rule {
 		this.ruleTags = ruleTags;
 		this.description = description;
 		this.active = active;
+		this.ignoreCache = ignoreCache;
 		this.expirationDate = expirationDate;
 		this.effectiveDate = effectiveDate;
 		canHaveOutcomes(ruleType, outcomes);
@@ -94,6 +97,10 @@ public class Rule {
 
 	protected Boolean getActive() {
 		return this.active;
+	}
+
+	protected Boolean getIgnoreCache() {
+		return this.ignoreCache;
 	}
 
 	protected Date getEffectiveDate() {
