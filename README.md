@@ -62,6 +62,14 @@ There are two changes in version 2.1.0:
 
 # Using
 
+## Get the Engine
+
+	<dependency>
+	  <groupId>com.synditcorp</groupId>
+	  <artifactId>ruleengine</artifactId>
+	  <version>3.0.2-RELEASE</version>
+	</dependency>
+
 ## Parser
 
 Step 1 is to instantiate a parser.  Included is a parser for JSON using the Jackson parser (com.fasterxml.jackson.core).  Any parser can be implemented, for instance for XML, MongoDB, etc., by writing a simple custom class that implements the RuleParser interface and uses your preferred parser.  In this example, a JSON file is parsed.  To reference the JSON document format, see the JSON definition documents in the project's test resources folder.

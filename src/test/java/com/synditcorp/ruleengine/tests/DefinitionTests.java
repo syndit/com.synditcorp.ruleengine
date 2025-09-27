@@ -8,7 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +18,7 @@ import com.synditcorp.ruleengine.RuleDefinition;
 import com.synditcorp.ruleengine.RuleEvaluator;
 import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 import com.synditcorp.ruleengine.exceptions.RuleEvaluationException;
+import com.synditcorp.ruleengine.logging.TimeTrack;
 import com.synditcorp.ruleengine.parser.RuleJSONParser;
 
 public class DefinitionTests {
@@ -508,28 +511,77 @@ public class DefinitionTests {
 			
 	}
 
+	/*
+	 * Rule 27 does not have a null in the outcome array
+	 */
+			
+	@Test
+	void test30() throws Exception {
+		
+		RuleEvaluator ruleEvaluator = getRuleEvaluator();
+		
+		ruleEvaluator.evaluateRule(27);
+		
+		ArrayList<String> tagOutcomes = ruleEvaluator.getTagOutcome(27, "flag");
+		
+		boolean nullFound = false;
+		for (Iterator<String> iterator = tagOutcomes.iterator(); iterator.hasNext();) {
+			String outcome = (String) iterator.next();
+			if(outcome == null) {
+				nullFound = true;
+				break;
+			}
+		}
+		
+		assertTrue( nullFound == false , "Rule 27 has a null value in its array.");
+			
+	}
+
+	/*
+	 * This test is to make sure code changes haven't affected the performance of the engine.
+	 * The engine should easily clear the maximum time requirements of this test 
+	 */
+	@Test
+	void test31() throws Exception {
+		
+		RuleEvaluator ruleEvaluator = getRuleEvaluator();
+		
+		ruleEvaluator.evaluateRule(6);
+		
+		TreeMap<String, Object> variables = ruleEvaluator.getVariables();
+		
+		int cnt = 10000;
+		
+		TimeTrack t1 = new TimeTrack();
+		
+		for(int i = 0; i < cnt; i++) {
+		
+			variables.replace("amount1", 1.50);
+			variables.replace("amount2", 5.00);
+			variables.replace("amount3", 7.15);
+			variables.replace("score", 4);
+			variables.replace("name1", "Buggs Bunny");
+			variables.replace("ID", "987654321");
+			variables.replace("phone", "724.555.1027");
+
+			ruleEvaluator.resetVariables(variables);
+			ruleEvaluator.evaluateRule(6);
+		
+		}
+		
+		long nanoseconds = TimeTrack.getElapsedTime(t1);
+		long milliseconds = TimeUnit.NANOSECONDS.toMillis(nanoseconds);
+		
+		assertTrue( milliseconds < 1000 , "Rule Engine performance is poor.");
+			
+	}
+
 	private RuleEvaluator getRuleEvaluator() throws Exception {
 		
 		if(this.ruleEvaluator == null) {
 		
-			TreeMap<String, Object> variables = new TreeMap<String, Object>();
+			TreeMap<String, Object> variables = getVariables();
 			
-			Double amount1 = 1.50;
-			Double amount2 = 5.00;
-			Double amount3 = 7.15;
-			Integer score = 4;
-			String name1 = "Buggs Bunny";
-			String ID = "987654321";
-			String phone = "724.555.1027";
-	
-			variables.put("amount1", amount1);
-			variables.put("amount2", amount2);
-			variables.put("amount3", amount3);
-			variables.put("score", score);
-			variables.put("name1", name1);
-			variables.put("ID", ID);
-			variables.put("phone", phone);
-
 			String fileName = "definitionsForTesting.json";
 			Path definitionResource = Paths.get(this.getClass().getResource(fileName).toURI());
 			RuleJSONParser parser = new RuleJSONParser();
@@ -544,6 +596,31 @@ public class DefinitionTests {
 		
 	}
 	
+	private TreeMap<String,Object> getVariables() {
+		
+		TreeMap<String, Object> variables = new TreeMap<String, Object>();
+		
+		Double amount1 = 1.50;
+		Double amount2 = 5.00;
+		Double amount3 = 7.15;
+		Integer score = 4;
+		String name1 = "Buggs Bunny";
+		String ID = "987654321";
+		String phone = "724.555.1027";
+
+		variables.put("amount1", amount1);
+		variables.put("amount2", amount2);
+		variables.put("amount3", amount3);
+		variables.put("score", score);
+		variables.put("name1", name1);
+		variables.put("ID", ID);
+		variables.put("phone", phone);
+		
+		return variables;
+
+	}
+	
 }
+
 
 

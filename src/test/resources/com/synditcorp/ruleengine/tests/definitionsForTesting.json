@@ -278,6 +278,19 @@
 					{"result":"pass", "type":"number", "key":"amount","global":"true","compositeOutcomeRules":[23]},
 					{"result":"fail", "type":"number", "key":"amount","global":"true","compositeOutcomeRules":[-23]}
 				]
+		},
+		{
+		"ruleType" : "and",
+		"ruleNumber" : "27",
+		"ruleTags" : [],
+		"description" : "Rule 27 returns true",
+		"compositeRules" : [1,8],
+		"active" : "true",
+		"effectiveDate" : null,
+		"expirationDate" : null,
+		"outcomes": [
+				{"result":"pass", "type":"tag", "key":"flag","global":"true","compositeOutcomeRules":[8,1]}
+			]
 		}
 		]
 	, "orRules" : 

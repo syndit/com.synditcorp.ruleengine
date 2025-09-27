@@ -33,9 +33,8 @@ import com.synditcorp.ruleengine.logging.TimeTrack;
 import com.synditcorp.ruleengine.processors.CalcRuleProcessor;
 
 /**
- * This class provides the runtime methods for the rule engine. Passed in the constructor
- * is a RuleDefinitions object that implements the RuleDefinitions interface. This
- * class is the primary class used to interact with the rule engine.
+ * This class provides the runtime methods for the Rule Engine. This
+ * class is the primary class used to interact with the Rule Engine.
  * RuleDefinitions, the RuleParser, or other rule engine classes need not be
  * accessed directly.
  */
@@ -173,19 +172,16 @@ public class RuleEvaluator implements Cloneable {
 	 * the integrity of the Engine, if variables exist, a EngineSafeguardException is
 	 * thrown.  Use resetVariables to set a new variable collection.
 	 * 
-	 * @throws EngineSafeguardException when variables exist in the internal map collection
+	 * @throws EngineSafeguardException when variables collection is null or if variables exist in the internal map collection
 	 * @param variables for the Engine's expressions
 	 */
 	public void setVariables(TreeMap<String, Object> variables) throws EngineSafeguardException {
 		
-		//if same instance being set within the Engine
-		if(this.variables == variables) return;
-
 		if (!this.variables.isEmpty())
 			throw new EngineSafeguardException(
 					"Variables collection already populated.  Use 'resetVariables' to set a new variables collection.");
 
-		this.variables.putAll(variables);
+		setVariablesProtected(variables);
 
 	}
 	
@@ -193,14 +189,12 @@ public class RuleEvaluator implements Cloneable {
 	 * Replaces the Engine variable collection.  This is used internally by the engine
 	 * to set the collection without safeguards. 
 	 * 
-	 * @throws Exception
+	 * @throws EngineSafeguardException if the variable collection is null
 	 * @param variables for the Engine's expressions
 	 */
-	protected void setVariablesProtected(TreeMap<String, Object> variables) throws Exception {
+	protected void setVariablesProtected(TreeMap<String, Object> variables) throws EngineSafeguardException {
 		
-		//if same instance being set within the Engine
-		if(this.variables == variables) return;
-
+		if(variables == null) throw new EngineSafeguardException("Variables collection cannot be null");
 		this.variables = variables;
 
 	}
@@ -237,8 +231,10 @@ public class RuleEvaluator implements Cloneable {
 	 * @param variables for the Engine's expressions
 	 */
 	public void resetVariables(TreeMap<String, Object> variables) throws Exception {
-		reset();
-		setVariables(variables);
+		
+		clearCache();
+		setVariablesProtected(variables);
+
 	}
 
 	/**
@@ -252,10 +248,8 @@ public class RuleEvaluator implements Cloneable {
 	 */
 	public TreeMap<String, Object> getVariables() {
 
-		TreeMap<String, Object> copyOf = new TreeMap<String, Object>();
-		copyOf.putAll(this.variables);
+		return(this.variables);
 
-		return copyOf;
 	}
 
 	/**
@@ -571,7 +565,11 @@ public class RuleEvaluator implements Cloneable {
 			return (ArrayList<String>) this.variables.get(outcome.getVariableName());
 
 		ArrayList<String> outcomeTags = new ArrayList<String>();
-		outcomeTags.add(calcTagOutcome(outcome));
+		
+		String outcomeStr = calcTagOutcome(outcome);
+		if(outcomeStr != null && outcomeStr.length() > 0) {
+			outcomeTags.add(outcomeStr);
+		}
 
 		ArrayList<Integer> compositeRulesList = outcome.getCompositeOutcomeRules();
 		if (compositeRulesList == null)
