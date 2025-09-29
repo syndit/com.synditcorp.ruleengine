@@ -34,8 +34,13 @@ public class CalcRuleProcessor {
 		if (ruleClassHandler == null || ruleClassHandler == "")
 			throw new Exception("No ruleClassHandler");
 
-		RuleClassHandler h = (RuleClassHandler) Class.forName(ruleClassHandler).getDeclaredConstructor().newInstance();
-		Boolean b = h.processCalcRule(ruleExpression, variables);
+		RuleClassHandler handler = (RuleClassHandler) variables.get(ruleClassHandler);
+		if(handler == null) {
+			handler = (RuleClassHandler) Class.forName(ruleClassHandler).getDeclaredConstructor().newInstance();
+			variables.put(ruleClassHandler, handler);
+		}
+
+		Boolean b = handler.processCalcRule(ruleExpression, variables);
 
 		return b;
 
