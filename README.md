@@ -236,7 +236,7 @@ _Not_  rules are  _calc_  rules or composite rules referenced in a composite rul
 
 ## Workflow
 
-Workflow is essentially doing something at the end of a series of rules and steps.  Work flow is quite easy to implement in the Syndit Rule Engine.  At the end of a series of rules, merely include a  _calc_  rule that references a Java class that implement the RuleClassHandler interface.  The Java class can make a JDBC database call, call and APIs, etc.  Any transaction initiated in Java that an application needs can be integrated into the Engine.
+Workflow is essentially doing something at the end of a series of rules and steps.  Work flow is quite easy to implement in the Syndit Rule Engine.  At the end of a series of rules, merely include a  _calc_  rule that references a Java class that implement the RuleClassHandler interface.  The Java class can make a JDBC database call, call APIs, etc.  Any transaction initiated in Java that an application needs can be integrated into the Engine.
 
 # Rule fields
 
