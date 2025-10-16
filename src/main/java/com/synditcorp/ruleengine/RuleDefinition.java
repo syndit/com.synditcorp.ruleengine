@@ -12,11 +12,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 package com.synditcorp.ruleengine;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
 import com.synditcorp.ruleengine.exceptions.DuplicateKeyException;
+import com.synditcorp.ruleengine.exceptions.InvalidDefinitionException;
 import com.synditcorp.ruleengine.exceptions.NoRuleFoundException;
 import com.synditcorp.ruleengine.exceptions.OutcomeKeyException;
 import com.synditcorp.ruleengine.interfaces.RuleParser;
@@ -32,7 +34,8 @@ public class RuleDefinition {
 
 	private final Rules baseRules;
 	private final TreeMap<Integer, Rule> aggregateRules = new TreeMap<Integer, Rule>();
-
+	private final HashSet<String> ruleClasses = new HashSet<String>();
+	
 	public RuleDefinition(RuleParser parser) throws Exception {
 		this.baseRules = parser.getRules();
 		setToAggregateRules();
@@ -151,6 +154,10 @@ public class RuleDefinition {
 		return this.aggregateRules.get(ruleNumber);
 
 	}
+	
+	protected HashSet<String> getRuleClasses() {
+		return this.ruleClasses;
+	}
 
 	/*
 	 * For runtime performance, configure as much as possible when loading rules
@@ -176,12 +183,17 @@ public class RuleDefinition {
 			CalcRule calcRule = (CalcRule) iterator.next();
 			if (!calcRule.getRuleType().equalsIgnoreCase("calc"))
 				throw new IllegalArgumentException("calc rules list can't have '" + calcRule.getRuleType() + "' rules");
-			calcRule.setOutcomesToCategories(this.getDocumentId());
+			
+			if (calcRule.getHandlerClass() == null || calcRule.getHandlerClass().length() == 0)
+				throw new InvalidDefinitionException("Calc rule number " + calcRule.getRuleNumber() + " requires a handler class");
 
+			calcRule.setOutcomesToCategories(this.getDocumentId());
+		
 			if(this.aggregateRules.containsKey(calcRule.getRuleNumber()))
 				throw new DuplicateKeyException("Rule number " + calcRule.getRuleNumber() + "is duplicated in the definitions.");
 
 			this.aggregateRules.put(calcRule.getRuleNumber(), calcRule);
+			this.ruleClasses.add(calcRule.getHandlerClass());
 		}
 	}
 

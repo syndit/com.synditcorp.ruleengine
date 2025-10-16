@@ -576,6 +576,22 @@ public class DefinitionTests {
 			
 	}
 
+	/*
+	 * Fails because a calc rules need a handler class 
+	 */
+	@Test
+	void test32() throws Exception {
+		
+		Exception exception = assertThrows(com.synditcorp.ruleengine.exceptions.InvalidDefinitionException.class, () -> {
+			String fileName = "test16.json";
+			Path definitionResource = Paths.get(this.getClass().getResource(fileName).toURI());
+			RuleJSONParser parser = new RuleJSONParser();
+			parser.loadRules(definitionResource);
+			RuleDefinition rules = new RuleDefinition(parser);
+	    });
+		
+	}
+	
 	private RuleEvaluator getRuleEvaluator() throws Exception {
 		
 		if(this.ruleEvaluator == null) {

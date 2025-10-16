@@ -13,6 +13,7 @@ package com.synditcorp.ruleengine;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -29,6 +30,7 @@ import com.synditcorp.ruleengine.exceptions.EngineSafeguardException;
 import com.synditcorp.ruleengine.exceptions.NoRuleEvaluatedException;
 import com.synditcorp.ruleengine.exceptions.RuleEvaluationException;
 import com.synditcorp.ruleengine.handlers.ExpressionHandler;
+import com.synditcorp.ruleengine.interfaces.RuleClassHandler;
 import com.synditcorp.ruleengine.logging.TimeTrack;
 import com.synditcorp.ruleengine.processors.CalcRuleProcessor;
 
@@ -45,11 +47,14 @@ public class RuleEvaluator implements Cloneable {
 	private RuleDefinition ruleDefinition;
 	private TreeMap<Integer, Boolean> cache = new TreeMap<Integer, Boolean>();
 	private TreeMap<String, Object> variables = new TreeMap<String, Object>();
+	private TreeMap<String, Object> calcRuleInstances = new TreeMap<String, Object>();
 	private int threadBlockSize = 100;
 	private ForkJoinPool pool = null;
 
 	public RuleEvaluator(RuleDefinition rulesDefinition) {
 		this.ruleDefinition = rulesDefinition;
+		instantiateCalcRuleClasses();
+				
 	}
 
 	/**
@@ -182,7 +187,7 @@ public class RuleEvaluator implements Cloneable {
 					"Variables collection already populated.  Use 'resetVariables' to set a new variables collection.");
 
 		setVariablesProtected(variables);
-
+		
 	}
 	
 	/**
@@ -248,7 +253,7 @@ public class RuleEvaluator implements Cloneable {
 	 */
 	public TreeMap<String, Object> getVariables() {
 
-		return(this.variables);
+		return this.variables;
 
 	}
 
@@ -343,6 +348,27 @@ public class RuleEvaluator implements Cloneable {
 		if (!this.cache.isEmpty())
 			throw new EngineSafeguardException("Cache contains evaulation results.  Use 'reset' to clear results.");
 		this.cache.putAll(cache);
+	}
+	
+
+	/**
+	 * Instantiates all RuleClassHandlers and puts to TreeMap collection for retrieval at runtime.
+	 * 
+	 */
+	private void instantiateCalcRuleClasses() {
+		
+		HashSet<String> ruleClasses = this.ruleDefinition.getRuleClasses();
+		
+		for(Iterator iterator = ruleClasses.iterator();iterator.hasNext();) {
+			String ruleClassHandler = (String) iterator.next();
+			try {
+				RuleClassHandler handler = (RuleClassHandler) Class.forName(ruleClassHandler).getDeclaredConstructor().newInstance();
+				this.calcRuleInstances.put(ruleClassHandler, handler);
+			} catch (Exception e) {
+				logger.info("RuleEvaluator: No Java class found for rule class in definition: " + ruleClassHandler);
+			}
+		}
+		
 	}
 	
 	/**
@@ -699,11 +725,12 @@ public class RuleEvaluator implements Cloneable {
 	private Boolean processCalcRule(Integer ruleNumber) throws Exception {
 
 		String ruleHandler = ((CalcRule) getRule(ruleNumber)).getHandlerClass();
+		RuleClassHandler ruleClassHandler = (RuleClassHandler) this.calcRuleInstances.get(ruleHandler);
 		String expression = ((CalcRule) getRule(ruleNumber)).getExpression();
 
 		Boolean result = null;
 		try {
-			result = CalcRuleProcessor.processCalcRule(ruleHandler, expression, variables);
+			result = CalcRuleProcessor.processCalcRule(ruleClassHandler, expression, variables);
 		} catch (NoRuleEvaluatedException e) {
 			logger.info("Unable to process rule expression: \"" + expression + "\", reason: " + e);
 			throw e;

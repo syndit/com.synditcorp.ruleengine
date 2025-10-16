@@ -21,26 +21,20 @@ public class CalcRuleProcessor {
 	 * This method processes an expression using a rule handler class that
 	 * implements RuleClassHandler.
 	 * 
-	 * @param ruleClassHandler is the value from the "handlerClass" field of the
+	 * @param ruleClassHandler is the instantiated class from the "handlerClass" field of the
 	 *                         BaseRule class
 	 * @param ruleExpression   is the expression to evaluate
 	 * @param variables        contains the variables needed by the expression
 	 * @return a boolean is returned based on the evaluation of the expression
 	 * @throws Exception when any exception occurs
 	 */
-	public static Boolean processCalcRule(String ruleClassHandler, String ruleExpression,
+	public static Boolean processCalcRule(RuleClassHandler ruleClassHandler, String ruleExpression,
 			TreeMap<String, Object> variables) throws Exception {
 
-		if (ruleClassHandler == null || ruleClassHandler == "")
+		if (ruleClassHandler == null)
 			throw new Exception("No ruleClassHandler");
 
-		RuleClassHandler handler = (RuleClassHandler) variables.get(ruleClassHandler);
-		if(handler == null) {
-			handler = (RuleClassHandler) Class.forName(ruleClassHandler).getDeclaredConstructor().newInstance();
-			variables.put(ruleClassHandler, handler);
-		}
-
-		Boolean b = handler.processCalcRule(ruleExpression, variables);
+		Boolean b = ruleClassHandler.processCalcRule(ruleExpression, variables);
 
 		return b;
 

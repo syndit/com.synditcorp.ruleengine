@@ -1,0 +1,28 @@
+{
+	"documentId" : "TEST_RULES",
+	"description" : "This definition should fail.  Calc rules need a handler class.",
+	"version" : "3.0.11",
+	"calcRules":
+		[
+		{
+			"ruleType" : "calc",
+			"ruleNumber" : "1",
+			"description" : "Rule without a handler class",
+			"expression" : "true"
+		}
+		]
+	, "andRules" : 
+		[
+		]
+	, "orRules" : 
+		[
+		]
+	, "allRules" : 
+		[
+		]
+	, "threadRules":
+		[
+		]
+}
+
+
