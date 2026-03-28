@@ -93,6 +93,12 @@ public class RuleDefinition {
 	protected Integer getStartRule() {
 		return baseRules.getStartRule();
 	}
+	
+	protected ArrayList<HandlerClass> getHandlerClasses() {
+		
+		return baseRules.gethandlerClasses();
+
+	}
 
 	/**
 	 * Optional rule tags are used to further define a rule, but are not used when

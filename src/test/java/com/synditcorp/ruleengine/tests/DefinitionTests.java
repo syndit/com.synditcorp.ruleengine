@@ -592,6 +592,18 @@ public class DefinitionTests {
 		
 	}
 	
+	/*
+	 * This tests handler class with parameterized constructor 
+	 */
+	@Test
+	void test33() throws Exception {
+		
+		RuleEvaluator ruleEvaluator = getRuleEvaluator();
+		
+		assertTrue( (ruleEvaluator.evaluateRule(28) == true), "Rule 28 results expecting true.");
+		
+	}
+	
 	private RuleEvaluator getRuleEvaluator() throws Exception {
 		
 		if(this.ruleEvaluator == null) {

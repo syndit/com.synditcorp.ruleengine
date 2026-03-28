@@ -53,8 +53,7 @@ public class RuleEvaluator implements Cloneable {
 
 	public RuleEvaluator(RuleDefinition rulesDefinition) {
 		this.ruleDefinition = rulesDefinition;
-		instantiateCalcRuleClasses();
-				
+		instantiateClassHandlers();				
 	}
 
 	/**
@@ -355,6 +354,45 @@ public class RuleEvaluator implements Cloneable {
 	 * Instantiates all RuleClassHandlers and puts to TreeMap collection for retrieval at runtime.
 	 * 
 	 */
+	private void instantiateClassHandlers() {
+		instantiateHandlerClasses();
+		instantiateCalcRuleClasses();
+	}
+	
+	private void instantiateHandlerClasses() {
+		
+		ArrayList<HandlerClass> handlerClasses = this.ruleDefinition.getHandlerClasses();
+		
+		if(handlerClasses == null || handlerClasses.isEmpty()) return;
+		
+		Iterator<HandlerClass> iterator = handlerClasses.iterator();
+		while (iterator.hasNext()) {
+			
+			HandlerClass handlerClass = iterator.next();
+			
+			try {
+				
+				if(this.calcRuleInstances.containsKey(handlerClass.getHandlerClassID())) continue;
+				
+				if(handlerClass.getHandlerConstParams() != null) {
+					RuleClassHandler handler = (RuleClassHandler) Class.forName( handlerClass.getHandlerClass() ).getDeclaredConstructor(String[].class).newInstance((Object) handlerClass.getHandlerConstParams());
+					this.calcRuleInstances.put(handlerClass.getHandlerClassID(), handler);
+					
+				} else {
+					RuleClassHandler handler = (RuleClassHandler) Class.forName( handlerClass.getHandlerClass() ).getDeclaredConstructor().newInstance();
+					this.calcRuleInstances.put(handlerClass.getHandlerClassID(), handler);
+				}
+			
+			} catch (Exception e) {
+				logger.info("RuleEvaluator: Exception creating rule class handler: " + handlerClass.getHandlerClassID());
+			}
+		}
+		
+	}
+	
+	/*
+	 * For backward compatibility
+	 */
 	private void instantiateCalcRuleClasses() {
 		
 		HashSet<String> ruleClasses = this.ruleDefinition.getRuleClasses();
@@ -362,14 +400,19 @@ public class RuleEvaluator implements Cloneable {
 		for(Iterator iterator = ruleClasses.iterator();iterator.hasNext();) {
 			String ruleClassHandler = (String) iterator.next();
 			try {
+				
+				if(this.calcRuleInstances.containsKey(ruleClassHandler)) continue;
+				
 				RuleClassHandler handler = (RuleClassHandler) Class.forName(ruleClassHandler).getDeclaredConstructor().newInstance();
 				this.calcRuleInstances.put(ruleClassHandler, handler);
+
 			} catch (Exception e) {
 				logger.info("RuleEvaluator: No Java class found for rule class in definition: " + ruleClassHandler);
 			}
 		}
 		
 	}
+	
 	
 	/**
 	 * To protect the integrity of the engine, this is used to prevent existing variables from 

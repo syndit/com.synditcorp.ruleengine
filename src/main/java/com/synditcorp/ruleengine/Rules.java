@@ -24,6 +24,7 @@ public class Rules {
 	private final Boolean active;
 	private final Integer startRule;
 	private final ArrayList<String> documentTags;
+	private final ArrayList<HandlerClass> handlerClasses;
 	private final ArrayList<CalcRule> calcRules;
 	private final ArrayList<AndRule> andRules;
 	private final ArrayList<OrRule> orRules;
@@ -38,6 +39,7 @@ public class Rules {
 			@JsonProperty("active") Boolean active,
 			@JsonProperty("startRule") Integer startRule,
 			@JsonProperty("documentTags") ArrayList<String> documentTags,
+			@JsonProperty("handlerClasses") ArrayList<HandlerClass> handlerClasses,
 			@JsonProperty("calcRules") ArrayList<CalcRule> calcRules,
 			@JsonProperty("andRules") ArrayList<AndRule> andRules,
 			@JsonProperty("orRules") ArrayList<OrRule> orRules,
@@ -51,6 +53,7 @@ public class Rules {
 		this.active = active;
 		this.startRule = startRule;
 		this.documentTags = documentTags;
+		this.handlerClasses = handlerClasses;
 		this.calcRules = calcRules;
 		this.andRules = andRules;
 		this.orRules = orRules;
@@ -101,6 +104,10 @@ public class Rules {
 
 	protected ArrayList<String> getDocumentTags() {
 		return this.documentTags;
+	}
+	
+	protected ArrayList<HandlerClass> gethandlerClasses() {
+		return this.handlerClasses;
 	}
 
 }

@@ -21,9 +21,11 @@ public class CalcRule extends Rule {
 
 	private final String expression;
 	private final String handlerClass;
+	private final String[] handlerConstParams;
 
 	@JsonCreator
-	public CalcRule(@JsonProperty("ruleNumber") Integer ruleNumber, 
+	public CalcRule(
+			@JsonProperty("ruleNumber") Integer ruleNumber, 
 			@JsonProperty("ruleType") String ruleType,
 			@JsonProperty("ruleTags") ArrayList<String> ruleTags, 
 			@JsonProperty("description") String description,
@@ -33,12 +35,15 @@ public class CalcRule extends Rule {
 			@JsonProperty("effectiveDate") Date effectiveDate,
 			@JsonProperty("outcomes") ArrayList<Outcome> outcomes, 
 			@JsonProperty("expression") String expression,
-			@JsonProperty("handlerClass") String handlerClass) {
+			@JsonProperty("handlerClass") String handlerClass, 
+			@JsonProperty("handlerConstParams") String[] handlerConstParams)
+	{
 
 		super(ruleNumber, ruleType, ruleTags, description, active, ignoreCache, expirationDate, effectiveDate, outcomes);
 
 		this.expression = expression;
 		this.handlerClass = handlerClass;
+		this.handlerConstParams = handlerConstParams;
 
 	}
 
@@ -48,6 +53,10 @@ public class CalcRule extends Rule {
 
 	protected String getHandlerClass() {
 		return this.handlerClass;
+	}
+
+	protected String[] handlerConstParams() {
+		return this.handlerConstParams;
 	}
 
 }

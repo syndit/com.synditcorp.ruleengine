@@ -4,7 +4,23 @@
 	"version" : "3.0.0",
 	"documentTags" : ["test"],
 	"startRule" : "1",
-	"calcRules":
+	"handlerClasses":
+		[
+			{
+				"handlerClass":"com.synditcorp.ruleengine.handlers.ExpressionRuleHandler",
+				"handlerClassID":"ExpressionRuleHandler"
+			},
+			{
+				"handlerClass":"com.somecompany.tests.MultipleUseClass",
+				"handlerClassID":"MultipleUseClass"
+			},
+			{
+				"handlerClass":"com.somecompany.tests.HandlerWithConstParams",
+				"handlerClassID":"HandlerWithConstParams_1",
+				"handlerConstParams":["1","1"]
+			}
+		]
+	, "calcRules":
 		[
 			{
 				"ruleType" : "calc",
@@ -224,6 +240,17 @@
 				"ignoreCache":"false",
 				"outcomes": [
 						{"result":"fail", "type":"tag", "key":"flag","expression":"26FlagF","global":"true"}
+				]
+			},
+			{
+				"ruleType" : "calc",
+				"ruleNumber" : "28",
+				"description" : "Test handlerClass with constructor params.",
+				"expression" : "1",
+				"handlerClass" : "HandlerWithConstParams_1",
+				"ignoreCache":"false",
+				"outcomes": [
+						{"result":"fail", "type":"tag", "key":"flag","expression":"28FlagF","global":"true"}
 				]
 			}
 		]
