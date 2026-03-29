@@ -18,6 +18,11 @@
 				"handlerClass":"com.somecompany.tests.HandlerWithConstParams",
 				"handlerClassID":"HandlerWithConstParams_1",
 				"handlerConstParams":["1","1"]
+			},
+			{
+				"handlerClass":"com.somecompany.tests.HandlerWithConstParams",
+				"handlerClassID":"HandlerWithConstParams_2",
+				"handlerConstParams":["2","2"]
 			}
 		]
 	, "calcRules":
@@ -177,7 +182,7 @@
 				"ruleNumber" : "23",
 				"description" : "Rule 23 passes",
 				"expression" : "(TEST_RULES_3_amount + TEST_RULES_2_amount) == -7",
-				"handlerClass" : "com.synditcorp.ruleengine.handlers.ExpressionRuleHandler",
+				"handlerClass" : "ExpressionRuleHandler",
 				"active" : "true",
 				"outcomes": [
 					{"result":"pass", "type":"number", "key":"amount","expression":"TEST_RULES_1_amount + 13","global":"true","compositeOutcomeRules":[2]},
@@ -225,7 +230,7 @@
 				"ruleNumber" : "25",
 				"description" : "Test ruleCache.  Setting ignoreCache to true allows the rule to be repeatedly evaluated.",
 				"expression" : "TEST_RULES_25_flag",
-				"handlerClass" : "com.somecompany.tests.MultipleUseClass",
+				"handlerClass" : "MultipleUseClass",
 				"ignoreCache":"true",
 				"outcomes": [
 						{"result":"fail", "type":"tag", "key":"flag","expression":"25FlagF","global":"true"}
@@ -236,7 +241,7 @@
 				"ruleNumber" : "26",
 				"description" : "Test ruleCache.  Setting ignoreCache to false means this rule will evaluate only once.",
 				"expression" : "TEST_RULES_26_flag",
-				"handlerClass" : "com.somecompany.tests.MultipleUseClass",
+				"handlerClass" : "MultipleUseClass",
 				"ignoreCache":"false",
 				"outcomes": [
 						{"result":"fail", "type":"tag", "key":"flag","expression":"26FlagF","global":"true"}
@@ -248,6 +253,17 @@
 				"description" : "Test handlerClass with constructor params.",
 				"expression" : "1",
 				"handlerClass" : "HandlerWithConstParams_1",
+				"ignoreCache":"false",
+				"outcomes": [
+						{"result":"fail", "type":"tag", "key":"flag","expression":"28FlagF","global":"true"}
+				]
+			},
+			{
+				"ruleType" : "calc",
+				"ruleNumber" : "29",
+				"description" : "Test handlerClass with constructor params.  This should fail because the expression does not match the constructor's parameters",
+				"expression" : "1",
+				"handlerClass" : "HandlerWithConstParams_2",
 				"ignoreCache":"false",
 				"outcomes": [
 						{"result":"fail", "type":"tag", "key":"flag","expression":"28FlagF","global":"true"}

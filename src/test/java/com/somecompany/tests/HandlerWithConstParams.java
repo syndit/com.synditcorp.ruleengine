@@ -18,7 +18,7 @@ public class HandlerWithConstParams implements RuleClassHandler {
 		
 		this.compareStr0 = params[0];
 		this.compareInt1 = Integer.parseInt(params[1]);
- 		
+		
 	}	
 	
 	@Override

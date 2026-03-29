@@ -36,9 +36,15 @@ The Syndit Rule Engine is a light-weight, simple rule engine that can be used to
 
 # Changes
 
+## Version 3.1.0
+
+There is one new feature in version 3.1:
+
+ 1. To remove the reliance on MVEL expressions, support in the definition document for rule handler classes that have parameterized constructors has been added.  This allows common rule handler classes to be initialized with different field values.  See Rule Handler Class Definitions below.
+
 ## Version 3.0.0
 
-The changes in version 3 include
+The changes in version 3 include:
 
  1. Outcomes have been simplified to allow for greater flexibility, essentially letting the developer designate any outcome tag or outcome number that is needed.
  2. Safeguards have been added to prevent runtime manipulation of objects that could potentially affect the integrity of the Engine's outcomes.  If rule definitions need to change, new rule definition must be loaded.
@@ -47,7 +53,7 @@ The changes in version 3 include
 
 ## Version 2.2.0
 
-There are three changes in version 2.2.0
+There are three changes in version 2.2.0:
 
  1. A new rule type was added to support multi-threaded processing.  See Thread rules below for more information.
  1. Uniquely identify document-specific field artifacts using namespaces. 
@@ -234,9 +240,6 @@ _Thread_  rules are for when multi-threaded processing is needed.  The  _thread_
 
 _Not_  rules are  _calc_  rules or composite rules referenced in a composite rule that need the opposite to be true.  In other words, a  _not_  rule is used when something needs to not be true or not be false.  For example, if you need a rule that evaluates if a property is not in the state of Florida, reference as a  _not_  rule a rule that returns if the property is in Florida.  If the rule returns FALSE, that is the property is not in Florida, and it is being referenced as a  _not_  rule, the evaluation will be TRUE that the property is not in Florida.  _Not_  rules are denoted in composite rules with a minus sign before the rule number.
 
-## Workflow
-
-Workflow is essentially doing something at the end of a series of rules and steps.  Work flow is quite easy to implement in the Syndit Rule Engine.  At the end of a series of rules, merely include a  _calc_  rule that references a Java class that implement the RuleClassHandler interface.  The Java class can make a JDBC database call, call APIs, etc.  Any transaction initiated in Java that an application needs can be integrated into the Engine.
 
 # Rule fields
 
@@ -297,6 +300,7 @@ There are five fields for use in identifying a particular document:
  1. version - always a good idea to version your documents.
  1. active - Set to true or false.  This can be used in document database queries.  For example, select the max version number for active documents.  If a document version is put into production, but needs to be rolled back, merely set the document active flag to false and re-intialize your Engines.
  1. documentTags - document tags are used to further define a document.  Tags can be used for things like authorization in databases or display control in custom rule definition editors.
+ 1. handlerClasses - define rule handler classes and assign an ID for reference in Calc rules.  See Rule Hanlder Class Definitions below.
  1. startRule - for very large decision trees, this holds the value of the base rule of the tree.  It is intended for the developers to retrieve at runtime so they don't have to rely on Jira tickets, emails, text messages, etc. to know the starting base rule to call. 
 
 		"definitionId" : "ORDACC",
@@ -305,6 +309,25 @@ There are five fields for use in identifying a particular document:
 		"active" : true,
 		"documentTags" : ["test","partial"],
 		"startRule" : "14",
+
+### Rule Handler Class Definitions
+
+Evaluation of MVEL expressions is relatively slow, particularly for batch implementations.  To avoid MVEL expressions, the solution is to create custom classes that already know expected data types and rule evaluation logic, which can significantly reduce processing time.  In version 3.1, support has been provided for common rule handler classes with parameterized constructors that can be defined in the definition document and initialized at runtime.  Parameterized constructors allow initialization with String values defined in the definition document.  Values can be whatever is needed for rules, with casting String parameters as needed for a rule's evaluation logic.  For example, an instance can be created with a value of "FL" (Florida) that is compared at runtime to a rule's expression value.  Or, an instance can be initialized with a variable name that at runtime retrieves a variable from the Variables collection.  Below is an extract from a definition document that defines two rule handler classes.  ExpressionRuleHandler is a provided class for evaluating MVEL expressions and does not have a parameterized constructor.  HandlerWithConstParams is a class that is initialized with two values.  For the Calc rule's handlerClass value, use the handlerClassID value that is defined in the handlerClasses array.
+
+		"handlerClasses":
+		[
+			{
+				"handlerClass":"com.synditcorp.ruleengine.handlers.ExpressionRuleHandler",
+				"handlerClassID":"ExpressionRuleHandler"
+			},
+			{
+				"handlerClass":"com.somecompany.tests.HandlerWithConstParams",
+				"handlerClassID":"HandlerWithConstParams_1",
+				"handlerConstParams":["1","FL"]
+			}
+		]
+		
+
 
 ## Accessing outcome values from other rules at runtime
 

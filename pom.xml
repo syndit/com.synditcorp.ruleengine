@@ -3,7 +3,7 @@
   <groupId>com.synditcorp</groupId>
   <artifactId>ruleengine</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.2-RELEASE</version>
+  <version>3.1.0-RELEASE</version>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>A rule engine for business rule implementations.</description>
   <url>https://github.com/syndit/com.synditcorp.ruleengine/tree/3.0</url>

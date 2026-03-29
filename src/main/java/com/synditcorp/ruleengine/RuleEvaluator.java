@@ -372,10 +372,13 @@ public class RuleEvaluator implements Cloneable {
 			
 			try {
 				
-				if(this.calcRuleInstances.containsKey(handlerClass.getHandlerClassID())) continue;
+				String handlerClassID = handlerClass.getHandlerClassID();
+				
+				if(this.calcRuleInstances.containsKey(handlerClassID)) continue;
 				
 				if(handlerClass.getHandlerConstParams() != null) {
-					RuleClassHandler handler = (RuleClassHandler) Class.forName( handlerClass.getHandlerClass() ).getDeclaredConstructor(String[].class).newInstance((Object) handlerClass.getHandlerConstParams());
+					String[] params = handlerClass.getHandlerConstParams();
+					RuleClassHandler handler = (RuleClassHandler) Class.forName( handlerClass.getHandlerClass() ).getDeclaredConstructor(String[].class).newInstance((Object) params);
 					this.calcRuleInstances.put(handlerClass.getHandlerClassID(), handler);
 					
 				} else {

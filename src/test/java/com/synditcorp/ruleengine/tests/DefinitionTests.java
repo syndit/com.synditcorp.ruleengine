@@ -604,6 +604,18 @@ public class DefinitionTests {
 		
 	}
 	
+	/*
+	 * This tests handler class with parameterized constructor.  This should fail because expression value does not match the parameters passed to the constructor. 
+	 */
+	@Test
+	void test34() throws Exception {
+		
+		RuleEvaluator ruleEvaluator = getRuleEvaluator();
+		
+		assertTrue( (ruleEvaluator.evaluateRule(29) == false), "Rule 29 results expecting false.");
+		
+	}
+	
 	private RuleEvaluator getRuleEvaluator() throws Exception {
 		
 		if(this.ruleEvaluator == null) {
